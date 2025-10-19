@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Türkiye Cumhurbaşkanlığı Seçimi Simülatörü</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">TR</div>
+      <div class="titles">
+        <h1>Türkiye Cumhurbaşkanlığı Seçimi Simülatörü</h1>
+        <p>AA • ANKA • %0.00 formatı • Manuel / Otomatik sandık açılışı</p>
+      </div>
+    </div>
+    <div class="hdr-actions">
+      <button id="btnExport" class="btn ghost" title="Ayarları JSON olarak indir">Yapılandırmayı İndir</button>
+      <label class="file">
+        Yükle
+        <input id="fileImport" type="file" accept=".json" />
+      </label>
+      <button id="btnReset" class="btn danger">Sıfırla</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- SOL PANEL -->
+    <section class="panel">
+      <h2>1) Adaylar ve Genel Parametreler</h2>
+
+      <div class="grid g2">
+        <div class="card">
+          <h3>Aday Yönetimi</h3>
+          <div class="row">
+            <input id="candidateName" class="input" placeholder="Aday adı" />
+            <input id="candidateColor" class="input color" type="color" value="#2563eb" />
+            <button id="btnAddCandidate" class="btn">Ekle</button>
+          </div>
+          <p class="hint">En az 2, en fazla 6 aday. İsim/renk anında düzenlenebilir.</p>
+          <ul id="candidateList" class="list"></ul>
+        </div>
+
+        <div class="card">
+          <h3>Genel Parametreler</h3>
+          <div class="grid g2">
+            <label class="field">
+              <span>Toplam Seçmen</span>
+              <input id="inpVoters" class="input" type="number" min="100000" step="1000" value="60000000" />
+            </label>
+            <label class="field">
+              <span>Final Katılım (%)</span>
+              <input id="inpTurnout" class="input" type="number" min="10" max="100" step="0.01" value="85.00" />
+            </label>
+            <label class="field">
+              <span>Geçerli Oy Oranı (%)</span>
+              <input id="inpValidRate" class="input" type="number" min="80" max="100" step="0.01" value="98.00" />
+            </label>
+            <label class="field">
+              <span>Toplam Sandık</span>
+              <input id="inpSandik" class="input" type="number" min="1000" step="100" value="200000" />
+            </label>
+          </div>
+          <p class="hint">Katılım/Geçerli oy oranı final hedefleridir; açılış ilerledikçe gerçekçi şekilde yaklaşır.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>2) Hedef Sonuç Modu</h3>
+        <div class="row space">
+          <label class="switch">
+            <input id="chkTargetMode" type="checkbox" />
+            <span>Final yüzdelerini ben gireceğim</span>
+          </label>
+          <div class="row">
+            <button id="btnRandomize" class="btn ghost">Rastgele Gerçekçi Final Üret</button>
+            <button id="btnNormalize" class="btn">Toplamı %100 Yap</button>
+          </div>
+        </div>
+        <div id="targetTableWrap" class="hidden">
+          <table class="table">
+            <thead><tr><th>Aday</th><th>Hedef %</th></tr></thead>
+            <tbody id="targetTableBody"></tbody>
+            <tfoot><tr><td>Toplam</td><td id="targetSum">%0.00</td></tr></tfoot>
+          </table>
+          <div id="targetWarn" class="warn hidden">Uyarı: Toplam %100 değil.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>3) Ajans Ayarları</h3>
+        <div class="grid g2">
+          <label class="field">
+            <span>AA: Erken Avantaj</span>
+            <select id="selFavAA" class="input"></select>
+          </label>
+          <label class="field">
+            <span>ANKA: Erken Avantaj</span>
+            <select id="selFavANKA" class="input"></select>
+          </label>
+          <label class="field">
+            <span>AA Önyargı Gücü</span>
+            <input id="biasAA" type="range" min="0" max="40" value="30" />
+            <small id="biasAAVal">%30.00</small>
+          </label>
+          <label class="field">
+            <span>ANKA Önyargı Gücü</span>
+            <input id="biasANKA" type="range" min="0" max="40" value="25" />
+            <small id="biasANKAVal">%25.00</small>
+          </label>
+        </div>
+        <p class="hint">Önyargı sadece erken aşamada etkilidir; sandıklar açıldıkça hızla azalır ve final hedeflerine yakınsar.</p>
+      </div>
+
+      <div class="card">
+        <h3>4) 2. Tur Ayarları</h3>
+        <div class="row wrap">
+          <label class="switch">
+            <input id="r2Enabled" type="checkbox" />
+            <span>2. Tur Etkin</span>
+          </label>
+          <div class="seg">
+            <label><input type="radio" name="r2mode" value="auto" checked /> Otomatik (ilk turun ilk 2’si)</label>
+            <label><input type="radio" name="r2mode" value="manual" /> Elle Seç</label>
+          </div>
+          <div id="r2ManualPair" class="row hidden">
+            <select id="r2c1" class="input"></select>
+            <select id="r2c2" class="input"></select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="seg seg-small">
+            <button id="btnViewR1" class="seg-btn active">Görüntülenen Tur: 1</button>
+            <button id="btnViewR2" class="seg-btn">Görüntülenen Tur: 2</button>
+          </div>
+        </div>
+
+        <div id="r2TargetWrap" class="hidden">
+          <h4>2. Tur Hedef Yüzdeleri</h4>
+          <table class="table">
+            <thead><tr><th>Aday</th><th>Hedef % (2. Tur)</th></tr></thead>
+            <tbody id="r2TargetBody"></tbody>
+            <tfoot><tr><td>Toplam</td><td id="r2TargetSum">%0.00</td></tr></tfoot>
+          </table>
+          <button id="btnR2Normalize" class="btn">Toplamı %100 Yap</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>5) Alarm ve Eğriler</h3>
+        <div class="grid g2">
+          <label class="field">
+            <span>Fark Alarm Eşiği (puan)</span>
+            <input id="diffAlarm" class="input" type="number" step="0.01" value="1.50" />
+          </label>
+          <label class="field">
+            <span>Katılım Eğrisi</span>
+            <select id="curveTurnout" class="input">
+              <option value="balanced" selected>Dengeli</option>
+              <option value="fast">Hızlı Başlangıç</option>
+              <option value="slow">Geç Açılır</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Geçerli Oy Eğrisi</span>
+            <select id="curveValid" class="input">
+              <option value="balanced" selected>Dengeli</option>
+              <option value="fast">Hızlı Başlangıç</option>
+              <option value="slow">Geç Açılır</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAĞ PANEL -->
+    <section class="panel">
+      <h2>6) Simülasyon</h2>
+
+      <div class="card">
+        <div class="controls">
+          <div class="row wrap">
+            <button class="btn step" data-step="1">+%1</button>
+            <button class="btn step" data-step="3">+%3</button>
+            <button class="btn step" data-step="5">+%5</button>
+            <button class="btn step" data-step="9">+%9</button>
+            <button class="btn step" data-step="25">+%25</button>
+            <button class="btn step" data-step="100">+%100</button>
+            <div class="row">
+              <input id="customStep" class="input small" type="number" min="0.01" step="0.01" placeholder="Örn. 2.5" />
+              <button id="btnCustomStep" class="btn ghost">+Özel %</button>
+            </div>
+          </div>
+
+          <div class="row wrap">
+            <button id="btnAutoStart" class="btn success">Otomatik Başlat</button>
+            <button id="btnAutoPause" class="btn">Duraklat</button>
+            <label class="field inline">
+              <span>Adım (%)</span>
+              <input id="autoStep" type="range" min="0.25" max="5" step="0.25" value="1" />
+              <small id="autoStepVal">%1.00</small>
+            </label>
+            <label class="field inline">
+              <span>Hız (ms/adım)</span>
+              <input id="autoSpeed" type="range" min="150" max="2000" step="50" value="600" />
+              <small id="autoSpeedVal">600 ms</small>
+            </label>
+          </div>
+
+          <div class="status">
+            <div class="meter"><div id="meterFill" class="meter-fill"></div></div>
+            <div class="stat-row">
+              <div><strong>Sandık Açılışı:</strong> <span id="lblOpened">%0.00</span></div>
+              <div><strong>Açılan Sandık:</strong> <span id="lblOpenedCount">0</span> / <span id="lblTotalSandik">0</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card agency">
+          <div class="agency-head">
+            <h3>Anadolu Ajansı (AA)</h3>
+            <span id="aaLeader" class="chip">Lider: –</span>
+          </div>
+          <div id="aaKpis" class="kpis"></div>
+          <div id="aaBars" class="bars"></div>
+        </div>
+
+        <div class="card agency">
+          <div class="agency-head">
+            <h3>ANKA Haber Ajansı (ANKA)</h3>
+            <span id="ankaLeader" class="chip">Lider: –</span>
+          </div>
+          <div id="ankaKpis" class="kpis"></div>
+          <div id="ankaBars" class="bars"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Grafikler ve Dışa Aktarım</h3>
+        <div class="row wrap">
+          <button id="btnChartPng" class="btn">Grafiği PNG İndir</button>
+          <button id="btnExportCsv" class="btn ghost">Anlık Sonuçları CSV İndir</button>
+        </div>
+        <canvas id="chartGap" class="chart" height="220"></canvas>
+      </div>
+
+      <div class="card">
+        <h3>Canlı Günlük</h3>
+        <div id="log" class="log"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© 2025</span>
+    <span>Arayüz: Beyaz • Modern</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
