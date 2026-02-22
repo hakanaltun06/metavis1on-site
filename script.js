@@ -496,3 +496,99 @@ $("#copyInvite2")?.addEventListener("click", async (e) => {
 
   requestAnimationFrame(step);
 })();
+/* =========================
+   ADMIN + EMERGENCY VIDEO
+========================= */
+
+const ADMIN_PASSWORD = "metavis1on-admin"; // ← BURAYI DEĞİŞTİR
+
+const LS_KEYS = {
+  AUTH: "mv_admin_auth",
+  VIDEO_ACTIVE: "mv_video_active",
+  VIDEO_URL: "mv_video_url",
+  VIDEO_EXPIRE: "mv_video_expire"
+};
+
+/* ---------- ADMIN LOGIN ---------- */
+if (document.getElementById("loginBtn")) {
+
+  const loginBox = document.getElementById("loginBox");
+  const panelBox = document.getElementById("panelBox");
+
+  if (localStorage.getItem(LS_KEYS.AUTH) === "true") {
+    loginBox.classList.add("hidden");
+    panelBox.classList.remove("hidden");
+  }
+
+  document.getElementById("loginBtn").onclick = () => {
+    const pass = document.getElementById("adminPass").value;
+    if (pass === ADMIN_PASSWORD) {
+      localStorage.setItem(LS_KEYS.AUTH,"true");
+      loginBox.classList.add("hidden");
+      panelBox.classList.remove("hidden");
+    } else {
+      alert("Hatalı şifre");
+    }
+  };
+
+  document.getElementById("logoutBtn").onclick = () => {
+    localStorage.removeItem(LS_KEYS.AUTH);
+    location.reload();
+  };
+
+  /* Video Controls */
+  document.getElementById("enableVideo").onclick = () => {
+    const url = document.getElementById("videoUrl").value.trim();
+    const mode = document.getElementById("videoMode").value;
+
+    if (!url.endsWith(".mp4")) {
+      alert("Sadece MP4 desteklenir");
+      return;
+    }
+
+    localStorage.setItem(LS_KEYS.VIDEO_ACTIVE,"true");
+    localStorage.setItem(LS_KEYS.VIDEO_URL,url);
+
+    if (mode === "24h") {
+      localStorage.setItem(
+        LS_KEYS.VIDEO_EXPIRE,
+        Date.now() + 24*60*60*1000
+      );
+    } else {
+      localStorage.removeItem(LS_KEYS.VIDEO_EXPIRE);
+    }
+
+    alert("Acil yayın AKTİF");
+  };
+
+  document.getElementById("disableVideo").onclick = () => {
+    localStorage.removeItem(LS_KEYS.VIDEO_ACTIVE);
+    localStorage.removeItem(LS_KEYS.VIDEO_URL);
+    localStorage.removeItem(LS_KEYS.VIDEO_EXPIRE);
+    alert("Acil yayın KAPATILDI");
+  };
+}
+
+/* ---------- SITE SIDE OVERLAY ---------- */
+(function(){
+  if (localStorage.getItem(LS_KEYS.VIDEO_ACTIVE) !== "true") return;
+
+  const expire = localStorage.getItem(LS_KEYS.VIDEO_EXPIRE);
+  if (expire && Date.now() > Number(expire)) {
+    localStorage.removeItem(LS_KEYS.VIDEO_ACTIVE);
+    return;
+  }
+
+  const videoUrl = localStorage.getItem(LS_KEYS.VIDEO_URL);
+  if (!videoUrl) return;
+
+  document.body.innerHTML = `
+    <div id="emergencyOverlay">
+      <div id="emergencyHeader">
+        <img src="assets/logo.png">
+        <span>Metavis1on — Duyuru</span>
+      </div>
+      <video id="emergencyVideo" src="${videoUrl}" autoplay controls></video>
+    </div>
+  `;
+})();
