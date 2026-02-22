@@ -584,20 +584,64 @@ if (loginBtn) {
   const url = localStorage.getItem(LS.URL);
   if (!url) return;
 
+  // ACIL YAYIN MODE — GLOBAL RESET
+document.documentElement.style.background = "#000";
+document.body.style.background = "#000";
+document.body.style.margin = "0";
+document.body.style.padding = "0";
+document.body.style.overflow = "hidden";
+
 document.body.innerHTML = `
-  <div id="emergencyOverlay">
-    <div id="emergencyHeader">
-      <img src="assets/logo.png" alt="Metavis1on">
-      <span>Metavis1on — Duyuru</span>
+  <div id="emergencyOverlay" style="
+    position:fixed;
+    inset:0;
+    z-index:999999;
+    background:#000;
+    display:flex;
+    flex-direction:column;
+  ">
+    <div style="
+      height:64px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:0 18px;
+      background:rgba(0,0,0,.85);
+      border-bottom:1px solid rgba(255,255,255,.15);
+      flex-shrink:0;
+    ">
+      <img src="assets/logo.png" style="
+        width:34px;
+        height:34px;
+        border-radius:10px;
+      ">
+      <span style="
+        font-weight:900;
+        color:#fff;
+        letter-spacing:.3px;
+      ">
+        Metavis1on — Duyuru
+      </span>
     </div>
 
-    <div id="emergencyPlayer">
+    <div style="
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#000;
+    ">
       <video
-        id="emergencyVideo"
         src="${url}"
         autoplay
         controls
         playsinline
+        style="
+          width:100%;
+          height:100%;
+          object-fit:cover;
+          background:#000;
+        "
       ></video>
     </div>
   </div>
