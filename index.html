@@ -3,182 +3,223 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Metavis1on — Oyun, Sohbet ve Eğlencenin Buluşma Noktası</title>
-  <meta name="description" content="Metavis1on — Discord tabanlı sohbet ve teknoloji topluluğu. Eğlence, sohbet ve kaliteli ortam. Discord’a katıl!">
+
+  <title>Metavis1on — Oyun, Sohbet, Teknoloji</title>
+  <meta name="description" content="Metavis1on — Discord tabanlı topluluk. Oyun, sohbet, teknoloji, etkinlikler ve projeler. Katıl, ortamı gör." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="assets/logo.png">
-  <meta name="theme-color" content="#0b0b0b">
+  <meta name="theme-color" content="#07070a">
+
+  <!-- OpenGraph -->
+  <meta property="og:type" content="website">
   <meta property="og:title" content="Metavis1on">
-  <meta property="og:description" content="Discord topluluğumuzda eğlence, sohbet ve eğlence bir arada.">
+  <meta property="og:description" content="Discord topluluğu: oyun, sohbet, teknoloji, etkinlik ve projeler.">
   <meta property="og:image" content="assets/logo.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Metavis1on">
+  <meta name="twitter:description" content="Discord topluluğu: oyun, sohbet, teknoloji, etkinlik ve projeler.">
+  <meta name="twitter:image" content="assets/logo.png">
+
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
     "@type":"Organization",
     "name":"Metavis1on",
-    "url":"https://discord.gg/metavis1on",
-    "logo":"assets/logo.png",
-    "sameAs":["https://discord.gg/metavis1on","https://x.com","https://github.com"]
+    "url":"https://metavis1on.com",
+    "logo":"https://metavis1on.com/assets/logo.png",
+    "sameAs":["https://discord.gg/metavis1on"]
   }
   </script>
 </head>
-<body class="bg-grid">
+
+<body class="bg">
   <a class="skip" href="#home">İçeriğe geç</a>
 
   <div id="scrollProgress" aria-hidden="true"></div>
 
-  <canvas id="neonBg" aria-hidden="true"></canvas>
+  <!-- Performans: canvas varsayılan kapalı; JS uygun cihazda açıyor -->
+  <canvas id="fx" aria-hidden="true"></canvas>
 
   <header class="nav" aria-label="Birincil">
     <div class="nav-inner container">
       <a href="#home" class="brand" aria-label="Metavis1on ana sayfa">
-        <img src="assets/logo.png" alt="Metavis1on Logo" />
+        <img src="assets/logo.png" alt="Metavis1on Logo" width="32" height="32" loading="eager" decoding="async" />
         <span>Metavis1on</span>
+        <span class="pill">2026</span>
       </a>
 
-      <nav class="menu" role="navigation" aria-label="Bölümler">
+      <nav class="menu" aria-label="Bölümler">
         <a href="#home" class="nav-link active">Ana Sayfa</a>
         <a href="#community" class="nav-link">Topluluk</a>
         <a href="#projects" class="nav-link">Projeler</a>
-        <a href="#team" class="nav-link">Ekibimiz</a>
+        <a href="#team" class="nav-link">Ekip</a>
         <a href="#join" class="nav-cta">Discord’a Katıl</a>
       </nav>
 
       <div class="nav-actions">
-        <button id="accentToggle" class="accent-toggle" aria-label="Aksan rengini değiştir">Mor</button>
-        <button id="cmdOpen" class="kbd-btn" aria-label="Komut Paleti (Ctrl/⌘+K)">⌘K</button>
+        <button id="accentToggle" class="chip" aria-label="Renk temasını değiştir">Mor</button>
+        <button id="cmdOpen" class="chip kbd" aria-label="Komut Paleti (Ctrl/⌘+K)">⌘K</button>
         <button id="burger" class="burger" aria-label="Menüyü aç/kapat" aria-expanded="false" aria-controls="mobileNav">
           <span></span><span></span><span></span>
         </button>
       </div>
     </div>
+
     <nav id="mobileNav" class="mobile-nav" hidden>
       <a href="#home" class="m-link">Ana Sayfa</a>
       <a href="#community" class="m-link">Topluluk</a>
       <a href="#projects" class="m-link">Projeler</a>
-      <a href="#team" class="m-link">Ekibimiz</a>
+      <a href="#team" class="m-link">Ekip</a>
       <a href="#join" class="m-cta">Discord’a Katıl</a>
     </nav>
   </header>
 
   <main id="home" class="site">
-    <section class="hero container section reveal" data-parallax>
-      <div class="logo-wrap">
-        <img class="hero-logo" src="assets/logo.png" alt="Metavis1on Logo" />
-        <div class="logo-glow"></div>
+    <!-- HERO -->
+    <section class="hero container section reveal">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="logo-wrap">
+            <img class="hero-logo" src="assets/logo.png" alt="Metavis1on Logo" width="160" height="160" loading="eager" decoding="async"/>
+            <div class="logo-glow" aria-hidden="true"></div>
+          </div>
+
+          <h1 class="hero-title">Oyun • Sohbet • Teknoloji</h1>
+          <p class="hero-sub">
+            Metavis1on; <strong>Discord</strong> tabanlı bir topluluk. Aktif sohbet, oyun geceleri,
+            teknoloji konuşmaları, proje paylaşımları ve temiz bir ortam.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="https://discord.gg/metavis1on" target="_blank" rel="noopener">
+              Discord’a Katıl
+            </a>
+            <a class="btn btn-ghost" href="#community">Topluluğu Gör</a>
+            <button class="btn btn-soft" id="copyInvite" type="button">Daveti Kopyala</button>
+          </div>
+
+          <div class="hero-badges">
+            <div class="badge-card">
+              <div class="b-title">Aktif Üye</div>
+              <div class="b-value" id="activeCount">—</div>
+              <div class="b-sub" id="apiStatus">Bağlanıyor…</div>
+            </div>
+            <div class="badge-card">
+              <div class="b-title">Toplam Kanal</div>
+              <div class="b-value" id="channelCount">—</div>
+              <div class="b-sub">Widget açıksa görünür</div>
+            </div>
+            <div class="badge-card">
+              <div class="b-title">Hız</div>
+              <div class="b-value">v5</div>
+              <div class="b-sub">Optimize UI</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-right glass">
+          <div class="panel-head">
+            <h2 class="panel-title">Şu an çevrimiçi</h2>
+            <span class="panel-hint">Discord widget verisi</span>
+          </div>
+          <div class="avatar-row" id="onlineAvatars" aria-live="polite"></div>
+
+          <div class="divider"></div>
+
+          <div class="panel-head">
+            <h2 class="panel-title">Hızlı Özellikler</h2>
+            <span class="panel-hint">Topluluk düzeni</span>
+          </div>
+
+          <ul class="feature-list">
+            <li><span class="dot"></span> Oyun geceleri, turnuva / etkinlik</li>
+            <li><span class="dot"></span> Teknoloji & güvenlik sohbetleri</li>
+            <li><span class="dot"></span> Proje paylaşımı ve geri bildirim</li>
+            <li><span class="dot"></span> Temiz moderasyon, net kurallar</li>
+          </ul>
+
+          <div class="panel-actions">
+            <a class="btn btn-mini btn-primary" href="#projects">Projeler</a>
+            <a class="btn btn-mini" href="#team">Ekip</a>
+          </div>
+        </div>
       </div>
-
-      <h1 class="hero-title">Metavis1on — Oyun, Sohbet ve Eğlencenin Buluşma Noktası</h1>
-      <p class="hero-sub">
-        Discord topluluğumuzda her türlü eğlence, sohbet ve oyun ortamı vardır.
-      </p>
-
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="https://discord.gg/metavis1on" target="_blank" rel="noopener">
-          Discord’a Katıl
-        </a>
-        <a class="btn btn-ghost" href="#about">Daha Fazla Bilgi</a>
-      </div>
-
-      <div class="hero-sheen"></div>
-      <div class="hero-orb orb-a" aria-hidden="true"></div>
-      <div class="hero-orb orb-b" aria-hidden="true"></div>
     </section>
 
-    <section id="about" class="about container section reveal">
-      <h2 class="section-title">Neden Metavis1on?</h2>
-      <p class="section-text">
-        Metavis1on, samimi sohbet kültürünü eğlenceyle birleştiren bir topluluk.
-      </p>
-    </section>
-
+    <!-- COMMUNITY -->
     <section id="community" class="community container section reveal">
       <div class="section-head">
-        <h2 class="section-title">Gerçek Zamanlı Topluluk – Sohbet, Yardım ve Eğlence</h2>
+        <h2 class="section-title">Topluluk</h2>
         <p class="section-text">
-          Metavis1on, samimi sohbetleriyle eğlenceyi birleştirir. Katıl ve aramıza sen de katıl.
+          Burada amaç: “kafa rahat” bir ortam. Sohbet + oyun + teknoloji = Metavis1on.
         </p>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-card glass tilt">
-          <div class="stat-label">Aktif Üye</div>
-          <div class="stat-value" id="activeCount">—</div>
-          <div class="stat-hint">Discord’dan canlı çekilir</div>
-        </div>
-        <div class="stat-card glass tilt">
-          <div class="stat-label">Toplam Kanal</div>
-          <div class="stat-value" id="channelCount">—</div>
-          <div class="stat-hint">Widget açıksa görüntülenir</div>
-        </div>
-        <div class="stat-card glass tilt">
-          <div class="stat-label">Durum</div>
-          <div class="stat-value status-dot" id="apiStatus">•••</div>
-          <div class="stat-hint">API bağlantı durumu</div>
-        </div>
+      <div class="grid-3">
+        <article class="card glass">
+          <h3 class="card-title">Sohbet</h3>
+          <p class="card-text">Gündem, muhabbet, oyun, öneri. Toxic değil, keyifli.</p>
+        </article>
+        <article class="card glass">
+          <h3 class="card-title">Oyun</h3>
+          <p class="card-text">CS2, Valorant, LoL, ETS2, co-op geceleri. Kafile gibi.</p>
+        </article>
+        <article class="card glass">
+          <h3 class="card-title">Teknoloji</h3>
+          <p class="card-text">Web projeleri, botlar, siber güvenlik muhabbeti ve paylaşım.</p>
+        </article>
       </div>
 
-      <div class="online-wrap">
-        <h3 class="mini-title">Şu an çevrimiçi</h3>
-        <div class="avatar-row" id="onlineAvatars" aria-live="polite"></div>
-      </div>
-
-      <div class="feed">
-        <div class="feed-head">
-          <h3 class="feed-title">Duyurular</h3>
-          <span class="feed-note">Simülasyon — Discord’a katıldığında daha fazlasını gör!</span>
+      <div class="callout glass">
+        <div>
+          <div class="callout-title">Duyurular</div>
+          <div class="callout-text">Discord içinde etkinlikler & güncellemeler düzenli paylaşılıyor.</div>
         </div>
-        <ul class="feed-list" id="sampleFeed">
-          <li class="feed-item tilt">
-            <span class="badge">Test</span>
-            <p>Test</p>
-          </li>
-          <li class="feed-item tilt">
-            <span class="badge">Test</span>
-            <p>Test</p>
-          </li>
-          <li class="feed-item tilt">
-            <span class="badge">Test</span>
-            <p>Test</p>
-          </li>
-        </ul>
+        <a class="btn btn-primary" href="https://discord.gg/metavis1on" target="_blank" rel="noopener">Katıl</a>
       </div>
     </section>
 
+    <!-- PROJECTS -->
     <section id="projects" class="projects container section reveal">
       <div class="section-head">
         <h2 class="section-title">Projeler</h2>
-        <p class="section-text">Test</p>
+        <p class="section-text">Metavis1on ekosistemi: site araçları, botlar, mini paneller.</p>
       </div>
 
       <div class="filters glass">
         <input id="projSearch" class="input" type="search" placeholder="Projelerde ara..." aria-label="Projelerde ara">
         <div class="tagbar" role="tablist" aria-label="Proje etiketleri">
           <button class="tag is-active" data-tag="all" role="tab" aria-selected="true">Tümü</button>
-          <button class="tag" data-tag="bot" role="tab">Test</button>
-          <button class="tag" data-tag="web" role="tab">Test</button>
-          <button class="tag" data-tag="docs" role="tab">Test</button>
+          <button class="tag" data-tag="bot" role="tab">Bot</button>
+          <button class="tag" data-tag="web" role="tab">Web</button>
+          <button class="tag" data-tag="tool" role="tab">Araç</button>
         </div>
       </div>
 
       <div class="card-grid" id="projectGrid">
-        <article class="card glass tilt" data-tags="bot">
-          <h3 class="card-title">Test</h3>
-          <p class="card-text">Test</p>
+        <!-- Kartlar JS’den de üretilebilir; şimdilik HTML’de kolay edit -->
+        <article class="card glass" data-tags="bot tool">
+          <h3 class="card-title">Metacoin Bot</h3>
+          <p class="card-text">Ekonomi / kasa / mini oyunlar. Sunucu içi etkileşim.</p>
           <button class="btn btn-mini" data-modal="#m1">Detay</button>
         </article>
 
-        <article class="card glass tilt" data-tags="web">
-          <h3 class="card-title">Test</h3>
-          <p class="card-text">Test</p>
+        <article class="card glass" data-tags="web tool">
+          <h3 class="card-title">Drop Tracker</h3>
+          <p class="card-text">CS2 haftalık drop ve kazanç takibi (panel mantığı).</p>
           <button class="btn btn-mini" data-modal="#m2">Detay</button>
         </article>
 
-        <article class="card glass tilt" data-tags="docs web">
-          <h3 class="card-title">Test</h3>
-          <p class="card-text">Test</p>
+        <article class="card glass" data-tags="web">
+          <h3 class="card-title">Metavis1on Site v5</h3>
+          <p class="card-text">Bu sayfa. Daha akıcı, daha modern, daha optimize.</p>
           <button class="btn btn-mini" data-modal="#m3">Detay</button>
         </article>
       </div>
@@ -186,124 +227,104 @@
       <div class="modal" id="m1" aria-hidden="true">
         <div class="modal-dialog">
           <button class="modal-close" data-close aria-label="Kapat">&times;</button>
-          <h3>Test</h3>
-          <p>Test</p>
-          <a class="btn btn-primary btn-block" href="#" target="_blank" rel="noopener">Tamam</a>
+          <h3>Metacoin Bot</h3>
+          <p>Sunucu içinde para sistemi, görevler, kasa/lootbox ve mini oyunlar.</p>
+          <a class="btn btn-primary btn-block" href="https://discord.gg/metavis1on" target="_blank" rel="noopener">Discord’da Gör</a>
         </div>
       </div>
 
       <div class="modal" id="m2" aria-hidden="true">
         <div class="modal-dialog">
           <button class="modal-close" data-close aria-label="Kapat">&times;</button>
-          <h3>Test</h3>
-          <p>Test</p>
-          <a class="btn btn-primary btn-block" href="#" target="_blank" rel="noopener">Tamam</a>
+          <h3>Drop Tracker</h3>
+          <p>Haftalık drop planı + kazanç takibi. Çok hesaplı, çok pratik.</p>
+          <a class="btn btn-primary btn-block" href="https://discord.gg/metavis1on" target="_blank" rel="noopener">Toplulukta Paylaş</a>
         </div>
       </div>
 
       <div class="modal" id="m3" aria-hidden="true">
         <div class="modal-dialog">
           <button class="modal-close" data-close aria-label="Kapat">&times;</button>
-          <h3>Test</h3>
-          <p>Test</p>
-          <a class="btn btn-primary btn-block" href="#" target="_blank" rel="noopener">Tamam</a>
+          <h3>Site v5</h3>
+          <p>Performans odaklı: düşük cihazda efektler kapanır, yüksek cihazda premium görünür.</p>
+          <a class="btn btn-primary btn-block" href="#home">Ana Sayfa</a>
         </div>
       </div>
     </section>
 
+    <!-- TEAM -->
     <section id="team" class="team container section reveal">
       <div class="section-head">
-        <h2 class="section-title">Ekibimiz</h2>
-        <p class="section-text">Kurucu, yöneticiler ve destek ekibimiz.</p>
+        <h2 class="section-title">Ekip</h2>
+        <p class="section-text">Kurucu ve yönetim kadrosu. İsimleri kolayca değiştirebilirsin.</p>
       </div>
 
       <div class="team-grid">
-        <article class="person glass tilt">
+        <article class="person glass">
           <div class="avatar" aria-hidden="true">C</div>
           <h3 class="person-name">Cruse</h3>
-          <div class="person-role">Kurucu &amp; Yönetici</div>
-          <p class="person-bio">Site kurucusu, Discord yetkilisi.</p>
+          <div class="person-role">Kurucu</div>
+          <p class="person-bio">Topluluk düzeni, vizyon, içerik.</p>
         </article>
 
-        <article class="person glass tilt">
-          <div class="avatar" aria-hidden="true">B</div>
+        <article class="person glass">
+          <div class="avatar" aria-hidden="true">L</div>
           <h3 class="person-name">Lykia</h3>
-          <div class="person-role">Sunucu Kurucusu, Yetkili Servisi</div>
-          <p class="person-bio">Discord sunucu kurucusu, Site yetkilisi</p>
+          <div class="person-role">Yönetim</div>
+          <p class="person-bio">Moderasyon ve organizasyon.</p>
         </article>
 
-        <article class="person glass tilt">
-          <div class="avatar" aria-hidden="true">B</div>
+        <article class="person glass">
+          <div class="avatar" aria-hidden="true">N</div>
           <h3 class="person-name">Lynra</h3>
-          <div class="person-role">Sunucu Tasarımcısı</div>
-          <p class="person-bio">Photoshop uzmanı</p>
+          <div class="person-role">Tasarım</div>
+          <p class="person-bio">Görsel kimlik ve paylaşım işleri.</p>
         </article>
       </div>
     </section>
 
-    <!-- Katıl / İletişim -->
+    <!-- JOIN -->
     <section id="join" class="join container section reveal">
-      <h2 class="section-title">Topluluğumuza Katıl</h2>
+      <h2 class="section-title">Katıl</h2>
       <p class="section-text">
-        Metavis1on’un bir parçası olmak için Discord sunucumuza katıl veya bize sosyal medya üzerinden ulaş.
+        İçeriği “tam” görmek için Discord’a gir. 30 saniye bakınca zaten anlaşılıyor.
       </p>
 
       <div class="join-actions">
         <a class="btn btn-primary btn-xxl" href="https://discord.gg/metavis1on" target="_blank" rel="noopener">
           Discord’a Katıl
         </a>
-        <button id="copyInvite" class="btn btn-ghost btn-xxl" aria-label="Davet bağlantısını kopyala">
-          Daveti Kopyala
-        </button>
+        <button class="btn btn-ghost btn-xxl" id="copyInvite2" type="button">Daveti Kopyala</button>
       </div>
 
-      <div class="socials">
-        <a class="social" href="https://discord.gg/metavis1on" target="_blank" aria-label="Discord">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369A19.791 19.791 0 0016.558 3c-.197.35-.421.82-.577 1.194a18.27 18.27 0 00-3.962 0A7.662 7.662 0 0011.442 3a19.79 19.79 0 00-3.76 1.369C3.58 8.307 2.88 12.146 3.07 15.938A19.948 19.948 0 008.214 18c.405-.554.766-1.146 1.074-1.77a12.881 12.881 0 003.424 0c.309.624.67 1.216 1.074 1.77a19.967 19.967 0 005.144-2.063c.343-3.298-.591-7.092-2.313-11.568zM9.6 13.5c-.79 0-1.429-.9-1.429-2s.64-2 1.429-2 1.429.9 1.429 2-.64 2-1.429 2zm4.8 0c-.79 0-1.429-.9-1.429-2s.64-2 1.429-2 1.429.9 1.429 2-.64 2-1.429 2z"/></svg>
-        </a>
-        <a class="social" href="https://x.com" target="_blank" aria-label="X">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2H21l-6.5 7.43L22 22h-6.928l-5.41-7.01L3.5 22H1l7.03-8.03L2 2h6.928l5.012 6.495L18.244 2zM7.36 3.5H4.9l11.78 16.98h2.458L7.36 3.5z"/></svg>
-        </a>
-        <a class="social" href="https://github.com" target="_blank" aria-label="GitHub">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 000 12.1c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.8-1.5-3.8-1.5-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.8.1-.8 1.2.1 1.9 1.3 1.9 1.3 1.1 1.9 2.9 1.4 3.6 1.1.1-.8.4-1.4.7-1.8-2.6-.3-5.3-1.3-5.3-5.9 0-1.3.5-2.4 1.2-3.3-.1-.3-.5-1.6.1-3.3 0 0 1-.3 3.4 1.3a11.7 11.7 0 016.2 0c2.4-1.6 3.4-1.3 3.4-1.3.6 1.7.2 3 .1 3.3.8.9 1.2 2 1.2 3.3 0 4.6-2.7 5.6-5.3 5.9.4.3.8 1 .8 2.1v3.1c0 .3.2.7.8.6A11.6 11.6 0 0024 12.1C24 5.7 18.6.5 12 .5z"/></svg>
-        </a>
+      <div class="tiny">
+        Metavis1on © <span id="year"></span> — Tüm hakları saklıdır.
       </div>
     </section>
   </main>
 
   <button id="toTop" class="to-top" aria-label="Yukarı dön">↑</button>
 
-  <footer class="footer">
-    <div class="container footer-inner">
-      <div>© <span id="year"></span> Metavis1on — Tüm hakları saklıdır.</div>
-      <div class="footer-right">
-        <a href="https://discord.gg/metavis1on" target="_blank">Discord</a>
-        <span>•</span>
-        <a href="https://x.com" target="_blank">X</a>
-        <span>•</span>
-        <a href="https://github.com" target="_blank">GitHub</a>
-      </div>
-    </div>
-  </footer>
-
+  <!-- Command Palette -->
   <div class="modal cmdk" id="cmdk" aria-hidden="true">
-    <div class="modal-dialog cmdk-dialog" role="dialog" aria-label="Komut Paleti">
+    <div class="modal-dialog cmdk-dialog" role="dialog" aria-label="Komut Paleti" aria-modal="true">
       <button class="modal-close" data-close aria-label="Kapat">&times;</button>
-      <input id="cmdInput" class="cmdk-input" type="search" placeholder="Ara veya git: Ana Sayfa, Topluluk, Projeler, Ekibimiz, Katıl..." autofocus>
+      <input id="cmdInput" class="cmdk-input" type="search" placeholder="Ara veya git: Ana, Topluluk, Projeler, Ekip, Katıl…" autocomplete="off">
       <ul id="cmdList" class="cmdk-list" role="listbox" aria-label="Komutlar">
         <li data-cmd="go:#home">Ana Sayfa</li>
         <li data-cmd="go:#community">Topluluk</li>
         <li data-cmd="go:#projects">Projeler</li>
-        <li data-cmd="go:#team">Ekibimiz</li>
+        <li data-cmd="go:#team">Ekip</li>
         <li data-cmd="go:#join">Katıl</li>
         <li data-cmd="copy:invite">Davet bağlantısını kopyala</li>
         <li data-cmd="open:discord">Discord’u aç</li>
-        <li data-cmd="accent:toggle">Aksan rengini değiştir</li>
+        <li data-cmd="accent:toggle">Renk temasını değiştir</li>
       </ul>
+      <div class="cmdk-foot">İpucu: Ctrl/⌘ + K • ESC ile kapat</div>
     </div>
   </div>
 
-  <noscript>test</noscript>
+  <noscript>Bu site düzgün çalışması için JavaScript ister.</noscript>
   <script src="script.js" defer></script>
 </body>
 </html>
