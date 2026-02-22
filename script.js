@@ -620,7 +620,7 @@ document.body.innerHTML = `
         color:#fff;
         letter-spacing:.3px;
       ">
-        Metavis1on — Duyuru
+        Metavis1on — ÖZEL VİDEO :)
       </span>
     </div>
 
