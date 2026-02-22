@@ -4,55 +4,52 @@
   <meta charset="utf-8">
   <title>Metavis1on — Admin Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+
+  <!-- SADECE ADMIN CSS -->
+  <link rel="stylesheet" href="admin.css">
   <link rel="icon" href="assets/logo.png">
 </head>
 
-<body class="admin-bg">
-  <div class="admin-wrap">
+<body class="admin-body">
 
-    <!-- LOGIN -->
-    <div id="loginBox" class="admin-card">
-      <img src="assets/logo.png" class="admin-logo" alt="">
-      <h1>Admin Giriş</h1>
-      <input id="adminPass" type="password" placeholder="Admin şifresi">
-      <button class="btn btn-primary" id="loginBtn">Giriş Yap</button>
-      <p class="admin-hint">Yetkisiz erişimler loglanır.</p>
-    </div>
+  <!-- LOGIN -->
+  <div id="loginBox" class="admin-card">
+    <img src="assets/logo.png" class="admin-logo">
+    <h1>Admin Giriş</h1>
+    <input id="adminPass" type="password" placeholder="Admin şifresi">
+    <button id="loginBtn">Giriş Yap</button>
+    <p class="hint">Yetkisiz erişim engellenir.</p>
+  </div>
 
-    <!-- PANEL -->
-    <div id="panelBox" class="admin-card hidden">
+  <!-- PANEL -->
+  <div id="panelBox" class="admin-card hidden">
 
-      <h1>Metavis1on Admin Panel</h1>
+    <h1>Metavis1on Kontrol Merkezi</h1>
 
-      <section class="admin-section">
-        <h2>🚨 Acil Yayın (Fullscreen Video)</h2>
+    <section>
+      <h2>🚨 Acil Yayın (Fullscreen Video)</h2>
 
-        <label>MP4 Video URL</label>
-        <input id="videoUrl" type="text" placeholder="assets/duyuru.mp4">
+      <label>MP4 Video URL</label>
+      <input id="videoUrl" placeholder="assets/duyuru.mp4">
 
-        <label>Mod</label>
-        <select id="videoMode">
-          <option value="manual">Manuel (ben kapatana kadar)</option>
-          <option value="24h">24 Saatlik</option>
-        </select>
+      <label>Yayın Süresi</label>
+      <select id="videoMode">
+        <option value="manual">Manuel (ben kapatana kadar)</option>
+        <option value="24h">24 Saat</option>
+      </select>
 
-        <div class="admin-actions">
-          <button class="btn btn-primary" id="enableVideo">YAYINI AÇ</button>
-          <button class="btn btn-ghost" id="disableVideo">YAYINI KAPAT</button>
-        </div>
+      <div class="row">
+        <button id="enableVideo" class="primary">Yayını Aç</button>
+        <button id="disableVideo" class="ghost">Yayını Kapat</button>
+      </div>
 
-        <p class="admin-note">
-          Açıldığında tüm site kilitlenir. Logo üstte sabit kalır.
-        </p>
-      </section>
+      <p class="note">
+        Yayın aktifken tüm site kilitlenir. Üstte logo görünür.
+      </p>
+    </section>
 
-      <section class="admin-section">
-        <h2>⚙ Sistem</h2>
-        <button class="btn btn-soft" id="logoutBtn">Çıkış Yap</button>
-      </section>
+    <button id="logoutBtn" class="logout">Çıkış Yap</button>
 
-    </div>
   </div>
 
   <script src="script.js"></script>

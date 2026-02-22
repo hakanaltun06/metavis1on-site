@@ -497,90 +497,78 @@ $("#copyInvite2")?.addEventListener("click", async (e) => {
   requestAnimationFrame(step);
 })();
 /* =========================
-   ADMIN + EMERGENCY VIDEO
+   ADMIN + ACIL YAYIN
 ========================= */
 
-const ADMIN_PASSWORD = "metavis1on-admin"; // ← BURAYI DEĞİŞTİR
+const ADMIN_PASSWORD = "metavis1on-admin"; // değiştir
 
-const LS_KEYS = {
-  AUTH: "mv_admin_auth",
-  VIDEO_ACTIVE: "mv_video_active",
-  VIDEO_URL: "mv_video_url",
-  VIDEO_EXPIRE: "mv_video_expire"
+const LS = {
+  AUTH:"mv_admin_auth",
+  ACTIVE:"mv_video_active",
+  URL:"mv_video_url",
+  EXPIRE:"mv_video_expire"
 };
 
-/* ---------- ADMIN LOGIN ---------- */
-if (document.getElementById("loginBtn")) {
+/* ADMIN */
+if (document.getElementById("loginBtn")){
 
-  const loginBox = document.getElementById("loginBox");
+  const loginBox = loginBox = document.getElementById("loginBox");
   const panelBox = document.getElementById("panelBox");
 
-  if (localStorage.getItem(LS_KEYS.AUTH) === "true") {
+  if (localStorage.getItem(LS.AUTH)==="true"){
     loginBox.classList.add("hidden");
     panelBox.classList.remove("hidden");
   }
 
-  document.getElementById("loginBtn").onclick = () => {
-    const pass = document.getElementById("adminPass").value;
-    if (pass === ADMIN_PASSWORD) {
-      localStorage.setItem(LS_KEYS.AUTH,"true");
+  loginBtn.onclick = ()=>{
+    if (adminPass.value === ADMIN_PASSWORD){
+      localStorage.setItem(LS.AUTH,"true");
       loginBox.classList.add("hidden");
       panelBox.classList.remove("hidden");
-    } else {
-      alert("Hatalı şifre");
-    }
+    } else alert("Şifre hatalı");
   };
 
-  document.getElementById("logoutBtn").onclick = () => {
-    localStorage.removeItem(LS_KEYS.AUTH);
+  logoutBtn.onclick = ()=>{
+    localStorage.removeItem(LS.AUTH);
     location.reload();
   };
 
-  /* Video Controls */
-  document.getElementById("enableVideo").onclick = () => {
-    const url = document.getElementById("videoUrl").value.trim();
-    const mode = document.getElementById("videoMode").value;
-
-    if (!url.endsWith(".mp4")) {
-      alert("Sadece MP4 desteklenir");
+  enableVideo.onclick = ()=>{
+    if (!videoUrl.value.endsWith(".mp4")){
+      alert("Sadece MP4");
       return;
     }
 
-    localStorage.setItem(LS_KEYS.VIDEO_ACTIVE,"true");
-    localStorage.setItem(LS_KEYS.VIDEO_URL,url);
+    localStorage.setItem(LS.ACTIVE,"true");
+    localStorage.setItem(LS.URL,videoUrl.value);
 
-    if (mode === "24h") {
-      localStorage.setItem(
-        LS_KEYS.VIDEO_EXPIRE,
-        Date.now() + 24*60*60*1000
-      );
-    } else {
-      localStorage.removeItem(LS_KEYS.VIDEO_EXPIRE);
-    }
+    if (videoMode.value==="24h"){
+      localStorage.setItem(LS.EXPIRE,Date.now()+86400000);
+    } else localStorage.removeItem(LS.EXPIRE);
 
-    alert("Acil yayın AKTİF");
+    alert("Acil yayın aktif");
   };
 
-  document.getElementById("disableVideo").onclick = () => {
-    localStorage.removeItem(LS_KEYS.VIDEO_ACTIVE);
-    localStorage.removeItem(LS_KEYS.VIDEO_URL);
-    localStorage.removeItem(LS_KEYS.VIDEO_EXPIRE);
-    alert("Acil yayın KAPATILDI");
+  disableVideo.onclick = ()=>{
+    localStorage.removeItem(LS.ACTIVE);
+    localStorage.removeItem(LS.URL);
+    localStorage.removeItem(LS.EXPIRE);
+    alert("Acil yayın kapatıldı");
   };
 }
 
-/* ---------- SITE SIDE OVERLAY ---------- */
+/* SITE TARAFI */
 (function(){
-  if (localStorage.getItem(LS_KEYS.VIDEO_ACTIVE) !== "true") return;
+  if (localStorage.getItem(LS.ACTIVE)!=="true") return;
 
-  const expire = localStorage.getItem(LS_KEYS.VIDEO_EXPIRE);
-  if (expire && Date.now() > Number(expire)) {
-    localStorage.removeItem(LS_KEYS.VIDEO_ACTIVE);
+  const exp = localStorage.getItem(LS.EXPIRE);
+  if (exp && Date.now()>+exp){
+    localStorage.removeItem(LS.ACTIVE);
     return;
   }
 
-  const videoUrl = localStorage.getItem(LS_KEYS.VIDEO_URL);
-  if (!videoUrl) return;
+  const url = localStorage.getItem(LS.URL);
+  if (!url) return;
 
   document.body.innerHTML = `
     <div id="emergencyOverlay">
@@ -588,7 +576,7 @@ if (document.getElementById("loginBtn")) {
         <img src="assets/logo.png">
         <span>Metavis1on — Duyuru</span>
       </div>
-      <video id="emergencyVideo" src="${videoUrl}" autoplay controls></video>
+      <video id="emergencyVideo" src="${url}" autoplay controls></video>
     </div>
   `;
 })();
