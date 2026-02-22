@@ -512,7 +512,7 @@ const LS = {
 /* ADMIN */
 if (document.getElementById("loginBtn")){
 
-  const loginBox = loginBox = document.getElementById("loginBox");
+  const loginBox = document.getElementById("loginBox");
   const panelBox = document.getElementById("panelBox");
 
   if (localStorage.getItem(LS.AUTH)==="true"){
