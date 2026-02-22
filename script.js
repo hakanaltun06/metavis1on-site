@@ -584,13 +584,22 @@ if (loginBtn) {
   const url = localStorage.getItem(LS.URL);
   if (!url) return;
 
-  document.body.innerHTML = `
-    <div id="emergencyOverlay">
-      <div id="emergencyHeader">
-        <img src="assets/logo.png">
-        <span>Metavis1on — Duyuru</span>
-      </div>
-      <video id="emergencyVideo" src="${url}" autoplay controls></video>
+document.body.innerHTML = `
+  <div id="emergencyOverlay">
+    <div id="emergencyHeader">
+      <img src="assets/logo.png" alt="Metavis1on">
+      <span>Metavis1on — Duyuru</span>
     </div>
-  `;
+
+    <div id="emergencyPlayer">
+      <video
+        id="emergencyVideo"
+        src="${url}"
+        autoplay
+        controls
+        playsinline
+      ></video>
+    </div>
+  </div>
+`;
 })();
