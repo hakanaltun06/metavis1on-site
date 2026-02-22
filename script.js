@@ -500,7 +500,7 @@ $("#copyInvite2")?.addEventListener("click", async (e) => {
    ADMIN + ACIL YAYIN
 ========================= */
 
-const ADMIN_PASSWORD = "metavis1on-admin"; // değiştir
+const ADMIN_PASSWORD = "admin123"; // değiştir
 
 const LS = {
   AUTH: "mv_admin_auth",
