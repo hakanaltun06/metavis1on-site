@@ -503,66 +503,80 @@ $("#copyInvite2")?.addEventListener("click", async (e) => {
 const ADMIN_PASSWORD = "metavis1on-admin"; // değiştir
 
 const LS = {
-  AUTH:"mv_admin_auth",
-  ACTIVE:"mv_video_active",
-  URL:"mv_video_url",
-  EXPIRE:"mv_video_expire"
+  AUTH: "mv_admin_auth",
+  ACTIVE: "mv_video_active",
+  URL: "mv_video_url",
+  EXPIRE: "mv_video_expire"
 };
 
-/* ADMIN */
-if (document.getElementById("loginBtn")){
+/* ================= ADMIN PANEL ================= */
+const loginBtn = document.getElementById("loginBtn");
+if (loginBtn) {
 
-  const loginBox = document.getElementById("loginBox");
-  const panelBox = document.getElementById("panelBox");
+  const loginBox   = document.getElementById("loginBox");
+  const panelBox   = document.getElementById("panelBox");
+  const adminPass  = document.getElementById("adminPass");
+  const logoutBtn  = document.getElementById("logoutBtn");
+  const enableBtn  = document.getElementById("enableVideo");
+  const disableBtn = document.getElementById("disableVideo");
+  const videoUrl   = document.getElementById("videoUrl");
+  const videoMode  = document.getElementById("videoMode");
 
-  if (localStorage.getItem(LS.AUTH)==="true"){
+  // Oturum kontrolü
+  if (localStorage.getItem(LS.AUTH) === "true") {
     loginBox.classList.add("hidden");
     panelBox.classList.remove("hidden");
   }
 
-  loginBtn.onclick = ()=>{
-    if (adminPass.value === ADMIN_PASSWORD){
-      localStorage.setItem(LS.AUTH,"true");
+  loginBtn.onclick = () => {
+    if (adminPass.value === ADMIN_PASSWORD) {
+      localStorage.setItem(LS.AUTH, "true");
       loginBox.classList.add("hidden");
       panelBox.classList.remove("hidden");
-    } else alert("Şifre hatalı");
+    } else {
+      alert("Şifre hatalı");
+    }
   };
 
-  logoutBtn.onclick = ()=>{
+  logoutBtn.onclick = () => {
     localStorage.removeItem(LS.AUTH);
     location.reload();
   };
 
-  enableVideo.onclick = ()=>{
-    if (!videoUrl.value.endsWith(".mp4")){
-      alert("Sadece MP4");
+  enableBtn.onclick = () => {
+    const url = videoUrl.value.trim();
+
+    if (!url.endsWith(".mp4")) {
+      alert("Sadece MP4 dosyaları desteklenir");
       return;
     }
 
-    localStorage.setItem(LS.ACTIVE,"true");
-    localStorage.setItem(LS.URL,videoUrl.value);
+    localStorage.setItem(LS.ACTIVE, "true");
+    localStorage.setItem(LS.URL, url);
 
-    if (videoMode.value==="24h"){
-      localStorage.setItem(LS.EXPIRE,Date.now()+86400000);
-    } else localStorage.removeItem(LS.EXPIRE);
+    if (videoMode.value === "24h") {
+      localStorage.setItem(LS.EXPIRE, Date.now() + 86400000);
+    } else {
+      localStorage.removeItem(LS.EXPIRE);
+    }
 
-    alert("Acil yayın aktif");
+    alert("Acil yayın AKTİF");
   };
 
-  disableVideo.onclick = ()=>{
+  disableBtn.onclick = () => {
     localStorage.removeItem(LS.ACTIVE);
     localStorage.removeItem(LS.URL);
     localStorage.removeItem(LS.EXPIRE);
-    alert("Acil yayın kapatıldı");
+    alert("Acil yayın KAPATILDI");
   };
 }
 
-/* SITE TARAFI */
-(function(){
-  if (localStorage.getItem(LS.ACTIVE)!=="true") return;
+/* ================= SITE TARAFI ================= */
+(() => {
+  if (localStorage.getItem(LS.ACTIVE) !== "true") return;
 
   const exp = localStorage.getItem(LS.EXPIRE);
-  if (exp && Date.now()>+exp){
+  if (exp && Date.now() > Number(exp)) {
     localStorage.removeItem(LS.ACTIVE);
     return;
   }
