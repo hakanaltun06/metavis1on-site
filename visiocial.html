@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Visiocial | Metavis1on Ekosistemi</title>
+    <style>
+        /* ==========================================================================
+           1. CSS DEĞİŞKENLERİ & TEMEL AYARLAR (METAVIS1ON THEME)
+           ========================================================================== */
+        :root {
+            --bg-base: #050507;
+            --bg-surface: #0a0a0f;
+            --bg-surface-hover: #12121a;
+            --bg-glass: rgba(15, 15, 22, 0.75);
+            
+            --primary-core: #5e00ff;
+            --primary-hover: #7b2cff;
+            --primary-glow: rgba(94, 0, 255, 0.4);
+            
+            --neon-blue: #00e5ff;
+            --neon-blue-glow: rgba(0, 229, 255, 0.4);
+            --neon-pink: #ff007f;
+            
+            --text-main: #f0f0f5;
+            --text-muted: #8a8a9e;
+            --text-dark: #050507;
+            
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-light: rgba(255, 255, 255, 0.15);
+            
+            --success: #00e676;
+            --danger: #ff1744;
+            --warning: #ffea00;
+            
+            --font-main: 'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-pill: 9999px;
+            
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --shadow-neon: 0 0 15px var(--primary-glow);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-main);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(94, 0, 255, 0.05), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 229, 255, 0.03), transparent 25%);
+            background-attachment: fixed;
+        }
+
+        /* Özel Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: var(--radius-pill); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-core); }
+
+        /* Metin Seçimi */
+        ::selection { background: var(--primary-core); color: #fff; }
+
+        a { text-decoration: none; color: inherit; }
+        button { cursor: pointer; border: none; background: none; color: inherit; font-family: inherit; outline: none;}
+        input, textarea { outline: none; border: none; background: none; color: inherit; font-family: inherit; }
+        ul { list-style: none; }
+
+        /* Ortak Sınıflar */
+        .glass-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-core), #3a00b3);
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: var(--radius-pill);
+            font-weight: 600;
+            font-size: 15px;
+            transition: var(--transition-normal);
+            box-shadow: var(--shadow-neon);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 25px var(--primary-glow); background: linear-gradient(135deg, var(--primary-hover), var(--primary-core));}
+        
+        .btn-outline {
+            border: 1px solid var(--border-light);
+            padding: 10px 24px;
+            border-radius: var(--radius-pill);
+            font-weight: 600;
+            transition: var(--transition-fast);
+        }
+        .btn-outline:hover { background: rgba(255,255,255,0.05); }
+
+        .btn-icon {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            transition: var(--transition-fast);
+        }
+        .btn-icon:hover { background: rgba(255,255,255,0.08); color: var(--neon-blue); }
+
+        .avatar {
+            border-radius: 50%;
+            object-fit: cover;
+            background: linear-gradient(45deg, #2a2a35, #12121a);
+        }
+        
+        .avatar-sm { width: 40px; height: 40px; }
+        .avatar-md { width: 48px; height: 48px; }
+        .avatar-lg { width: 120px; height: 120px; border: 4px solid var(--bg-base); }
+
+        .verified-badge { color: var(--neon-blue); width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-left: 4px; }
+        .premium-badge { color: var(--primary-core); width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-left: 4px; filter: drop-shadow(0 0 2px var(--primary-glow));}
+
+        .hashtag { color: var(--neon-blue); cursor: pointer; }
+        .hashtag:hover { text-decoration: underline; }
+        .mention { color: var(--primary-hover); cursor: pointer; font-weight: 500;}
+        .mention:hover { text-decoration: underline; }
+
+        /* ==========================================================================
+           2. YAPI VE DÜZEN (LAYOUT)
+           ========================================================================== */
+        #app {
+            display: none; /* Giriş yapılana kadar gizli */
+            max-width: 1280px;
+            margin: 0 auto;
+            min-height: 100vh;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 275px minmax(0, 600px) 350px;
+            gap: 20px;
+            height: 100vh;
+        }
+
+        /* SOL SIDEBAR */
+        .sidebar {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            padding: 20px 20px 20px 0;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 30px;
+            padding-left: 12px;
+            color: #fff;
+        }
+        .brand-logo img { width: 36px; height: 36px; border-radius: 8px; object-fit: cover;}
+        .brand-logo .glitch { position: relative; }
+        
+        .nav-menu { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 20px;
+            border-radius: var(--radius-pill);
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-main);
+            transition: var(--transition-fast);
+            cursor: pointer;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.05); }
+        .nav-item.active { font-weight: 700; color: var(--neon-blue); }
+        .nav-item.active svg { stroke: var(--neon-blue); fill: rgba(0, 229, 255, 0.1); }
+        .nav-item svg { width: 26px; height: 26px; stroke-width: 2; }
+        
+        .nav-badge { background: var(--primary-core); color: #fff; font-size: 12px; padding: 2px 6px; border-radius: 10px; margin-left: auto; font-weight: 700;}
+
+        .post-btn-sidebar { width: 100%; margin-top: 20px; padding: 15px; font-size: 18px; }
+
+        .user-mini-card {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-pill);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        .user-mini-card:hover { background: rgba(255,255,255,0.05); }
+        .user-mini-info { flex: 1; overflow: hidden; }
+        .user-mini-name { font-weight: 700; font-size: 15px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
+        .user-mini-handle { color: var(--text-muted); font-size: 15px; }
+
+        /* ORTA KOLON (AKIŞ) */
+        .main-feed {
+            border-right: 1px solid var(--border-color);
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(5, 5, 7, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .header-title { font-size: 20px; font-weight: 700; }
+        
+        .feed-tabs { display: flex; gap: 20px; border-bottom: 1px solid var(--border-color); }
+        .feed-tab {
+            padding: 10px 0;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            flex: 1;
+            text-align: center;
+            transition: var(--transition-fast);
+        }
+        .feed-tab:hover { color: var(--text-main); background: rgba(255,255,255,0.02);}
+        .feed-tab.active { color: var(--text-main); }
+        .feed-tab.active::after {
+            content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+            width: 60%; height: 4px; background: var(--primary-core); border-radius: 4px 4px 0 0;
+            box-shadow: 0 -2px 10px var(--primary-glow);
+        }
+
+        /* Gönderi Oluşturma Alanı */
+        .create-post-area {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 15px;
+        }
+        .post-input-wrapper { flex: 1; }
+        .post-textarea {
+            width: 100%; min-height: 60px; font-size: 20px; resize: none; margin-bottom: 15px;
+            color: var(--text-main); line-height: 1.4;
+        }
+        .post-textarea::placeholder { color: var(--text-muted); }
+        
+        .post-actions {
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid var(--border-color); padding-top: 15px;
+        }
+        .post-tools { display: flex; gap: 10px; color: var(--primary-core); }
+        .post-tool-btn { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;}
+        .post-tool-btn:hover { background: rgba(94, 0, 255, 0.1); }
+        
+        .post-submit-area { display: flex; align-items: center; gap: 15px; }
+        .char-counter { font-size: 13px; color: var(--text-muted); }
+        .char-counter.warning { color: var(--warning); }
+        .char-counter.danger { color: var(--danger); }
+
+        /* Gönderi Kartı */
+        .post-card {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 15px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+        .post-card:hover { background: rgba(255,255,255,0.02); }
+        
+        .post-content-area { flex: 1; min-width: 0; }
+        .post-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; position: relative;}
+        .post-name { font-weight: 700; font-size: 15px; color: var(--text-main); }
+        .post-name:hover { text-decoration: underline; }
+        .post-handle, .post-time { color: var(--text-muted); font-size: 15px; }
+        .post-time::before { content: '·'; margin-right: 8px; }
+        
+        .post-options { margin-left: auto; color: var(--text-muted); width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%;}
+        .post-options:hover { background: rgba(255,255,255,0.1); color: var(--neon-blue); }
+
+        .post-text { font-size: 15px; line-height: 1.5; color: #d7d7dc; margin-bottom: 12px; white-space: pre-wrap; word-wrap: break-word;}
+        
+        .post-media {
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 12px;
+            max-height: 400px;
+            background: #111;
+        }
+        .post-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            max-width: 425px;
+            color: var(--text-muted);
+        }
+        .stat-item {
+            display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;
+            transition: var(--transition-fast);
+            padding: 8px; border-radius: var(--radius-pill);
+        }
+        .stat-item svg { width: 18px; height: 18px; transition: 0.2s; }
+        
+        .stat-reply:hover { color: var(--neon-blue); }
+        .stat-reply:hover svg { fill: rgba(0, 229, 255, 0.1); stroke: var(--neon-blue); }
+        
+        .stat-repost:hover, .stat-item.reposted { color: var(--success); }
+        .stat-repost:hover svg, .stat-item.reposted svg { stroke: var(--success); }
+        
+        .stat-like:hover, .stat-item.liked { color: var(--neon-pink); }
+        .stat-like:hover svg, .stat-item.liked svg { fill: var(--neon-pink); stroke: var(--neon-pink); }
+        
+        .stat-view:hover { color: var(--primary-core); }
+
+        /* SAĞ PANEL */
+        .right-panel { padding: 15px 0 20px 20px; height: 100vh; position: sticky; top: 0; overflow-y: auto;}
+        
+        .search-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-pill);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            position: sticky; top: 10px; z-index: 5;
+            transition: 0.3s;
+        }
+        .search-box:focus-within { border-color: var(--primary-core); box-shadow: 0 0 10px var(--primary-glow); background: var(--bg-base);}
+        .search-box input { width: 100%; font-size: 15px; }
+        
+        .panel-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .panel-header { padding: 15px 20px; font-size: 20px; font-weight: 800; border-bottom: 1px solid var(--border-color); }
+        
+        .trend-item { padding: 12px 20px; cursor: pointer; transition: 0.2s; }
+        .trend-item:hover { background: rgba(255,255,255,0.03); }
+        .trend-category { font-size: 13px; color: var(--text-muted); display: flex; justify-content: space-between;}
+        .trend-name { font-weight: 700; font-size: 16px; margin: 4px 0; color: var(--text-main);}
+        .trend-stats { font-size: 13px; color: var(--text-muted); }
+
+        .suggested-user { display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; transition: 0.2s;}
+        .suggested-user:hover { background: rgba(255,255,255,0.03); }
+        .suggested-info { flex: 1; overflow: hidden; }
+        .suggested-name { font-weight: 700; font-size: 15px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+        .suggested-handle { color: var(--text-muted); font-size: 14px; }
+        .btn-follow { background: #fff; color: #000; padding: 6px 16px; border-radius: var(--radius-pill); font-weight: 600; font-size: 14px; transition: 0.2s;}
+        .btn-follow:hover { background: #e0e0e0; }
+
+        /* ==========================================================================
+           3. GÖRÜNÜMLER (VIEWS - PROFILE, EXPLORE vb.)
+           ========================================================================== */
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Profil Sayfası */
+        .profile-cover { height: 200px; background: linear-gradient(45deg, var(--primary-core), var(--neon-blue)); position: relative; }
+        .profile-cover img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-info-container { padding: 15px 20px; position: relative; }
+        .profile-avatar-wrapper { position: absolute; top: -60px; left: 20px; }
+        .profile-actions { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px; }
+        
+        .profile-name-block { margin-top: 10px; margin-bottom: 15px; }
+        .profile-display-name { font-size: 24px; font-weight: 800; display: flex; align-items: center; gap: 5px; }
+        .profile-handle { color: var(--text-muted); font-size: 15px; }
+        
+        .profile-bio { font-size: 15px; margin-bottom: 15px; line-height: 1.5; }
+        .profile-meta { display: flex; flex-wrap: wrap; gap: 15px; color: var(--text-muted); font-size: 14px; margin-bottom: 15px; }
+        .profile-meta-item { display: flex; align-items: center; gap: 5px; }
+        .profile-meta-item svg { width: 16px; height: 16px; }
+        
+        .profile-stats { display: flex; gap: 20px; font-size: 15px; }
+        .profile-stats span { font-weight: 700; color: var(--text-main); }
+        .profile-stats div { color: var(--text-muted); cursor: pointer; }
+        .profile-stats div:hover { text-decoration: underline; }
+
+        /* Bildirimler */
+        .notification-card {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 15px;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .notification-card:hover { background: rgba(255,255,255,0.02); }
+        .notification-card.unread { background: rgba(94, 0, 255, 0.05); border-left: 3px solid var(--primary-core); }
+        .notif-icon { width: 30px; display: flex; justify-content: flex-end; }
+        .notif-icon svg { width: 24px; height: 24px; }
+        .notif-content { flex: 1; }
+        .notif-avatars { display: flex; gap: 5px; margin-bottom: 8px; }
+        .notif-text { font-size: 15px; margin-bottom: 5px; }
+        .notif-text b { color: var(--text-main); }
+        .notif-subtext { color: var(--text-muted); font-size: 14px; }
+
+        /* Mesajlar */
+        .messages-layout { display: flex; height: calc(100vh - 60px); }
+        .messages-list { width: 40%; border-right: 1px solid var(--border-color); overflow-y: auto; }
+        .messages-chat { width: 60%; display: flex; flex-direction: column; }
+        .chat-item { padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; gap: 10px; cursor: pointer; }
+        .chat-item:hover { background: rgba(255,255,255,0.03); }
+        .chat-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .chat-name { font-weight: 700; font-size: 15px; }
+        .chat-date { font-size: 13px; color: var(--text-muted); }
+        .chat-preview { font-size: 14px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .chat-window-header { padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 15px; backdrop-filter: blur(10px); }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .msg-bubble { max-width: 70%; padding: 12px 16px; border-radius: 20px; font-size: 15px; line-height: 1.4; }
+        .msg-received { background: var(--bg-surface); border-bottom-left-radius: 4px; align-self: flex-start; }
+        .msg-sent { background: var(--primary-core); border-bottom-right-radius: 4px; align-self: flex-end; color: #fff;}
+        .chat-input-area { padding: 15px; border-top: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; }
+        .chat-input { flex: 1; background: var(--bg-surface); border-radius: var(--radius-pill); padding: 12px 20px; font-size: 15px; }
+
+        /* ==========================================================================
+           4. AUTH (GİRİŞ/KAYIT) & SPLASH
+           ========================================================================== */
+        #auth-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 100;
+        }
+
+        .auth-container {
+            width: 100%; max-width: 450px;
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .auth-logo { width: 60px; height: 60px; margin: 0 auto 20px; border-radius: 12px; box-shadow: 0 0 20px var(--primary-glow); object-fit: cover;}
+        .auth-title { font-size: 32px; font-weight: 800; margin-bottom: 10px; color: #fff; }
+        .auth-subtitle { color: var(--text-muted); margin-bottom: 30px; }
+
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
+        .form-control {
+            width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border-light);
+            padding: 14px 16px; border-radius: var(--radius-sm); font-size: 16px; color: #fff;
+            transition: 0.3s;
+        }
+        .form-control:focus { border-color: var(--primary-core); box-shadow: 0 0 10px var(--primary-glow); }
+
+        .auth-btn { width: 100%; padding: 14px; font-size: 16px; margin-bottom: 15px; }
+        .auth-links { margin-top: 20px; font-size: 14px; color: var(--text-muted); }
+        .auth-links span { color: var(--neon-blue); cursor: pointer; font-weight: 600;}
+        .auth-links span:hover { text-decoration: underline; }
+
+        .demo-login-box { margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .demo-btn { width: 100%; background: #1a1a24; border: 1px solid #333; color: #fff; padding: 12px; border-radius: var(--radius-sm); cursor: pointer; transition: 0.2s; font-weight: 600;}
+        .demo-btn:hover { background: #2a2a35; border-color: var(--neon-blue); }
+
+        /* ==========================================================================
+           5. MODALS & TOASTS
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content {
+            background: var(--bg-surface); border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg); width: 100%; max-width: 600px;
+            max-height: 90vh; overflow-y: auto; position: relative;
+            transform: translateY(20px); transition: transform 0.3s;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+        
+        .modal-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; background: var(--bg-surface); z-index: 2;}
+        .modal-title { font-size: 20px; font-weight: 700; }
+        .modal-body { padding: 20px; }
+
+        #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            background: var(--bg-glass); backdrop-filter: blur(10px); border: 1px solid var(--border-color);
+            padding: 12px 24px; border-radius: var(--radius-pill); color: #fff; font-weight: 500; font-size: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            animation: slideUpToast 0.3s forwards;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .toast.success { border-bottom: 2px solid var(--success); }
+        .toast.error { border-bottom: 2px solid var(--danger); }
+        @keyframes slideUpToast { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==========================================================================
+           6. RESPONSIVE
+           ========================================================================== */
+        @media (max-width: 1200px) {
+            .layout-grid { grid-template-columns: 80px minmax(0, 1fr) 300px; }
+            .sidebar { align-items: center; padding: 20px 0; }
+            .brand-logo span { display: none; }
+            .nav-item span { display: none; }
+            .nav-item { justify-content: center; padding: 12px; }
+            .post-btn-sidebar span { display: none; }
+            .post-btn-sidebar { border-radius: 50%; width: 50px; height: 50px; padding: 0; }
+            .post-btn-sidebar::before { content: '+'; font-size: 24px; }
+            .user-mini-info { display: none; }
+            .nav-badge { position: absolute; top: 5px; right: 5px; margin: 0; padding: 2px 5px; font-size: 10px; }
+            .nav-item { position: relative; }
+        }
+
+        @media (max-width: 992px) {
+            .layout-grid { grid-template-columns: 80px minmax(0, 1fr); }
+            .right-panel { display: none; }
+        }
+
+        @media (max-width: 576px) {
+            .layout-grid { display: block; padding-bottom: 60px; }
+            .sidebar {
+                position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; flex-direction: row; justify-content: space-around;
+                padding: 0; border-right: none; border-top: 1px solid var(--border-color); background: var(--bg-surface); z-index: 100;
+            }
+            .brand-logo, .user-mini-card, .post-btn-sidebar, .nav-item[data-target="view-settings"], .nav-item[data-target="view-bookmarks"] { display: none; }
+            .nav-item { flex: 1; justify-content: center; border-radius: 0; height: 100%; }
+            .main-feed { border-right: none; }
+            
+            /* Floating action button for mobile */
+            .mobile-fab {
+                position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px;
+                border-radius: 50%; background: var(--primary-core); color: #fff;
+                display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 4px 15px rgba(94, 0, 255, 0.5); z-index: 99;
+                font-size: 24px; cursor: pointer;
+            }
+        }
+        
+        /* Utility */
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
+        .empty-state svg { width: 64px; height: 64px; margin-bottom: 20px; opacity: 0.5; }
+        .empty-state h3 { font-size: 20px; color: var(--text-main); margin-bottom: 10px; }
+        
+        .skeleton { background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 4px; }
+        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    </style>
+</head>
+<body>
+
+    <div id="toast-container"></div>
+
+    <div id="auth-screen">
+        <div class="auth-container glass-panel" id="login-form">
+            <img src="assets/logo.png" alt="Logo" class="auth-logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\'><rect width=\'60\' height=\'60\' fill=\'%235e00ff\'/></svg>'">
+            <h1 class="auth-title">Visiocial</h1>
+            <p class="auth-subtitle">Metavis1on ekosistemine giriş yap.</p>
+            
+            <div class="form-group">
+                <label>Kullanıcı Adı veya E-posta</label>
+                <input type="text" id="login-id" class="form-control" placeholder="@kullaniciadi">
+            </div>
+            <div class="form-group">
+                <label>Şifre</label>
+                <input type="password" id="login-pass" class="form-control" placeholder="••••••••">
+            </div>
+            <button class="btn-primary auth-btn" onclick="app.login()">Giriş Yap</button>
+            
+            <div class="auth-links">
+                Hesabın yok mu? <span onclick="app.toggleAuthMode('register')">Hemen Oluştur</span>
+            </div>
+            
+            <div class="demo-login-box">
+                <button class="demo-btn" onclick="app.loginAsDemo()">Demo Hesabı İle Devam Et (metavis1on)</button>
+                <button class="demo-btn" style="margin-top:10px; background: transparent;" onclick="app.loginAsGuest()">Misafir Olarak Keşfet</button>
+            </div>
+        </div>
+
+        <div class="auth-container glass-panel" id="register-form" style="display: none;">
+            <h1 class="auth-title">Kayıt Ol</h1>
+            <p class="auth-subtitle">Yeni bir dijital kimlik oluştur.</p>
+            
+            <div class="form-group">
+                <input type="text" id="reg-name" class="form-control" placeholder="Görünen Ad (Örn: Neo)">
+            </div>
+            <div class="form-group">
+                <input type="text" id="reg-handle" class="form-control" placeholder="Kullanıcı Adı (Örn: neo_matrix)">
+            </div>
+            <div class="form-group">
+                <input type="email" id="reg-email" class="form-control" placeholder="E-posta Adresi">
+            </div>
+            <div class="form-group">
+                <input type="password" id="reg-pass" class="form-control" placeholder="Şifre">
+            </div>
+            <button class="btn-primary auth-btn" onclick="app.register()">Ağa Katıl</button>
+            
+            <div class="auth-links">
+                Zaten ağda mısın? <span onclick="app.toggleAuthMode('login')">Giriş Yap</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="app">
+        <div class="layout-grid">
+            
+            <nav class="sidebar">
+                <div class="brand-logo">
+                    <img src="assets/logo.png" alt="V" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'36\' height=\'36\'><rect width=\'36\' height=\'36\' fill=\'%235e00ff\'/></svg>'">
+                    <span class="glitch" data-text="Visiocial">Visiocial</span>
+                </div>
+                
+                <div class="nav-menu">
+                    <div class="nav-item active" data-target="view-home" onclick="app.switchView('view-home')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <span>Ana Sayfa</span>
+                    </div>
+                    <div class="nav-item" data-target="view-explore" onclick="app.switchView('view-explore')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <span>Keşfet</span>
+                    </div>
+                    <div class="nav-item" data-target="view-notifications" onclick="app.switchView('view-notifications')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <span>Bildirimler</span>
+                        <div class="nav-badge" id="badge-notif" style="display: none;">0</div>
+                    </div>
+                    <div class="nav-item" data-target="view-messages" onclick="app.switchView('view-messages')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        <span>Mesajlar</span>
+                    </div>
+                    <div class="nav-item" data-target="view-bookmarks" onclick="app.switchView('view-bookmarks')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                        <span>Kaydedilenler</span>
+                    </div>
+                    <div class="nav-item" data-target="view-profile" onclick="app.switchView('view-profile')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span>Profil</span>
+                    </div>
+                    <div class="nav-item" data-target="view-settings" onclick="app.switchView('view-settings')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        <span>Ayarlar</span>
+                    </div>
+                </div>
+
+                <button class="btn-primary post-btn-sidebar" onclick="app.openModal('post-modal')">
+                    <span>Paylaş</span>
+                </button>
+
+                <div class="user-mini-card" onclick="app.openModal('logout-modal')">
+                    <img src="" alt="Avatar" class="avatar avatar-sm" id="curr-user-avatar">
+                    <div class="user-mini-info">
+                        <div class="user-mini-name" id="curr-user-name">...</div>
+                        <div class="user-mini-handle" id="curr-user-handle">...</div>
+                    </div>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                </div>
+            </nav>
+
+            <main class="main-feed">
+                <div id="view-home" class="view-section active">
+                    <div class="sticky-header glass-panel">
+                        <div class="header-title">Ana Sayfa</div>
+                        <div class="feed-tabs">
+                            <div class="feed-tab active">Sana Özel</div>
+                            <div class="feed-tab">Takip Edilenler</div>
+                        </div>
+                    </div>
+                    
+                    <div class="create-post-area">
+                        <img src="" alt="Avatar" class="avatar avatar-md" id="create-post-avatar">
+                        <div class="post-input-wrapper">
+                            <textarea id="main-post-input" class="post-textarea" placeholder="Ağda neler oluyor?"></textarea>
+                            <div class="post-actions">
+                                <div class="post-tools">
+                                    <div class="post-tool-btn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>
+                                    <div class="post-tool-btn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg></div>
+                                    <div class="post-tool-btn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></div>
+                                </div>
+                                <div class="post-submit-area">
+                                    <span class="char-counter" id="main-char-count">0/280</span>
+                                    <button class="btn-primary" onclick="app.submitPost('main-post-input')" style="padding: 8px 20px; font-size: 14px;">Paylaş</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="home-feed-container">
+                        </div>
+                </div>
+
+                <div id="view-profile" class="view-section">
+                    <div class="sticky-header glass-panel">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <button class="btn-icon" onclick="app.switchView('view-home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
+                            <div>
+                                <div class="header-title" id="prof-header-name">Kullanıcı</div>
+                                <div style="font-size: 13px; color: var(--text-muted);" id="prof-header-count">0 gönderi</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="profile-cover">
+                            <img src="" id="prof-cover" onerror="this.style.display='none'">
+                        </div>
+                        <div class="profile-info-container">
+                            <div class="profile-avatar-wrapper">
+                                <img src="" class="avatar avatar-lg" id="prof-avatar">
+                            </div>
+                            <div class="profile-actions" id="prof-actions">
+                                </div>
+                            
+                            <div class="profile-name-block">
+                                <div class="profile-display-name" id="prof-name">İsim</div>
+                                <div class="profile-handle" id="prof-handle">@handle</div>
+                            </div>
+                            
+                            <div class="profile-bio" id="prof-bio">Biyografi alanı...</div>
+                            
+                            <div class="profile-meta">
+                                <div class="profile-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span id="prof-location">Siber Uzay</span></div>
+                                <div class="profile-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span id="prof-date">Eylül 2026 tarihinde katıldı</span></div>
+                            </div>
+                            
+                            <div class="profile-stats">
+                                <div><span id="prof-following">0</span> Takip Edilen</div>
+                                <div><span id="prof-followers">0</span> Takipçi</div>
+                            </div>
+                        </div>
+                        
+                        <div class="feed-tabs" style="margin-top: 10px;">
+                            <div class="feed-tab active">Gönderiler</div>
+                            <div class="feed-tab">Yanıtlar</div>
+                            <div class="feed-tab">Medya</div>
+                            <div class="feed-tab">Beğeniler</div>
+                        </div>
+                        
+                        <div id="profile-feed-container">
+                            </div>
+                    </div>
+                </div>
+
+                <div id="view-explore" class="view-section">
+                    <div class="sticky-header glass-panel">
+                        <div class="search-box" style="margin-bottom: 0;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            <input type="text" id="explore-search" placeholder="Visiocial'da Ara" oninput="app.handleSearch(this.value)">
+                        </div>
+                    </div>
+                    
+                    <div id="explore-content">
+                        </div>
+                </div>
+
+                <div id="view-notifications" class="view-section">
+                    <div class="sticky-header glass-panel">
+                        <div class="header-title">Bildirimler</div>
+                        <div class="feed-tabs">
+                            <div class="feed-tab active">Tümü</div>
+                            <div class="feed-tab">Onaylanmış</div>
+                            <div class="feed-tab">Bahsetmeler</div>
+                        </div>
+                    </div>
+                    <div id="notifications-container"></div>
+                </div>
+
+                <div id="view-messages" class="view-section">
+                    <div class="sticky-header glass-panel">
+                        <div class="header-title">Mesajlar</div>
+                    </div>
+                    <div class="messages-layout">
+                        <div class="messages-list" id="msg-list">
+                            </div>
+                        <div class="messages-chat" id="msg-chat">
+                            <div class="empty-state" style="margin: auto;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                <h3>Mesaj Seçin</h3>
+                                <p>Mevcut bir sohbete katılın veya yeni bir tane başlatın.</p>
+                                <button class="btn-primary" style="margin-top: 20px;">Yeni Mesaj</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-bookmarks" class="view-section">
+                    <div class="sticky-header glass-panel">
+                        <div class="header-title">Kaydedilenler</div>
+                        <div style="font-size: 13px; color: var(--text-muted);">Sadece sen görebilirsin</div>
+                    </div>
+                    <div id="bookmarks-container"></div>
+                </div>
+
+                <div id="view-settings" class="view-section">
+                    <div class="sticky-header glass-panel">
+                        <div class="header-title">Ayarlar ve Gizlilik</div>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div class="panel-card">
+                            <div class="panel-header">Hesabın</div>
+                            <div class="trend-item" onclick="app.openModal('edit-profile-modal')">
+                                <div class="trend-name">Profilini Düzenle</div>
+                                <div class="trend-category">Görünen ad, bio, konum ve avatar</div>
+                            </div>
+                            <div class="trend-item" onclick="app.resetDemoData()">
+                                <div class="trend-name" style="color: var(--warning);">Sistemi Sıfırla (Demo Verilerini Yükle)</div>
+                                <div class="trend-category">Tüm local verileri temizler ve başlangıç haline döner.</div>
+                            </div>
+                        </div>
+                        <div class="panel-card">
+                            <div class="panel-header">Görünüm</div>
+                            <div style="padding: 20px;">
+                                <label style="display:block; margin-bottom:10px;">Vurgu Rengi</label>
+                                <div style="display:flex; gap:10px;">
+                                    <div style="width:40px;height:40px;border-radius:50%;background:#5e00ff;cursor:pointer;border:2px solid #fff;"></div>
+                                    <div style="width:40px;height:40px;border-radius:50%;background:#00e5ff;cursor:pointer;"></div>
+                                    <div style="width:40px;height:40px;border-radius:50%;background:#ff007f;cursor:pointer;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <aside class="right-panel">
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" placeholder="Ara">
+                </div>
+
+                <div class="panel-card glass-panel">
+                    <div class="panel-header">Metavis1on Premium</div>
+                    <div style="padding: 15px 20px; font-size: 14px; color: var(--text-muted); line-height: 1.5;">
+                        Ekosistemdeki yerini sağlamlaştır. Gelişmiş özellikler, doğrulanmış rozet ve daha fazla görünürlük için yükselt.
+                        <button class="btn-primary" style="margin-top: 15px; width: 100%;">Aboneliği İncele</button>
+                    </div>
+                </div>
+
+                <div class="panel-card glass-panel" id="trends-panel">
+                    <div class="panel-header">İlgini Çekebilecek Gündemler</div>
+                    </div>
+
+                <div class="panel-card glass-panel" id="suggested-users-panel">
+                    <div class="panel-header">Kimi Takip Etmeli</div>
+                    </div>
+
+                <div style="font-size: 13px; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 10px; padding: 0 20px;">
+                    <a href="#">Hizmet Şartları</a>
+                    <a href="#">Gizlilik Politikası</a>
+                    <a href="#">Çerez Politikası</a>
+                    <a href="#">Erişilebilirlik</a>
+                    <a href="#">Reklam Bilgisi</a>
+                    <span>© 2026 Metavis1on Corp.</span>
+                </div>
+            </aside>
+        </div>
+
+        <div class="mobile-fab" onclick="app.openModal('post-modal')">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="post-modal" onclick="if(event.target===this) app.closeModal('post-modal')">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="btn-icon" onclick="app.closeModal('post-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button class="btn-primary" onclick="app.submitPost('modal-post-input')" style="padding: 6px 16px; font-size: 14px;">Paylaş</button>
+            </div>
+            <div class="modal-body">
+                <div class="create-post-area" style="border:none; padding:0;">
+                    <img src="" class="avatar avatar-md" id="modal-avatar">
+                    <div class="post-input-wrapper">
+                        <textarea id="modal-post-input" class="post-textarea" placeholder="Neler düşünüyorsun?" style="min-height: 120px;"></textarea>
+                        <div class="post-actions" style="border-top: none;">
+                            <div class="post-tools">
+                                <div class="post-tool-btn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div>
+                                <div class="post-tool-btn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="edit-profile-modal" onclick="if(event.target===this) app.closeModal('edit-profile-modal')">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap:15px;">
+                    <button class="btn-icon" onclick="app.closeModal('edit-profile-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                    <span class="modal-title">Profili Düzenle</span>
+                </div>
+                <button class="btn-primary" onclick="app.saveProfile()" style="padding: 6px 16px; font-size: 14px;">Kaydet</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Görünen Ad</label>
+                    <input type="text" id="edit-name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Biyografi</label>
+                    <textarea id="edit-bio" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Konum</label>
+                    <input type="text" id="edit-location" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Avatar URL</label>
+                    <input type="text" id="edit-avatar" class="form-control">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="logout-modal" onclick="if(event.target===this) app.closeModal('logout-modal')">
+        <div class="modal-content" style="max-width: 320px; text-align: center;">
+            <div class="modal-body">
+                <img src="assets/logo.png" style="width:40px; border-radius:8px; margin-bottom:15px;" onerror="this.style.display='none'">
+                <h3 style="margin-bottom: 10px;">Çıkış Yap</h3>
+                <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 14px;">Metavis1on ağından ayrılmak istediğine emin misin?</p>
+                <button class="btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="app.logout()">Evet, Çıkış Yap</button>
+                <button class="btn-outline" style="width: 100%;" onclick="app.closeModal('logout-modal')">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           JS SİSTEMİ - VERİ MODELİ, YÖNETİMİ VE RENDER İŞLEMLERİ
+           ========================================================================== */
+        
+        const DB_KEY = 'visiocial_db_v1';
+
+        // Varsayılan / Demo Veriler
+        const defaultData = {
+            currentUser: null,
+            users: [
+                { id: 'u1', handle: 'metavis1on', name: 'Metavis1on', avatar: 'assets/logo.png', cover: '', bio: 'The future of cyber-social interaction. Welcome to the ecosystem. \n\n#Tech #Cyberpunk #Web3', location: 'Metropolis', joined: 'Ocak 2026', followers: 984500, following: 12, isPremium: true, isVerified: true },
+                { id: 'u2', handle: 'neo_matrix', name: 'Neo', avatar: '', cover: '', bio: 'Wake up.', location: 'Zion', joined: 'Mart 2026', followers: 1542, following: 300, isPremium: false, isVerified: false },
+                { id: 'u3', handle: 'cyber_ninja', name: 'Ghost', avatar: '', cover: '', bio: 'Coding in the dark.', location: 'Tokyo', joined: 'Şubat 2026', followers: 8500, following: 400, isPremium: true, isVerified: false }
+            ],
+            posts: [
+                { id: 'p1', authorId: 'u1', content: 'Visiocial ağı aktif edildi. Tüm sistemler normal çalışıyor. Metavis1on evrenine hoş geldiniz. 🌐✨\n\nEkosistemi keşfetmeye hemen başlayın.\n#Metavis1on #VisiocialLaunch', media: null, timestamp: Date.now() - 3600000, likes: 4500, reposts: 1200, replies: 340, views: 150000, likedBy: [], repostedBy: [], savedBy: [] },
+                { id: 'p2', authorId: 'u3', content: 'Yeni arayüz gerçekten inanılmaz hızlı. LocalStorage üzerinden bu kadar veriyi yönetmek harika bir mühendislik. @metavis1on tebrikler! 🚀💻', media: null, timestamp: Date.now() - 7200000, likes: 340, reposts: 12, replies: 5, views: 5000, likedBy: [], repostedBy: [], savedBy: [] },
+                { id: 'p3', authorId: 'u1', content: 'Siber güvenlik protokolleri güncellendi. Kullanıcı verileriniz şifreleme altındadır. Güvendesiniz. 🛡️', media: null, timestamp: Date.now() - 86400000, likes: 8900, reposts: 2300, replies: 120, views: 300000, likedBy: [], repostedBy: [], savedBy: [] }
+            ],
+            trends: [
+                { category: 'Teknoloji', name: '#Metavis1on', posts: '1.2M' },
+                { category: 'Gündem', name: 'VisiocialLaunch', posts: '450K' },
+                { category: 'Siber Güvenlik', name: 'Protokol Güncellemesi', posts: '23K' },
+                { category: 'Oyun', name: 'Cyberpunk 2077', posts: '15K' }
+            ],
+            notifications: [
+                { id: 'n1', type: 'system', text: '<b>Metavis1on</b> ağına hoş geldin.', time: Date.now(), read: false }
+            ],
+            messages: [],
+            bookmarks: []
+        };
+
+        const app = {
+            db: {},
+            
+            // 1. İLKLEME (INITIALIZATION)
+            init() {
+                this.loadDB();
+                
+                // Tema ayarları (Basit glow effect oluşturucu)
+                document.querySelectorAll('.avatar').forEach(img => {
+                    if(!img.src || img.src.includes('undefined')) {
+                        img.src = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>U</text></svg>`;
+                    }
+                });
+
+                if (this.db.currentUser) {
+                    this.showApp();
+                } else {
+                    this.showAuth();
+                }
+
+                this.setupEventListeners();
+            },
+
+            loadDB() {
+                const data = localStorage.getItem(DB_KEY);
+                if (data) {
+                    this.db = JSON.parse(data);
+                } else {
+                    this.db = JSON.parse(JSON.stringify(defaultData));
+                    this.saveDB();
+                }
+            },
+
+            saveDB() {
+                localStorage.setItem(DB_KEY, JSON.stringify(this.db));
+            },
+
+            resetDemoData() {
+                localStorage.removeItem(DB_KEY);
+                this.showToast('Sistem sıfırlanıyor...', 'success');
+                setTimeout(() => location.reload(), 1000);
+            },
+
+            // 2. AUTHENTICATION
+            showAuth() {
+                document.getElementById('app').style.display = 'none';
+                document.getElementById('auth-screen').style.display = 'flex';
+            },
+
+            showApp() {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                
+                this.updateUIWithCurrentUser();
+                this.switchView('view-home');
+                this.renderTrends();
+                this.renderSuggestedUsers();
+            },
+
+            toggleAuthMode(mode) {
+                if (mode === 'register') {
+                    document.getElementById('login-form').style.display = 'none';
+                    document.getElementById('register-form').style.display = 'block';
+                } else {
+                    document.getElementById('register-form').style.display = 'none';
+                    document.getElementById('login-form').style.display = 'block';
+                }
+            },
+
+            login() {
+                const id = document.getElementById('login-id').value.trim();
+                const pass = document.getElementById('login-pass').value.trim();
+                
+                if(!id || !pass) return this.showToast('Lütfen alanları doldurun.', 'error');
+
+                const user = this.db.users.find(u => u.handle === id || u.email === id);
+                if (user) {
+                    this.db.currentUser = user.id;
+                    this.saveDB();
+                    this.showToast('Giriş başarılı.', 'success');
+                    this.showApp();
+                } else {
+                    this.showToast('Kullanıcı bulunamadı.', 'error');
+                }
+            },
+
+            loginAsDemo() {
+                this.db.currentUser = 'u1'; // metavis1on
+                this.saveDB();
+                this.showToast('Demo hesabına geçildi.', 'success');
+                this.showApp();
+            },
+
+            loginAsGuest() {
+                // Misafir hesabı oluştur
+                const guestId = 'guest_' + Date.now();
+                const guestUser = { id: guestId, handle: 'guest' + Math.floor(Math.random()*1000), name: 'Misafir', avatar: '', bio: '', location: '', joined: 'Şimdi', followers: 0, following: 0 };
+                this.db.users.push(guestUser);
+                this.db.currentUser = guestId;
+                this.saveDB();
+                this.showToast('Misafir olarak giriş yapıldı.', 'success');
+                this.showApp();
+            },
+
+            register() {
+                const name = document.getElementById('reg-name').value.trim();
+                const handle = document.getElementById('reg-handle').value.trim().replace('@','');
+                const email = document.getElementById('reg-email').value.trim();
+                const pass = document.getElementById('reg-pass').value.trim();
+
+                if(!name || !handle || !email || !pass) return this.showToast('Tüm alanları doldurun.', 'error');
+                if(this.db.users.find(u => u.handle === handle)) return this.showToast('Bu kullanıcı adı alınmış.', 'error');
+
+                const newUser = {
+                    id: 'u_' + Date.now(),
+                    handle: handle,
+                    name: name,
+                    email: email,
+                    avatar: '',
+                    cover: '',
+                    bio: 'Metavis1on ağına yeni katıldım.',
+                    location: 'Bilinmiyor',
+                    joined: new Date().toLocaleDateString('tr-TR', {month:'long', year:'numeric'}),
+                    followers: 0, following: 0, isPremium: false, isVerified: false
+                };
+
+                this.db.users.push(newUser);
+                this.db.currentUser = newUser.id;
+                this.saveDB();
+                
+                this.showToast('Ağa başarıyla katıldın.', 'success');
+                this.showApp();
+            },
+
+            logout() {
+                this.db.currentUser = null;
+                this.saveDB();
+                this.closeModal('logout-modal');
+                this.showAuth();
+            },
+
+            updateUIWithCurrentUser() {
+                const me = this.getUser(this.db.currentUser);
+                if(!me) return;
+
+                const avatarSrc = me.avatar || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>${me.name.charAt(0)}</text></svg>`;
+
+                document.getElementById('curr-user-name').innerText = me.name;
+                document.getElementById('curr-user-handle').innerText = '@' + me.handle;
+                document.getElementById('curr-user-avatar').src = avatarSrc;
+                
+                document.getElementById('create-post-avatar').src = avatarSrc;
+                document.getElementById('modal-avatar').src = avatarSrc;
+
+                // Unread notifications
+                const unreadCount = this.db.notifications.filter(n => !n.read).length;
+                const badge = document.getElementById('badge-notif');
+                if(unreadCount > 0) {
+                    badge.style.display = 'block';
+                    badge.innerText = unreadCount;
+                } else {
+                    badge.style.display = 'none';
+                }
+            },
+
+            // 3. ROUTING / VIEWS
+            switchView(viewId) {
+                // Reset active states
+                document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                
+                // Set active
+                document.getElementById(viewId).classList.add('active');
+                const navItem = document.querySelector(`.nav-item[data-target="${viewId}"]`);
+                if(navItem) navItem.classList.add('active');
+
+                // Render specific view data
+                window.scrollTo(0,0);
+                if (viewId === 'view-home') this.renderFeed(this.db.posts, 'home-feed-container');
+                if (viewId === 'view-profile') this.renderProfile(this.db.currentUser);
+                if (viewId === 'view-notifications') this.renderNotifications();
+                if (viewId === 'view-bookmarks') this.renderBookmarks();
+                if (viewId === 'view-explore') this.renderExplore();
+            },
+
+            // 4. RENDERING LOGIC
+            getUser(id) {
+                return this.db.users.find(u => u.id === id);
+            },
+
+            formatTime(ms) {
+                const diff = Date.now() - ms;
+                if(diff < 60000) return 'şimdi';
+                if(diff < 3600000) return Math.floor(diff/60000) + 'd';
+                if(diff < 86400000) return Math.floor(diff/3600000) + 's';
+                return new Date(ms).toLocaleDateString('tr-TR', {day:'numeric', month:'short'});
+            },
+
+            formatNumber(num) {
+                if(num >= 1000000) return (num/1000000).toFixed(1) + 'M';
+                if(num >= 1000) return (num/1000).toFixed(1) + 'B';
+                return num;
+            },
+
+            parseContent(text) {
+                // Escape HTML
+                let safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                // Hashtags
+                safeText = safeText.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
+                // Mentions
+                safeText = safeText.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
+                return safeText;
+            },
+
+            getIcons() {
+                return {
+                    verified: `<svg class="verified-badge" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1.9 14.7L6 12.6l1.5-1.5 2.6 2.6 6.4-6.4 1.5 1.5-7.9 7.9z"/></svg>`,
+                    premium: `<svg class="premium-badge" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
+                    reply: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>`,
+                    repost: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>`,
+                    like: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`,
+                    view: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
+                    save: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`,
+                    more: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>`
+                };
+            },
+
+            generatePostHTML(post) {
+                const author = this.getUser(post.authorId);
+                if(!author) return '';
+                
+                const icons = this.getIcons();
+                const isLiked = post.likedBy?.includes(this.db.currentUser);
+                const isReposted = post.repostedBy?.includes(this.db.currentUser);
+                const isSaved = post.savedBy?.includes(this.db.currentUser);
+
+                const avatarSrc = author.avatar || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>${author.name.charAt(0)}</text></svg>`;
+
+                return `
+                <div class="post-card" data-id="${post.id}">
+                    <div style="width: 48px;">
+                        <img src="${avatarSrc}" class="avatar avatar-md" onclick="app.goToProfile('${author.id}')">
+                    </div>
+                    <div class="post-content-area">
+                        <div class="post-header">
+                            <span class="post-name" onclick="app.goToProfile('${author.id}')">${author.name}</span>
+                            ${author.isVerified ? icons.verified : ''}
+                            ${author.isPremium ? icons.premium : ''}
+                            <span class="post-handle">@${author.handle}</span>
+                            <span class="post-time">${this.formatTime(post.timestamp)}</span>
+                            <div class="post-options">${icons.more}</div>
+                        </div>
+                        <div class="post-text">${this.parseContent(post.content)}</div>
+                        ${post.media ? `<div class="post-media"><img src="${post.media}"></div>` : ''}
+                        
+                        <div class="post-stats">
+                            <div class="stat-item stat-reply" onclick="app.showToast('Yorum özelliği demo sürümündedir.', 'info')">
+                                ${icons.reply} <span>${this.formatNumber(post.replies)}</span>
+                            </div>
+                            <div class="stat-item stat-repost ${isReposted ? 'reposted' : ''}" onclick="app.toggleRepost('${post.id}')">
+                                ${icons.repost} <span>${this.formatNumber(post.reposts)}</span>
+                            </div>
+                            <div class="stat-item stat-like ${isLiked ? 'liked' : ''}" onclick="app.toggleLike('${post.id}')">
+                                ${icons.like} <span>${this.formatNumber(post.likes)}</span>
+                            </div>
+                            <div class="stat-item stat-view">
+                                ${icons.view} <span>${this.formatNumber(post.views)}</span>
+                            </div>
+                            <div class="stat-item stat-save ${isSaved ? 'saved' : ''}" onclick="app.toggleBookmark('${post.id}')" style="margin-left:auto; ${isSaved ? 'color:var(--primary-core);' : ''}">
+                                ${icons.save}
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            },
+
+            renderFeed(postsArray, containerId) {
+                const container = document.getElementById(containerId);
+                if(postsArray.length === 0) {
+                    container.innerHTML = `<div class="empty-state"><h3>Burada henüz bir şey yok.</h3><p>Takip edecek birilerini bulun veya ilk gönderiyi siz paylaşın.</p></div>`;
+                    return;
+                }
+
+                // Skeleton efekti
+                container.innerHTML = `
+                    <div style="padding:20px;"><div class="skeleton" style="height:100px; width:100%;"></div></div>
+                    <div style="padding:20px;"><div class="skeleton" style="height:150px; width:100%;"></div></div>
+                `;
+
+                setTimeout(() => {
+                    const sortedPosts = [...postsArray].sort((a,b) => b.timestamp - a.timestamp);
+                    container.innerHTML = sortedPosts.map(p => this.generatePostHTML(p)).join('');
+                }, 400); // 400ms loading hissiyatı
+            },
+
+            renderProfile(userId) {
+                const user = this.getUser(userId);
+                if(!user) return;
+
+                document.getElementById('prof-header-name').innerText = user.name;
+                const userPosts = this.db.posts.filter(p => p.authorId === userId);
+                document.getElementById('prof-header-count').innerText = `${userPosts.length} gönderi`;
+
+                const avatarSrc = user.avatar || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>${user.name.charAt(0)}</text></svg>`;
+                
+                document.getElementById('prof-cover').src = user.cover || '';
+                document.getElementById('prof-avatar').src = avatarSrc;
+                document.getElementById('prof-name').innerHTML = user.name + (user.isVerified ? this.getIcons().verified : '') + (user.isPremium ? this.getIcons().premium : '');
+                document.getElementById('prof-handle').innerText = '@' + user.handle;
+                document.getElementById('prof-bio').innerHTML = this.parseContent(user.bio);
+                document.getElementById('prof-location').innerText = user.location || 'Metavis1on';
+                document.getElementById('prof-date').innerText = `${user.joined} tarihinde katıldı`;
+                document.getElementById('prof-following').innerText = user.following;
+                document.getElementById('prof-followers').innerText = this.formatNumber(user.followers);
+
+                const actionsContainer = document.getElementById('prof-actions');
+                if(userId === this.db.currentUser) {
+                    actionsContainer.innerHTML = `<button class="btn-outline" onclick="app.openModal('edit-profile-modal'); app.fillEditForm();">Profili Düzenle</button>`;
+                } else {
+                    actionsContainer.innerHTML = `
+                        <button class="btn-icon btn-outline" style="width:40px;height:40px;border-radius:50%;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
+                        <button class="btn-icon btn-outline" style="width:40px;height:40px;border-radius:50%;"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></button>
+                        <button class="btn-primary" style="background: #fff; color: #000; padding: 8px 20px;">Takip Et</button>
+                    `;
+                }
+
+                this.renderFeed(userPosts, 'profile-feed-container');
+            },
+
+            goToProfile(userId) {
+                this.renderProfile(userId);
+                this.switchView('view-profile');
+            },
+
+            renderTrends() {
+                const container = document.getElementById('trends-panel');
+                let html = '<div class="panel-header">İlgini Çekebilecek Gündemler</div>';
+                this.db.trends.forEach(t => {
+                    html += `
+                        <div class="trend-item">
+                            <div class="trend-category"><span>${t.category}</span> <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></div>
+                            <div class="trend-name">${t.name}</div>
+                            <div class="trend-stats">${t.posts} gönderi</div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            },
+
+            renderSuggestedUsers() {
+                const container = document.getElementById('suggested-users-panel');
+                let html = '<div class="panel-header">Kimi Takip Etmeli</div>';
+                
+                const suggested = this.db.users.filter(u => u.id !== this.db.currentUser).slice(0, 3);
+                
+                suggested.forEach(u => {
+                    const avatarSrc = u.avatar || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>${u.name.charAt(0)}</text></svg>`;
+                    html += `
+                        <div class="suggested-user" onclick="app.goToProfile('${u.id}')">
+                            <img src="${avatarSrc}" class="avatar avatar-sm">
+                            <div class="suggested-info">
+                                <div class="suggested-name">${u.name} ${u.isVerified ? this.getIcons().verified : ''}</div>
+                                <div class="suggested-handle">@${u.handle}</div>
+                            </div>
+                            <button class="btn-follow" onclick="event.stopPropagation(); app.showToast('Takip edildi.', 'success')">Takip Et</button>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            },
+
+            renderBookmarks() {
+                const myId = this.db.currentUser;
+                const savedPosts = this.db.posts.filter(p => p.savedBy && p.savedBy.includes(myId));
+                this.renderFeed(savedPosts, 'bookmarks-container');
+            },
+
+            renderExplore() {
+                const container = document.getElementById('explore-content');
+                // Gelişmiş keşfet tasarımı
+                container.innerHTML = `
+                    <div style="height: 200px; background: linear-gradient(to right, #3a00b3, #00e5ff); position: relative; display: flex; align-items: flex-end; padding: 20px;">
+                        <h2 style="color: #fff; font-size: 28px; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,0.5);">Metavis1on Gündemi</h2>
+                    </div>
+                    <div style="padding: 10px 0;">
+                        ${this.db.trends.map(t => `
+                            <div class="trend-item" style="border-bottom: 1px solid var(--border-color);">
+                                <div class="trend-category">${t.category}</div>
+                                <div class="trend-name" style="font-size: 18px;">${t.name}</div>
+                                <div class="trend-stats">${t.posts} gönderi</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+
+            renderNotifications() {
+                const container = document.getElementById('notifications-container');
+                if(this.db.notifications.length === 0) {
+                    container.innerHTML = `<div class="empty-state"><h3>Henüz bildirim yok.</h3><p>Etkileşimler burada görünür.</p></div>`;
+                    return;
+                }
+                
+                let html = '';
+                this.db.notifications.sort((a,b) => b.time - a.time).forEach(n => {
+                    html += `
+                        <div class="notification-card ${n.read ? '' : 'unread'}" onclick="app.markAsRead('${n.id}')">
+                            <div class="notif-icon">
+                                <svg viewBox="0 0 24 24" fill="var(--primary-core)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                            </div>
+                            <div class="notif-content">
+                                <div class="notif-text">${n.text}</div>
+                                <div class="notif-subtext">${this.formatTime(n.time)}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            },
+
+            // 5. ETKİLEŞİMLER (ACTIONS)
+            submitPost(inputId) {
+                const input = document.getElementById(inputId);
+                const content = input.value.trim();
+                
+                if(!content) return;
+                
+                const newPost = {
+                    id: 'p_' + Date.now(),
+                    authorId: this.db.currentUser,
+                    content: content,
+                    media: null,
+                    timestamp: Date.now(),
+                    likes: 0, reposts: 0, replies: 0, views: 0,
+                    likedBy: [], repostedBy: [], savedBy: []
+                };
+
+                this.db.posts.unshift(newPost);
+                this.saveDB();
+                
+                input.value = '';
+                if(inputId === 'main-post-input') {
+                    document.getElementById('main-char-count').innerText = '0/280';
+                }
+                
+                this.closeModal('post-modal');
+                this.showToast('Gönderin paylaşıldı.', 'success');
+                
+                if(document.getElementById('view-home').classList.contains('active')) {
+                    this.renderFeed(this.db.posts, 'home-feed-container');
+                }
+            },
+
+            toggleLike(postId) {
+                const post = this.db.posts.find(p => p.id === postId);
+                if(!post) return;
+                
+                if(!post.likedBy) post.likedBy = [];
+                
+                const myId = this.db.currentUser;
+                const idx = post.likedBy.indexOf(myId);
+                
+                if(idx > -1) {
+                    post.likedBy.splice(idx, 1);
+                    post.likes--;
+                } else {
+                    post.likedBy.push(myId);
+                    post.likes++;
+                }
+                
+                this.saveDB();
+                this.refreshCurrentFeed();
+            },
+
+            toggleRepost(postId) {
+                const post = this.db.posts.find(p => p.id === postId);
+                if(!post) return;
+                
+                if(!post.repostedBy) post.repostedBy = [];
+                
+                const myId = this.db.currentUser;
+                const idx = post.repostedBy.indexOf(myId);
+                
+                if(idx > -1) {
+                    post.repostedBy.splice(idx, 1);
+                    post.reposts--;
+                } else {
+                    post.repostedBy.push(myId);
+                    post.reposts++;
+                    this.showToast('Repost edildi', 'success');
+                }
+                
+                this.saveDB();
+                this.refreshCurrentFeed();
+            },
+
+            toggleBookmark(postId) {
+                const post = this.db.posts.find(p => p.id === postId);
+                if(!post) return;
+                
+                if(!post.savedBy) post.savedBy = [];
+                
+                const myId = this.db.currentUser;
+                const idx = post.savedBy.indexOf(myId);
+                
+                if(idx > -1) {
+                    post.savedBy.splice(idx, 1);
+                    this.showToast('Kaydedilenlerden çıkarıldı.', 'info');
+                } else {
+                    post.savedBy.push(myId);
+                    this.showToast('Gönderi kaydedildi.', 'success');
+                }
+                
+                this.saveDB();
+                this.refreshCurrentFeed();
+            },
+
+            refreshCurrentFeed() {
+                if(document.getElementById('view-home').classList.contains('active')) this.renderFeed(this.db.posts, 'home-feed-container');
+                if(document.getElementById('view-profile').classList.contains('active')) this.renderProfile(this.db.currentUser);
+                if(document.getElementById('view-bookmarks').classList.contains('active')) this.renderBookmarks();
+            },
+
+            // PROFİL DÜZENLEME
+            fillEditForm() {
+                const me = this.getUser(this.db.currentUser);
+                document.getElementById('edit-name').value = me.name || '';
+                document.getElementById('edit-bio').value = me.bio || '';
+                document.getElementById('edit-location').value = me.location || '';
+                document.getElementById('edit-avatar').value = me.avatar || '';
+            },
+
+            saveProfile() {
+                const me = this.getUser(this.db.currentUser);
+                me.name = document.getElementById('edit-name').value;
+                me.bio = document.getElementById('edit-bio').value;
+                me.location = document.getElementById('edit-location').value;
+                me.avatar = document.getElementById('edit-avatar').value;
+                
+                this.saveDB();
+                this.closeModal('edit-profile-modal');
+                this.showToast('Profil güncellendi.', 'success');
+                this.updateUIWithCurrentUser();
+                this.renderProfile(this.db.currentUser);
+            },
+
+            // YARDIMCI METOTLAR
+            showToast(msg, type = 'info') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                let icon = '';
+                if(type === 'success') icon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                if(type === 'error') icon = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+                
+                toast.innerHTML = `${icon} <span>${msg}</span>`;
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(20px)';
+                    toast.style.transition = '0.3s';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            },
+
+            openModal(id) {
+                document.getElementById(id).classList.add('active');
+                document.body.style.overflow = 'hidden';
+            },
+
+            closeModal(id) {
+                document.getElementById(id).classList.remove('active');
+                document.body.style.overflow = '';
+            },
+
+            markAsRead(notifId) {
+                const n = this.db.notifications.find(x => x.id === notifId);
+                if(n) n.read = true;
+                this.saveDB();
+                this.renderNotifications();
+                this.updateUIWithCurrentUser();
+            },
+
+            handleSearch(val) {
+                if(!val) return this.renderExplore(); // Reset
+                const low = val.toLowerCase();
+                const container = document.getElementById('explore-content');
+                const users = this.db.users.filter(u => u.name.toLowerCase().includes(low) || u.handle.toLowerCase().includes(low));
+                const posts = this.db.posts.filter(p => p.content.toLowerCase().includes(low));
+                
+                let html = '<div style="padding: 20px;">';
+                if(users.length > 0) {
+                    html += '<h3 style="margin-bottom: 10px;">Kişiler</h3>';
+                    users.forEach(u => {
+                        html += `<div class="suggested-user" onclick="app.goToProfile('${u.id}')"><div class="suggested-name">${u.name}</div></div>`;
+                    });
+                }
+                if(posts.length > 0) {
+                    html += '<h3 style="margin: 20px 0 10px;">Gönderiler</h3>';
+                    posts.forEach(p => html += this.generatePostHTML(p));
+                }
+                if(users.length === 0 && posts.length === 0) {
+                    html += '<div class="empty-state">Sonuç bulunamadı.</div>';
+                }
+                html += '</div>';
+                container.innerHTML = html;
+            },
+
+            setupEventListeners() {
+                // Karakter sayacı
+                const mainInput = document.getElementById('main-post-input');
+                const mainCounter = document.getElementById('main-char-count');
+                
+                if(mainInput) {
+                    mainInput.addEventListener('input', (e) => {
+                        const len = e.target.value.length;
+                        mainCounter.innerText = `${len}/280`;
+                        if(len > 260) mainCounter.className = 'char-counter danger';
+                        else if(len > 200) mainCounter.className = 'char-counter warning';
+                        else mainCounter.className = 'char-counter';
+                    });
+                }
+            }
+        };
+
+        // Uygulamayı Başlat
+        window.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+
+    </script>
+</body>
+</html>

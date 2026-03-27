@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>metavis1on GRID</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>metavis1on GRID 2.1.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* =========================================
-           1. DEĞİŞKENLER VE TEMEL AYARLAR
+           1. DEĞİŞKENLER VE TEMEL AYARLAR (v2.0 Geliştirilmiş)
            ========================================= */
         :root {
             /* Renk Paleti - metavis1on Premium Dark */
-            --bg-deep: #05060A;
+            --bg-deep: #030407; /* Daha derin bir siyah */
             --bg-surface: #0a0c14;
             --text-main: #FFFFFF;
             --text-muted: #8b949e;
@@ -22,25 +22,29 @@
             --accent-pink: #ff007f;
             --accent-orange: #ff7900;
             --accent-green: #00ff88;
+            --accent-red: #ff3333;
+            --accent-gold: #ffd700;
             
             /* Glassmorphism & UI */
             --glass-bg: rgba(255, 255, 255, 0.03);
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            --glass-hover: rgba(255, 255, 255, 0.06);
             
-            --board-bg: rgba(10, 12, 20, 0.8);
-            --cell-bg: rgba(255, 255, 255, 0.05);
-            --cell-border: rgba(255, 255, 255, 0.02);
+            --board-bg: rgba(7, 9, 15, 0.85);
+            --cell-bg: rgba(255, 255, 255, 0.03);
+            --cell-border: rgba(255, 255, 255, 0.04);
             
             --transition-fast: 0.15s ease;
             --transition-smooth: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none; /* Metin seçimini engelle - oyun hissi için önemli */
+            user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -57,23 +61,29 @@
             position: relative;
         }
 
-        /* Arka Plan Efektleri */
+        /* Arka Plan Efektleri (Güçlendirildi) */
         .bg-glow {
             position: absolute;
             border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.15;
+            filter: blur(140px);
+            opacity: 0.12;
             z-index: 0;
             pointer-events: none;
+            animation: pulseBg 10s infinite alternate ease-in-out;
         }
-        .glow-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: var(--accent-cyan); }
-        .glow-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: var(--accent-purple); }
+        .glow-1 { top: -10%; left: -10%; width: 55vw; height: 55vw; background: var(--accent-cyan); }
+        .glow-2 { bottom: -10%; right: -10%; width: 65vw; height: 65vw; background: var(--accent-purple); }
+
+        @keyframes pulseBg {
+            0% { transform: scale(1); opacity: 0.1; }
+            100% { transform: scale(1.1); opacity: 0.18; }
+        }
 
         .bg-noise {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            opacity: 0.03;
+            opacity: 0.04;
             z-index: 0;
             pointer-events: none;
         }
@@ -83,15 +93,15 @@
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 500px;
+            max-width: 520px;
             height: 100%;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: clamp(10px, 3vh, 20px);
         }
 
         /* =========================================
-           2. ARAYÜZ BİLEŞENLERİ (UI)
+           2. ARAYÜZ BİLEŞENLERİ (UI) - Premium Modals
            ========================================= */
         .screen {
             position: absolute;
@@ -100,9 +110,9 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: rgba(5, 6, 10, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(3, 4, 7, 0.9);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             z-index: 100;
             opacity: 0;
             pointer-events: none;
@@ -116,249 +126,349 @@
             pointer-events: all;
         }
 
+        .brand-logo-img {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 20px rgba(0, 225, 255, 0.3));
+        }
+
         .logo-text {
-            font-size: clamp(2.5rem, 8vw, 3.5rem);
-            font-weight: 700;
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 800;
             letter-spacing: -2px;
-            background: linear-gradient(135deg, #fff, var(--text-muted));
+            background: linear-gradient(135deg, #fff 30%, var(--text-muted));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 5px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .logo-sub {
             color: var(--accent-cyan);
-            font-size: 1.2rem;
-            font-weight: 600;
-            letter-spacing: 4px;
+            font-size: clamp(1rem, 4vw, 1.4rem);
+            font-weight: 700;
+            letter-spacing: 6px;
             margin-bottom: 40px;
             text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(0, 225, 255, 0.4);
         }
 
         .glass-panel {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: var(--glass-shadow);
+            border-radius: 28px;
+            padding: clamp(20px, 5vw, 40px);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02), var(--glass-shadow);
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
         }
 
         .btn {
             background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
             color: white;
             border: none;
-            padding: 16px 32px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 12px;
+            padding: 18px 32px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            border-radius: 14px;
             cursor: pointer;
             width: 100%;
             margin-bottom: 15px;
-            transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+            transition: all var(--transition-fast);
             font-family: 'Space Grotesk', sans-serif;
-            box-shadow: 0 4px 15px rgba(157, 78, 221, 0.3);
+            box-shadow: 0 8px 20px rgba(157, 78, 221, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(157, 78, 221, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(157, 78, 221, 0.4);
         }
-        
+        .btn:hover::after { left: 150%; }
         .btn:active { transform: translateY(1px); }
 
         .btn-outline {
-            background: transparent;
+            background: rgba(255,255,255,0.02);
             border: 1px solid var(--glass-border);
             box-shadow: none;
         }
-        .btn-outline:hover { background: var(--glass-bg); box-shadow: none; }
+        .btn-outline:hover { background: var(--glass-hover); border-color: rgba(255,255,255,0.15); }
+        .btn-danger { background: linear-gradient(135deg, #ff0055, #ff3333); box-shadow: 0 8px 20px rgba(255, 0, 85, 0.25); }
 
         /* =========================================
-           3. OYUN EKRANI (Header & Skor)
+           3. OYUN EKRANI HUD (Header & Skor - Yenilendi)
            ========================================= */
-        .game-header {
+        .game-top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding: 10px 0;
+            margin-bottom: 15px;
             opacity: 0;
             transform: translateY(-20px);
             transition: all 0.5s ease;
         }
-        
-        .game-active .game-header {
-            opacity: 1;
-            transform: translateY(0);
+
+        .game-active .game-top-bar { opacity: 1; transform: translateY(0); }
+
+        .mini-logo {
+            font-weight: 800;
+            font-size: 1.2rem;
+            background: linear-gradient(to right, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        .mini-logo img { height: 24px; }
+
+        .top-actions { display: flex; gap: 10px; }
+        
+        .icon-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.2rem; cursor: pointer; transition: var(--transition-fast);
+        }
+        .icon-btn:hover { background: var(--glass-hover); transform: scale(1.05); }
+
+        .score-hud-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.5s ease 0.1s;
+        }
+        .game-active .score-hud-container { opacity: 1; transform: translateY(0); }
 
         .score-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 12px 10px;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .score-box.highlight {
+            border-color: rgba(0, 225, 255, 0.3);
+            background: linear-gradient(180deg, rgba(0, 225, 255, 0.05), transparent);
         }
 
         .score-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
+            font-weight: 600;
         }
 
         .score-value {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: clamp(1.4rem, 4vw, 1.8rem);
+            font-weight: 800;
             color: var(--text-main);
             line-height: 1;
+            transition: color 0.2s;
         }
 
         .score-value.pulse {
-            animation: scorePulse 0.3s ease-out;
+            animation: scorePulse 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             color: var(--accent-cyan);
         }
 
-        .header-right { text-align: right; }
-        
-        /* Combo Göstergesi */
+        .streak-value { color: var(--accent-orange); }
+
+        /* Combo Göstergesi (Merkezde) */
         .combo-display {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0.5);
-            font-size: 3rem;
-            font-weight: 700;
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 800;
             color: var(--accent-pink);
-            text-shadow: 0 0 20px rgba(255, 0, 127, 0.8);
+            text-shadow: 0 10px 30px rgba(255, 0, 127, 0.8);
             opacity: 0;
             pointer-events: none;
             z-index: 50;
+            text-align: center;
+            width: 100%;
+            letter-spacing: -1px;
         }
-
-        .combo-display.show {
-            animation: comboPop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
+        .combo-display.show { animation: comboPop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .combo-display span { display: block; font-size: 1.2rem; color: #fff; text-shadow: none; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-top: -5px;}
 
         /* =========================================
-           4. OYUN TAHTASI (Grid)
+           4. OYUN TAHTASI (Grid) - Daha Premium
            ========================================= */
         .board-container {
             width: 100%;
             aspect-ratio: 1 / 1;
             background: var(--board-bg);
-            border-radius: 16px;
-            border: 1px solid var(--glass-border);
-            padding: 8px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), var(--glass-shadow);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: clamp(6px, 2vw, 10px);
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 10px 40px rgba(0,0,0,0.4);
             margin-bottom: auto;
             position: relative;
             
             opacity: 0;
             transform: scale(0.95);
-            transition: all 0.5s ease 0.1s;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
         }
 
-        .game-active .board-container {
-            opacity: 1;
-            transform: scale(1);
-        }
+        .game-active .board-container { opacity: 1; transform: scale(1); }
 
         .grid {
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             grid-template-rows: repeat(8, 1fr);
-            gap: 4px; /* Hücreler arası boşluk */
+            gap: clamp(2px, 1vw, 5px); 
             width: 100%;
             height: 100%;
+            position: relative;
+            z-index: 2;
         }
 
         .cell {
             background: var(--cell-bg);
-            border-radius: 6px;
+            border-radius: clamp(4px, 1.5vw, 8px);
             border: 1px solid var(--cell-border);
-            transition: background var(--transition-fast), transform 0.1s;
+            transition: background var(--transition-fast), transform 0.1s, border-color 0.2s, box-shadow 0.2s;
             position: relative;
             overflow: hidden;
+            /* Click-to-place için cursor eklendi */
+            cursor: pointer;
         }
 
-        /* Dolu Hücre Renkleri (Temalar) */
+        /* Dolu Hücre Renkleri (Temalar - Daha Canlı) */
         .cell.filled {
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
+            box-shadow: inset 0 0 15px rgba(255,255,255,0.2);
+            border-width: 2px;
         }
-        .cell.color-1 { background: var(--accent-cyan); border-color: rgba(0, 225, 255, 0.5); box-shadow: 0 0 10px rgba(0, 225, 255, 0.3); }
-        .cell.color-2 { background: var(--accent-purple); border-color: rgba(157, 78, 221, 0.5); box-shadow: 0 0 10px rgba(157, 78, 221, 0.3); }
-        .cell.color-3 { background: var(--accent-pink); border-color: rgba(255, 0, 127, 0.5); box-shadow: 0 0 10px rgba(255, 0, 127, 0.3); }
-        .cell.color-4 { background: var(--accent-orange); border-color: rgba(255, 121, 0, 0.5); box-shadow: 0 0 10px rgba(255, 121, 0, 0.3); }
-        .cell.color-5 { background: var(--accent-green); border-color: rgba(0, 255, 136, 0.5); box-shadow: 0 0 10px rgba(0, 255, 136, 0.3); }
+        .cell.color-1 { background: var(--accent-cyan); border-color: rgba(255,255,255,0.4); box-shadow: inset 0 0 15px rgba(255,255,255,0.3), 0 0 10px rgba(0, 225, 255, 0.2); }
+        .cell.color-2 { background: var(--accent-purple); border-color: rgba(255,255,255,0.4); box-shadow: inset 0 0 15px rgba(255,255,255,0.3), 0 0 10px rgba(157, 78, 221, 0.2); }
+        .cell.color-3 { background: var(--accent-pink); border-color: rgba(255,255,255,0.4); box-shadow: inset 0 0 15px rgba(255,255,255,0.3), 0 0 10px rgba(255, 0, 127, 0.2); }
+        .cell.color-4 { background: var(--accent-orange); border-color: rgba(255,255,255,0.4); box-shadow: inset 0 0 15px rgba(255,255,255,0.3), 0 0 10px rgba(255, 121, 0, 0.2); }
+        .cell.color-5 { background: var(--accent-green); border-color: rgba(255,255,255,0.4); box-shadow: inset 0 0 15px rgba(255,255,255,0.3), 0 0 10px rgba(0, 255, 136, 0.2); }
 
-        /* Önizleme (Hover) Durumu */
-        .cell.preview {
-            background: rgba(255, 255, 255, 0.2) !important;
-            transform: scale(0.9);
-            border: 1px dashed rgba(255, 255, 255, 0.5);
+        /* V2.0 Özelliği: Geçerli ve Geçersiz Önizleme Sinyalleri */
+        .cell.preview-valid {
+            background: rgba(0, 255, 136, 0.2) !important;
+            transform: scale(0.92);
+            border: 2px solid rgba(0, 255, 136, 0.8) !important;
+            box-shadow: inset 0 0 10px rgba(0, 255, 136, 0.5);
+            border-radius: 8px;
         }
 
-        .cell.invalid {
+        .cell.preview-invalid {
             background: rgba(255, 0, 0, 0.3) !important;
-            border-color: rgba(255, 0, 0, 0.5);
+            border: 2px solid rgba(255, 0, 0, 0.8) !important;
+            transform: scale(0.92);
+            box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.5);
         }
 
-        /* Temizlenme Animasyonu */
-        .cell.clearing {
-            animation: clearCell 0.4s ease-out forwards;
-        }
+        /* V2.0: Güçlü Temizlenme Animasyonları */
+        .cell.clearing { animation: clearCell 0.4s ease-out forwards; z-index: 10; }
+        .cell.mega-clearing { animation: megaClearCell 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; z-index: 10; }
 
         /* =========================================
-           5. BLOK HAVUZU (Tray)
+           5. BLOK HAVUZU (Tray) - Click-to-Place Desteği
            ========================================= */
         .tray {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 120px;
-            margin-top: 20px;
+            height: clamp(100px, 15vh, 140px);
+            margin-top: clamp(15px, 3vh, 25px);
             padding: 10px;
             background: rgba(255, 255, 255, 0.02);
-            border-radius: 16px;
+            border-radius: 20px;
             border: 1px solid var(--glass-border);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
             
             opacity: 0;
             transform: translateY(20px);
-            transition: all 0.5s ease 0.2s;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
         }
 
-        .game-active .tray {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .game-active .tray { opacity: 1; transform: translateY(0); }
 
         .tray-slot {
-            width: 30%;
+            width: 32%;
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
         }
 
-        /* Sürüklenebilir Şekiller */
         .shape {
             display: grid;
-            gap: 2px;
+            gap: clamp(1px, 0.5vw, 3px);
             cursor: grab;
-            touch-action: none; /* Dokunmatik kaydırmayı engelle */
-            transition: transform 0.2s, opacity 0.2s;
+            touch-action: none; 
+            transition: transform var(--transition-bounce), filter 0.2s, opacity 0.2s;
+            position: relative;
         }
 
         .shape:active { cursor: grabbing; }
 
+        .shape:hover { transform: scale(1.05); filter: brightness(1.2); }
+
+        /* V2.0: Tıklanarak Seçilmiş Blok Vurgusu */
+        .shape.selected {
+            transform: scale(1.15) translateY(-10px);
+            filter: drop-shadow(0 10px 15px rgba(0, 225, 255, 0.5));
+            z-index: 5;
+            animation: floatSelected 2s infinite ease-in-out;
+        }
+        .shape.selected .cell.filled {
+            box-shadow: 0 0 15px rgba(255,255,255,0.5), inset 0 0 10px rgba(255,255,255,0.5);
+            border-color: #fff;
+        }
+
+        @keyframes floatSelected {
+            0%, 100% { transform: scale(1.15) translateY(-10px); }
+            50% { transform: scale(1.15) translateY(-15px); }
+        }
+
+        /* V2.0: Sürüklenen Element Çok Daha Premium */
         .shape.dragging {
             position: fixed;
             z-index: 1000;
-            pointer-events: none; /* Altındaki grid'i algılayabilmek için kritik */
-            transform: scale(1.2); /* Sürüklerken büyüt */
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
-            opacity: 0.9;
-            transition: none; /* Sürüklerken gecikme olmasın */
+            pointer-events: none;
+            transform: scale(1.3) !important; /* Daha büyük ve net */
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(255,255,255,0.2));
+            opacity: 0.95;
+            transition: none; 
         }
 
         /* =========================================
@@ -366,53 +476,184 @@
            ========================================= */
         @keyframes scorePulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+            50% { transform: scale(1.3); text-shadow: 0 0 20px var(--accent-cyan); }
             100% { transform: scale(1); }
         }
 
         @keyframes clearCell {
-            0% { transform: scale(1); opacity: 1; filter: brightness(2); }
-            50% { transform: scale(0.5); opacity: 0.8; }
+            0% { transform: scale(1); opacity: 1; filter: brightness(2) contrast(2); border-radius: 50%; }
+            50% { transform: scale(0.4); opacity: 0.9; box-shadow: 0 0 20px #fff; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        @keyframes megaClearCell {
+            0% { transform: scale(1); opacity: 1; filter: brightness(3); background: #fff; }
+            40% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 30px var(--accent-cyan); border-radius: 10px;}
             100% { transform: scale(0); opacity: 0; }
         }
 
         @keyframes comboPop {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+            30% { transform: translate(-50%, -50%) scale(1); }
             80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
             100% { opacity: 0; transform: translate(-50%, -100%) scale(0.8); }
         }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+            20% { transform: translateX(-8px) rotate(-1deg); }
+            40% { transform: translateX(8px) rotate(1deg); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
         }
-        .shake-effect { animation: shake 0.3s ease; }
+        .shake-effect { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; border-color: rgba(255,0,0,0.5) !important; box-shadow: 0 0 20px rgba(255,0,0,0.3) !important; }
 
-        /* Yüzen Skor Efekti */
         .floating-score {
             position: absolute;
-            color: var(--accent-cyan);
-            font-weight: bold;
-            font-size: 1.5rem;
+            font-weight: 800;
+            font-size: 2rem;
             pointer-events: none;
             z-index: 200;
-            animation: floatUp 1s ease-out forwards;
-            text-shadow: 0 0 10px rgba(0, 225, 255, 0.8);
+            animation: floatUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
         }
         @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-50px) scale(1.5); }
+            0% { opacity: 0; transform: translateY(10px) scale(0.8); }
+            20% { opacity: 1; transform: translateY(0) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-60px) scale(1); }
         }
-        
-        /* Responsive İyileştirmeler */
+
+        /* V2.0: Sürpriz Rekor Efekti */
+        .record-glow {
+            animation: recordPulse 1.5s infinite alternate;
+            color: var(--accent-gold);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+        @keyframes recordPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        /* Responsive */
         @media (max-width: 380px) {
-            .tray { height: 100px; }
             .logo-text { font-size: 2.2rem; }
+            .score-value { font-size: 1.2rem; }
+            .tray { height: 90px; }
             .board-container { padding: 4px; }
             .grid { gap: 2px; }
         }
+        @media (max-height: 700px) {
+            #app { padding: 5px; }
+            .logo-sub { margin-bottom: 20px; }
+            .score-hud-container { margin-bottom: 10px; }
+            .board-container { margin-bottom: 5px; }
+            .tray { margin-top: 5px; height: 90px; }
+        }
+
+        /* ===== 2.1 CSS SYSTEM START ===== */
+        
+        /* Level Highlight (Yeni UI Eklemesi) */
+        .highlight-level {
+            border-color: rgba(255, 215, 0, 0.4);
+            background: linear-gradient(180deg, rgba(255, 215, 0, 0.05), transparent);
+        }
+
+        /* Smart Preview Hint (Seçili bloğun sığabileceği yerler) */
+        .smart-hint {
+            position: relative;
+        }
+        .smart-hint::after {
+            content: '';
+            position: absolute;
+            top: 30%; left: 30%; right: 30%; bottom: 30%;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: pulseHint 1.5s infinite;
+        }
+        @keyframes pulseHint {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* Last Move Highlight (Son yerleştirilen blok) */
+        .last-move {
+            animation: flashMove 1s forwards;
+        }
+        @keyframes flashMove {
+            0% { filter: brightness(2) drop-shadow(0 0 10px #fff); }
+            100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+        }
+
+        /* Mission Popup */
+        .mission-popup {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 12, 20, 0.95);
+            border: 1px solid var(--accent-cyan);
+            box-shadow: 0 10px 30px rgba(0, 225, 255, 0.3);
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 20px;
+            z-index: 1000;
+            text-align: center;
+            font-weight: 700;
+            transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+        }
+        .mission-popup.show {
+            top: 20px;
+        }
+        .mission-popup small {
+            color: var(--accent-green);
+            font-size: 0.9rem;
+            display: block;
+            margin-top: 5px;
+        }
+
+        /* Background Pulse Overlay */
+        .bg-pulse-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1;
+            transition: opacity 0.5s ease-out;
+        }
+        .bg-pulse-overlay.active-pulse {
+            opacity: 1;
+            transition: opacity 0.05s ease-in;
+        }
+
+        /* Mobil Responsive (Spacings) Fix */
+        @media (max-width: 480px) {
+            .score-hud-container {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: clamp(2px, 1.5vw, 6px);
+            }
+            .score-box {
+                padding: 8px 4px;
+            }
+            .score-label {
+                font-size: 0.65rem;
+                letter-spacing: 0px;
+            }
+            .score-value {
+                font-size: clamp(1.1rem, 4vw, 1.4rem);
+            }
+            #app {
+                padding-top: max(env(safe-area-inset-top), 10px);
+                padding-bottom: max(env(safe-area-inset-bottom), 10px);
+            }
+        }
+        /* ===== 2.1 CSS SYSTEM END ===== */
+
     </style>
 </head>
 <body>
@@ -422,46 +663,76 @@
     <div class="bg-noise"></div>
 
     <div id="app">
+        
         <div id="screen-menu" class="screen active">
+            <img src="assets/logo.png" alt="" class="brand-logo-img" onerror="this.style.display='none'">
             <h1 class="logo-text">metavis1on</h1>
-            <h2 class="logo-sub">GRID</h2>
+            <h2 class="logo-sub">GRID 2.1.0</h2>
             <div class="glass-panel">
-                <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 0.95rem;">
-                    Blokları yerleştir, satır ve sütunları temizle. Hamlen kalmayana kadar hayatta kal.
+                <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 1.05rem; line-height: 1.6;">
+                    Sıradanlığı bırak. Satırları temizle, komboları yakala, sistemin sınırlarını zorla.
                 </p>
-                <button class="btn" onclick="startGame()">Oyuna Başla</button>
+                <button class="btn" onclick="startGame()">Sisteme Gir</button>
                 <button class="btn btn-outline" onclick="showHowToPlay()">Nasıl Oynanır?</button>
             </div>
         </div>
 
         <div id="screen-howto" class="screen">
-            <h2 class="logo-sub" style="margin-bottom: 10px;">Nasıl Oynanır?</h2>
+            <h2 class="logo-sub" style="margin-bottom: 15px;">Kurallar</h2>
             <div class="glass-panel" style="text-align: left;">
-                <ul style="color: var(--text-muted); padding-left: 20px; line-height: 1.8; margin-bottom: 20px;">
-                    <li>Alttaki 3 bloğu sürükleyip 8x8 tahtaya bırak.</li>
-                    <li>Dikey veya yatay tam bir çizgi oluşturduğunda o çizgi patlar ve alan açılır.</li>
-                    <li>Aynı anda birden fazla çizgi temizlemek KOMBO puanı verir.</li>
-                    <li>Alttaki bloklardan <strong>hiçbiri</strong> tahtaya sığmazsa oyun biter!</li>
+                <ul style="color: var(--text-muted); padding-left: 20px; line-height: 1.8; margin-bottom: 25px; font-size: 1.05rem;">
+                    <li>Alttaki blokları sürükle <strong>VEYA</strong> tıklayıp seçerek tahtaya yerleştir.</li>
+                    <li>Tamamlanan satır ve sütunlar patlar, alan açılır.</li>
+                    <li>Arka arkaya temizlik yapmak <strong style="color:var(--accent-pink)">SERİ (STREAK)</strong> puanını katlar.</li>
+                    <li>Aynı anda birden fazla çizgi temizlemek <strong style="color:var(--accent-cyan)">MEGA KOMBO</strong> yaratır.</li>
+                    <li>Eldeki hiçbir blok tahtaya sığmazsa sistem çöker!</li>
                 </ul>
                 <button class="btn" onclick="hideHowToPlay()">Anladım</button>
             </div>
         </div>
 
-        <div class="game-header">
-            <div class="score-box">
+        <div id="screen-pause" class="screen">
+            <h1 class="logo-text" style="font-size: 3rem;">DURAKLATILDI</h1>
+            <div class="glass-panel" style="margin-top: 20px;">
+                <button class="btn" onclick="resumeGame()">Devam Et</button>
+                <button class="btn btn-danger" onclick="startGame()">Yeniden Başlat</button>
+                <button class="btn btn-outline" onclick="showMenu()">Ana Menüye Dön</button>
+            </div>
+        </div>
+
+        <div class="game-top-bar">
+            <div class="mini-logo">
+                <img src="assets/logo.png" alt="" onerror="this.style.display='none'">
+                metavis1on
+            </div>
+            <div class="top-actions">
+                <button class="icon-btn" onclick="toggleSound()" id="btn-sound">🔊</button>
+                <button class="icon-btn" onclick="pauseGame()">⏸</button>
+            </div>
+        </div>
+
+        <div class="score-hud-container">
+            <div class="score-box highlight">
                 <span class="score-label">Skor</span>
                 <span id="ui-score" class="score-value">0</span>
             </div>
-            <div class="score-box header-right">
-                <span class="score-label">En Yüksek</span>
-                <span id="ui-highscore" class="score-value">0</span>
+            <div class="score-box">
+                <span class="score-label">Seri</span>
+                <span id="ui-streak" class="score-value streak-value">x1</span>
             </div>
-        </div>
+            <div class="score-box">
+                <span class="score-label">En Yüksek</span>
+                <span id="ui-highscore" class="score-value" style="color: var(--text-muted);">0</span>
+            </div>
+            </div>
 
         <div class="board-container">
             <div id="board" class="grid">
                 </div>
-            <div id="combo-text" class="combo-display">KOMBO x2!</div>
+            <div id="combo-text" class="combo-display">
+                KOMBO!
+                <span id="combo-sub">x2 Çizgi</span>
+            </div>
         </div>
 
         <div class="tray" id="tray">
@@ -471,17 +742,24 @@
         </div>
 
         <div id="screen-gameover" class="screen">
-            <h1 class="logo-text" style="color: var(--accent-pink);">SİSTEM ÇÖKTÜ</h1>
+            <h1 class="logo-text" style="color: var(--accent-red); text-shadow: 0 0 30px rgba(255,0,0,0.5);">SİSTEM ÇÖKTÜ</h1>
             <h2 class="logo-sub">Hamle Kalmadı</h2>
             <div class="glass-panel">
-                <div style="margin-bottom: 20px;">
-                    <span class="score-label">Son Skor</span>
-                    <div id="go-score" class="score-value" style="font-size: 3rem; color: var(--accent-cyan);">0</div>
+                <div id="new-record-badge" class="record-glow" style="display:none;">
+                    🏆 YENİ SİSTEM REKORU 🏆
                 </div>
-                <div id="new-record-badge" style="display:none; color: var(--accent-green); font-weight: bold; margin-bottom: 15px; animation: scorePulse 1s infinite;">
-                    🎉 YENİ REKOR! 🎉
+                <div style="margin-bottom: 30px; display: flex; justify-content: space-around;">
+                    <div>
+                        <span class="score-label">Son Skor</span>
+                        <div id="go-score" class="score-value" style="font-size: 2.5rem; color: var(--accent-cyan);">0</div>
+                    </div>
+                    <div>
+                        <span class="score-label">Max Seri</span>
+                        <div id="go-streak" class="score-value" style="font-size: 2.5rem; color: var(--accent-orange);">x1</div>
+                    </div>
                 </div>
-                <button class="btn" onclick="startGame()">Tekrar Oyna</button>
+                
+                <button class="btn" onclick="startGame()">Sistemi Yeniden Başlat</button>
                 <button class="btn btn-outline" onclick="showMenu()">Ana Menü</button>
             </div>
         </div>
@@ -489,68 +767,134 @@
 
     <script>
         /* =========================================
-           METAVIS1ON GRID - CORE ENGINE
-           Tüm mantık, durum yönetimi ve DOM manipülasyonu
+           METAVIS1ON GRID 2.0 - CORE ENGINE
            ========================================= */
 
-        // --- SABİTLER VE AYARLAR ---
+        // --- SABİTLER VE AYARLAR (KORUNDU) ---
         const GRID_SIZE = 8;
-        const CELL_SIZE = 40; // Mobilde CSS ile esneyecek, bu hesaplama için yaklaşık referans
         
-        // Blok şekil tanımları (0: boş, 1: dolu). Her şeklin bir renk ID'si var.
         const SHAPES = [
-            // 1x1
-            { matrix: [[1]], colorId: 1 },
-            // 2x1 & 1x2
-            { matrix: [[1,1]], colorId: 2 },
-            { matrix: [[1],[1]], colorId: 2 },
-            // 3x1 & 1x3
-            { matrix: [[1,1,1]], colorId: 3 },
-            { matrix: [[1],[1],[1]], colorId: 3 },
-            // 4x1 & 1x4
-            { matrix: [[1,1,1,1]], colorId: 1 },
-            { matrix: [[1],[1],[1],[1]], colorId: 1 },
-            // 2x2 Kare
-            { matrix: [[1,1],[1,1]], colorId: 4 },
-            // 3x3 Kare (Nadirdir, zorluk katar)
-            { matrix: [[1,1,1],[1,1,1],[1,1,1]], colorId: 4 },
-            // L Şekilleri (Küçük)
-            { matrix: [[1,0],[1,1]], colorId: 5 },
-            { matrix: [[0,1],[1,1]], colorId: 5 },
-            { matrix: [[1,1],[1,0]], colorId: 5 },
-            { matrix: [[1,1],[0,1]], colorId: 5 },
-            // L Şekilleri (Büyük 3x3)
-            { matrix: [[1,0,0],[1,0,0],[1,1,1]], colorId: 2 },
-            { matrix: [[0,0,1],[0,0,1],[1,1,1]], colorId: 2 },
-            { matrix: [[1,1,1],[1,0,0],[1,0,0]], colorId: 2 },
-            { matrix: [[1,1,1],[0,0,1],[0,0,1]], colorId: 2 },
-            // T Şekli
-            { matrix: [[1,1,1],[0,1,0]], colorId: 3 },
-            { matrix: [[0,1,0],[1,1,1]], colorId: 3 },
-            { matrix: [[1,0],[1,1],[1,0]], colorId: 3 },
-            { matrix: [[0,1],[1,1],[0,1]], colorId: 3 }
+            { matrix: [[1]], colorId: 1 }, // 0
+            { matrix: [[1,1]], colorId: 2 }, // 1
+            { matrix: [[1],[1]], colorId: 2 }, // 2
+            { matrix: [[1,1,1]], colorId: 3 }, // 3
+            { matrix: [[1],[1],[1]], colorId: 3 }, // 4
+            { matrix: [[1,1,1,1]], colorId: 1 }, // 5
+            { matrix: [[1],[1],[1],[1]], colorId: 1 }, // 6
+            { matrix: [[1,1],[1,1]], colorId: 4 }, // 7
+            { matrix: [[1,1,1],[1,1,1],[1,1,1]], colorId: 4 }, // 8 (Zor kare)
+            { matrix: [[1,0],[1,1]], colorId: 5 }, // 9
+            { matrix: [[0,1],[1,1]], colorId: 5 }, // 10
+            { matrix: [[1,1],[1,0]], colorId: 5 }, // 11
+            { matrix: [[1,1],[0,1]], colorId: 5 }, // 12
+            { matrix: [[1,0,0],[1,0,0],[1,1,1]], colorId: 2 }, // 13
+            { matrix: [[0,0,1],[0,0,1],[1,1,1]], colorId: 2 }, // 14
+            { matrix: [[1,1,1],[1,0,0],[1,0,0]], colorId: 2 }, // 15
+            { matrix: [[1,1,1],[0,0,1],[0,0,1]], colorId: 2 }, // 16
+            { matrix: [[1,1,1],[0,1,0]], colorId: 3 }, // 17
+            { matrix: [[0,1,0],[1,1,1]], colorId: 3 }, // 18
+            { matrix: [[1,0],[1,1],[1,0]], colorId: 3 }, // 19
+            { matrix: [[0,1],[1,1],[0,1]], colorId: 3 }  // 20
         ];
 
-        // --- OYUN DURUMU (STATE) ---
-        let board = []; // 8x8 array. 0 = boş, sayı = renk ID'si
+        // --- OYUN DURUMU (STATE) (KORUNDU VE EKLENDİ) ---
+        let board = []; 
         let score = 0;
         let highScore = localStorage.getItem('mv_grid_highscore') || 0;
-        let currentTrayBlocks = [null, null, null]; // Tepsideki 3 blok verisi
+        let currentTrayBlocks = [null, null, null]; 
         
-        // Sürükleme State'i
-        let isDragging = false;
-        let draggedBlockData = null; // { matrix, colorId, slotIndex }
-        let draggedEl = null; // Sürüklenen DOM elementi
-        let dragOffset = { x: 0, y: 0 };
-        let currentDropTarget = null; // { row, col } (Grid üzerindeki sol üst köşe)
+        // V2.0 Yeni State'ler
+        let turnCount = 0; // Zorluk ayarı için
+        let currentStreak = 1;
+        let maxStreak = 1;
+        let isPaused = false;
+        
+        // V2.0 Seç/Yerleştir (Click-to-Place) State'i
+        let clickSelectedData = null; // { matrix, colorId, slotIndex, el }
 
-        // --- DOM ELEMENTLERİ ---
+        // Sürükleme State'i (KORUNDU)
+        let isDragging = false;
+        let draggedBlockData = null; 
+        let draggedEl = null; 
+        let dragOffset = { x: 0, y: 0 };
+        let currentDropTarget = null; 
+
+        // --- V2.0 SYNTH SES MOTORU (Dış dosyasız premium ses) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let soundEnabled = true;
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('btn-sound').innerText = soundEnabled ? '🔊' : '🔇';
+        }
+
+        function playSynth(type) {
+            if (!soundEnabled || audioCtx.state === 'suspended') return;
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+            
+            switch(type) {
+                case 'pickup':
+                case 'select':
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+                    gainNode.gain.setValueAtTime(0.3, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now); osc.stop(now + 0.1);
+                    break;
+                case 'drop':
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+                    gainNode.gain.setValueAtTime(0.5, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now); osc.stop(now + 0.1);
+                    break;
+                case 'clear':
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
+                    gainNode.gain.setValueAtTime(0.2, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now); osc.stop(now + 0.3);
+                    break;
+                case 'mega': // Combo temizlik
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.linearRampToValueAtTime(1200, now + 0.2);
+                    gainNode.gain.setValueAtTime(0.3, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                    osc.start(now); osc.stop(now + 0.5);
+                    break;
+                case 'error':
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.linearRampToValueAtTime(100, now + 0.2);
+                    gainNode.gain.setValueAtTime(0.3, now);
+                    gainNode.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now); osc.stop(now + 0.2);
+                    break;
+            }
+        }
+
+        // Kullanıcı ilk tıkladığında AudioContext'i başlat (Tarayıcı politikası)
+        document.body.addEventListener('click', () => {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+        }, {once:true});
+
+        // --- DOM ELEMENTLERİ (KORUNDU) ---
         const uiBoard = document.getElementById('board');
         const uiScore = document.getElementById('ui-score');
         const uiHighScore = document.getElementById('ui-highscore');
+        const uiStreak = document.getElementById('ui-streak');
         const appContainer = document.getElementById('app');
         
-        // --- BAŞLATMA ---
+        // --- BAŞLATMA VE EKRANLAR (KORUNDU VE GÜÇLENDİRİLDİ) ---
         function init() {
             uiHighScore.innerText = highScore;
             createBoardDOM();
@@ -568,12 +912,17 @@
                     cell.dataset.row = r;
                     cell.dataset.col = c;
                     cell.id = `cell-${r}-${c}`;
+                    
+                    // V2.0: Click-to-place için Board Cell Event Listener
+                    cell.addEventListener('click', () => handleBoardClick(r, c));
+                    // Mouse gezinirken önizleme (Sadece tıklayarak seçtiysek)
+                    cell.addEventListener('mouseenter', () => handleBoardHover(r, c));
+                    
                     uiBoard.appendChild(cell);
                 }
             }
         }
 
-        // --- EKRAN YÖNETİMİ ---
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             if(id) document.getElementById(id).classList.add('active');
@@ -581,28 +930,47 @@
 
         function showMenu() {
             appContainer.classList.remove('game-active');
+            isPaused = false;
             showScreen('screen-menu');
         }
 
         function showHowToPlay() { showScreen('screen-howto'); }
         function hideHowToPlay() { showScreen('screen-menu'); }
 
+        function pauseGame() {
+            isPaused = true;
+            showScreen('screen-pause');
+        }
+        function resumeGame() {
+            isPaused = false;
+            showScreen(null);
+        }
+
         function startGame() {
-            showScreen(null); // Menüleri gizle
+            showScreen(null); 
             appContainer.classList.add('game-active');
+            isPaused = false;
             
             // State'i sıfırla
             score = 0;
+            turnCount = 0;
+            currentStreak = 1;
+            maxStreak = 1;
+            clearClickSelection();
+            
             updateScoreUI();
+            updateStreakUI();
             createBoardDOM();
             
-            // İlk blokları ver
+            // Tüm tepsi slotlarını zorla boşalt ve yenile
+            currentTrayBlocks = [null, null, null];
             fillTray();
         }
 
         function gameOver() {
             appContainer.classList.remove('game-active');
             document.getElementById('go-score').innerText = score;
+            document.getElementById('go-streak').innerText = `x${maxStreak}`;
             
             const badge = document.getElementById('new-record-badge');
             if (score > highScore) {
@@ -610,19 +978,36 @@
                 localStorage.setItem('mv_grid_highscore', highScore);
                 uiHighScore.innerText = highScore;
                 badge.style.display = 'block';
+                playSynth('mega'); // Kutlama sesi
             } else {
                 badge.style.display = 'none';
+                playSynth('error'); // Çöküş sesi
             }
             
-            setTimeout(() => {
-                showScreen('screen-gameover');
-            }, 500);
+            setTimeout(() => { showScreen('screen-gameover'); }, 600);
         }
 
-        // --- BLOK ÜRETİMİ ---
+        // --- V2.0 AKILLI BLOK ÜRETİMİ (Ağırlıklı RNG) ---
         function getRandomShape() {
+            turnCount++;
+            let maxIndex = SHAPES.length;
+            
+            // Oyunun ilk 5 turunda çok büyük zorlayıcı kareler (index 8) veya dev L'ler gelmesin
+            if (turnCount < 5) {
+                // Sadece basit 1x1, 2x1, 3x1, küçük kare, küçük L
+                const easyShapes = [0,1,2,3,4,7,9,10,11,12];
+                const r = Math.floor(Math.random() * easyShapes.length);
+                return JSON.parse(JSON.stringify(SHAPES[easyShapes[r]]));
+            } else if (turnCount < 15) {
+                // Orta zorluk (3x3 kare hariç hepsi)
+                let r = Math.floor(Math.random() * SHAPES.length);
+                if(r === 8) r = 0; // 3x3 gelirse 1x1 yap
+                return JSON.parse(JSON.stringify(SHAPES[r]));
+            }
+
+            // Normal oyun (Hepsi gelebilir)
             const r = Math.floor(Math.random() * SHAPES.length);
-            return JSON.parse(JSON.stringify(SHAPES[r])); // Deep copy
+            return JSON.parse(JSON.stringify(SHAPES[r])); 
         }
 
         function fillTray() {
@@ -631,7 +1016,6 @@
                 if(!currentTrayBlocks[i]) emptyCount++;
             }
             
-            // Eğer hepsi boşsa yeni 3'lü üret
             if(emptyCount === 3) {
                 for (let i = 0; i < 3; i++) {
                     const shape = getRandomShape();
@@ -649,13 +1033,13 @@
 
             const shapeEl = document.createElement('div');
             shapeEl.className = 'shape';
+            shapeEl.dataset.slot = slotIndex;
             
-            // Şeklin matrisine göre grid ayarla
             const rows = shapeData.matrix.length;
             const cols = shapeData.matrix[0].length;
             
-            // Tepsisi küçük göstermek için boyut hesabı
-            const baseSize = window.innerWidth < 400 ? 15 : 22; 
+            // Dinamik boyutlandırma korundu
+            const baseSize = window.innerWidth < 400 ? 14 : 20; 
             
             shapeEl.style.gridTemplateColumns = `repeat(${cols}, ${baseSize}px)`;
             shapeEl.style.gridTemplateRows = `repeat(${rows}, ${baseSize}px)`;
@@ -663,8 +1047,7 @@
             for (let r = 0; r < rows; r++) {
                 for (let c = 0; c < cols; c++) {
                     const block = document.createElement('div');
-                    block.style.width = '100%';
-                    block.style.height = '100%';
+                    block.style.width = '100%'; block.style.height = '100%';
                     block.style.borderRadius = '4px';
                     if (shapeData.matrix[r][c] === 1) {
                         block.className = `cell filled color-${shapeData.colorId}`;
@@ -675,58 +1058,56 @@
                 }
             }
 
-            // Event Listeners (Mouse & Touch)
-            shapeEl.addEventListener('mousedown', (e) => handleDragStart(e, slotIndex, shapeData, shapeEl));
-            shapeEl.addEventListener('touchstart', (e) => handleDragStart(e, slotIndex, shapeData, shapeEl), {passive: false});
+            // V2.0 Unified Events: Hem Click-to-Place hem Drag & Drop
+            // Touch için pasif:false şart, mouse için standart.
+            shapeEl.addEventListener('mousedown', (e) => handleBlockInteraction(e, slotIndex, shapeData, shapeEl));
+            shapeEl.addEventListener('touchstart', (e) => handleBlockInteraction(e, slotIndex, shapeData, shapeEl), {passive: false});
 
             slot.appendChild(shapeEl);
         }
 
-        // --- SÜRÜKLE BIRAK (DRAG & DROP) MANTIĞI ---
-        function handleDragStart(e, slotIndex, shapeData, shapeEl) {
+        // --- V2.0 ETKİLEŞİM YÖNETİCİSİ (Sürükle veya Seç) ---
+        let touchTimer = null;
+        let startPos = {x:0, y:0};
+
+        function handleBlockInteraction(e, slotIndex, shapeData, shapeEl) {
+            if(isPaused) return;
             if (e.type === 'touchstart') e.preventDefault();
             
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            startPos = {x: clientX, y: clientY};
+
+            // Eğer zaten başka bir şey seçiliyse ve buna tıkladıysak, seçimi değiştir
+            if(clickSelectedData && clickSelectedData.slotIndex !== slotIndex) {
+                clearClickSelection();
+            }
+
+            // Seçim Toggle Mantığı (Eğer tıklanan zaten seçiliyse iptal et)
+            if(clickSelectedData && clickSelectedData.slotIndex === slotIndex) {
+                clearClickSelection();
+                playSynth('error');
+                return;
+            }
+
+            // Sürüklemeyi başlatmak için hazırlık
             isDragging = true;
             draggedBlockData = { ...shapeData, slotIndex };
             draggedEl = shapeEl;
 
-            // Elementin orijinal pos/boyutlarını al
             const rect = shapeEl.getBoundingClientRect();
+            const yOffsetTouch = e.type === 'touchstart' ? -80 : 0; 
             
-            // Fare/Parmak pozisyonu
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-            // Offset hesabı: Dokunmatik cihazlarda parmağın altında kalmaması için şekli biraz yukarı kaydır
-            const isTouch = e.type === 'touchstart';
-            const yOffsetTouch = isTouch ? -60 : 0; // Parmağın 60px üstünde görünsün
-            
-            // Fare elementin neresinden tuttu?
             dragOffset.x = clientX - rect.left;
             dragOffset.y = clientY - rect.top - yOffsetTouch;
 
-            // Şekli body'e taşı (fixed yapmak için)
-            document.body.appendChild(draggedEl);
-            draggedEl.classList.add('dragging');
-            
-            // Tepsisideki hücre boyutunu oyun tahtasındaki boyuta yakınlaştır
-            const boardRect = uiBoard.getBoundingClientRect();
-            const boardCellSize = (boardRect.width - (GRID_SIZE-1)*4) / GRID_SIZE; // gap:4px hesabı
-            
-            const cols = shapeData.matrix[0].length;
-            const rows = shapeData.matrix.length;
-            draggedEl.style.gridTemplateColumns = `repeat(${cols}, ${boardCellSize}px)`;
-            draggedEl.style.gridTemplateRows = `repeat(${rows}, ${boardCellSize}px)`;
-
-            moveDraggedElement(clientX, clientY);
-
-            // Global eventleri dinle
             document.addEventListener('mousemove', handleDragMove);
             document.addEventListener('touchmove', handleDragMove, {passive: false});
             document.addEventListener('mouseup', handleDragEnd);
             document.addEventListener('touchend', handleDragEnd);
         }
 
+        // --- SÜRÜKLE BIRAK (KORUNDU VE CİLALANDI) ---
         function handleDragMove(e) {
             if (!isDragging || !draggedEl) return;
             if (e.type === 'touchmove') e.preventDefault();
@@ -734,45 +1115,55 @@
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
-            moveDraggedElement(clientX, clientY);
+            // Hareket toleransı (Eğer çok az hareket ettiyse tıklama sayılabilir)
+            const dist = Math.hypot(clientX - startPos.x, clientY - startPos.y);
+            if(dist > 5 && !draggedEl.classList.contains('dragging')) {
+                // Gerçek sürükleme başladı
+                startActualDrag();
+                playSynth('pickup');
+            }
+
+            if(draggedEl.classList.contains('dragging')) {
+                moveDraggedElement(clientX, clientY);
+                calculateDropTarget(clientX, clientY);
+            }
+        }
+
+        function startActualDrag() {
+            clearClickSelection(); // Tıklama seçimi varsa temizle
+            document.body.appendChild(draggedEl);
+            draggedEl.classList.add('dragging');
             
-            // Grid üzerindeki yeri hesapla
-            calculateDropTarget(clientX, clientY);
+            const boardRect = uiBoard.getBoundingClientRect();
+            const boardCellSize = (boardRect.width - (GRID_SIZE-1)*4) / GRID_SIZE; 
+            
+            const cols = draggedBlockData.matrix[0].length;
+            const rows = draggedBlockData.matrix.length;
+            draggedEl.style.gridTemplateColumns = `repeat(${cols}, ${boardCellSize}px)`;
+            draggedEl.style.gridTemplateRows = `repeat(${rows}, ${boardCellSize}px)`;
         }
 
         function moveDraggedElement(x, y) {
-            // Fare pozisyonundan offseti çıkararak elementin sol üst köşesini bul
-            const posX = x - dragOffset.x;
-            const posY = y - dragOffset.y;
-            draggedEl.style.left = `${posX}px`;
-            draggedEl.style.top = `${posY}px`;
+            draggedEl.style.left = `${x - dragOffset.x}px`;
+            draggedEl.style.top = `${y - dragOffset.y}px`;
         }
 
         function calculateDropTarget(x, y) {
             clearPreviews();
             
-            // Sürüklenen elementin merkez/sol üst pozisyonuna göre board üzerinde element bul
-            // draggedEl pointer-events: none olduğu için altındaki div.cell bulunur.
-            
-            // Daha isabetli yerleşim için elementin kendi bounding kutusunun sol üst bloğunun merkezini bulalım
             const rect = draggedEl.getBoundingClientRect();
             const cols = draggedBlockData.matrix[0].length;
             const cellWidth = rect.width / cols;
             
-            // Şeklin matrisinde ilk dolu bloğu bul (Genelde [0][0]'dır ama boşluklu L şekillerinde değişir)
-            let firstFilledCol = 0;
-            let firstFilledRow = 0;
+            let firstFilledCol = 0, firstFilledRow = 0;
             outer: for(let r=0; r<draggedBlockData.matrix.length; r++){
                 for(let c=0; c<draggedBlockData.matrix[0].length; c++){
                     if(draggedBlockData.matrix[r][c] === 1) {
-                        firstFilledRow = r;
-                        firstFilledCol = c;
-                        break outer;
+                        firstFilledRow = r; firstFilledCol = c; break outer;
                     }
                 }
             }
 
-            // Bu dolu bloğun merkez koordinatını hesapla
             const testX = rect.left + (firstFilledCol * cellWidth) + (cellWidth / 2);
             const testY = rect.top + (firstFilledRow * cellWidth) + (cellWidth / 2);
 
@@ -783,17 +1174,12 @@
                 return;
             }
 
-            // Hover edilen grid hücresinin koordinatları (Bu, şeklin ilk dolu bloğunun geleceği yer)
             const targetRow = parseInt(elemBelow.dataset.row);
             const targetCol = parseInt(elemBelow.dataset.col);
-
-            // Şeklin matrisinin [0][0] noktası grid'de nereye denk geliyor?
             const startRow = targetRow - firstFilledRow;
             const startCol = targetCol - firstFilledCol;
 
             currentDropTarget = { row: startRow, col: startCol };
-
-            // Geçerli mi kontrol et ve önizleme çiz
             const isValid = checkFit(draggedBlockData.matrix, startRow, startCol);
             drawPreview(draggedBlockData.matrix, startRow, startCol, isValid);
         }
@@ -809,78 +1195,141 @@
 
             clearPreviews();
 
+            // Eğer element "dragging" classı almadıysa, bu bir TIKLAMADIR (Seçim işlemi)
+            if(!draggedEl.classList.contains('dragging')) {
+                setClickSelection(draggedBlockData, draggedEl);
+                draggedEl = null;
+                draggedBlockData = null;
+                return;
+            }
+
+            // Sürükleme bittiğinde yerleştirme kontrolü
             if (currentDropTarget && checkFit(draggedBlockData.matrix, currentDropTarget.row, currentDropTarget.col)) {
-                // Yerleştir!
-                placeBlock(draggedBlockData, currentDropTarget.row, currentDropTarget.col);
-                
-                // DOM elementini sil
-                draggedEl.remove();
-                
-                // Tray'dan veriyi temizle
-                currentTrayBlocks[draggedBlockData.slotIndex] = null;
-                
-                // Puan ver (Blok sayısı kadar)
-                let blockCount = 0;
-                draggedBlockData.matrix.forEach(row => row.forEach(val => blockCount += val));
-                addScore(blockCount);
-
-                // Satır/Sütun kontrolü yap
-                checkLines();
-
-                // Yeni blokları kontrol et
-                fillTray();
+                executePlacement(draggedBlockData, currentDropTarget.row, currentDropTarget.col, draggedEl);
             } else {
-                // Geçersiz yere bırakıldı, geri dön animasyonu (Basitçe silip tray'i yeniden renderla)
+                // Geçersiz Bırakma
                 draggedEl.remove();
                 uiBoard.classList.add('shake-effect');
-                setTimeout(() => uiBoard.classList.remove('shake-effect'), 300);
+                playSynth('error');
+                setTimeout(() => uiBoard.classList.remove('shake-effect'), 400);
                 renderTrayBlock(draggedBlockData.slotIndex, draggedBlockData);
             }
 
             draggedEl = null;
             draggedBlockData = null;
             currentDropTarget = null;
+            uiBoard.onmouseleave = null; // Hover temizliği için
         }
 
-        // --- OYUN MANTIĞI (LOGIC) ---
+        // --- V2.0 SEÇ VE YERLEŞTİR (CLICK-TO-PLACE) MANTIĞI ---
+        function setClickSelection(data, el) {
+            clearClickSelection();
+            clickSelectedData = { ...data, el: el };
+            el.classList.add('selected');
+            playSynth('select');
+        }
 
-        // Şekil grid'e sığıyor mu?
+        function clearClickSelection() {
+            if(clickSelectedData && clickSelectedData.el) {
+                clickSelectedData.el.classList.remove('selected');
+            }
+            clickSelectedData = null;
+            clearPreviews();
+        }
+
+        function handleBoardHover(r, c) {
+            if(!clickSelectedData || isDragging) return;
+            clearPreviews();
+            
+            let firstFilledCol = 0, firstFilledRow = 0;
+            outer: for(let ir=0; ir<clickSelectedData.matrix.length; ir++){
+                for(let ic=0; ic<clickSelectedData.matrix[0].length; ic++){
+                    if(clickSelectedData.matrix[ir][ic] === 1) {
+                        firstFilledRow = ir; firstFilledCol = ic; break outer;
+                    }
+                }
+            }
+            
+            const startRow = r - firstFilledRow;
+            const startCol = c - firstFilledCol;
+            const isValid = checkFit(clickSelectedData.matrix, startRow, startCol);
+            drawPreview(clickSelectedData.matrix, startRow, startCol, isValid);
+        }
+
+        function handleBoardClick(r, c) {
+            if(!clickSelectedData || isDragging) return;
+
+            let firstFilledCol = 0, firstFilledRow = 0;
+            outer: for(let ir=0; ir<clickSelectedData.matrix.length; ir++){
+                for(let ic=0; ic<clickSelectedData.matrix[0].length; ic++){
+                    if(clickSelectedData.matrix[ir][ic] === 1) {
+                        firstFilledRow = ir; firstFilledCol = ic; break outer;
+                    }
+                }
+            }
+            
+            const startRow = r - firstFilledRow;
+            const startCol = c - firstFilledCol;
+
+            if(checkFit(clickSelectedData.matrix, startRow, startCol)) {
+                executePlacement(clickSelectedData, startRow, startCol, clickSelectedData.el);
+                clearClickSelection();
+            } else {
+                uiBoard.classList.add('shake-effect');
+                playSynth('error');
+                setTimeout(() => uiBoard.classList.remove('shake-effect'), 400);
+            }
+        }
+
+        // --- ORTAK YERLEŞTİRME İŞLEMİ (Sürükleme ve Tıklama için) ---
+        function executePlacement(data, startRow, startCol, domEl) {
+            placeBlock(data, startRow, startCol);
+            
+            if(domEl.parentNode.id === "app" || domEl.parentNode === document.body) {
+                domEl.remove(); // Sürüklenen clone
+            } else {
+                domEl.innerHTML = ''; // Tray'deki asıl obje
+            }
+            
+            currentTrayBlocks[data.slotIndex] = null;
+            document.getElementById(`slot-${data.slotIndex}`).innerHTML = '';
+            
+            playSynth('drop');
+
+            // Puan ver
+            let blockCount = 0;
+            data.matrix.forEach(row => row.forEach(val => blockCount += val));
+            addScore(blockCount * currentStreak); // Seriye göre temel puan da katlanır
+
+            checkLines();
+            fillTray();
+        }
+
+        // --- OYUN MANTIĞI (KORUNDU VE GÜÇLENDİRİLDİ) ---
         function checkFit(matrix, startRow, startCol) {
             for (let r = 0; r < matrix.length; r++) {
                 for (let c = 0; c < matrix[0].length; c++) {
                     if (matrix[r][c] === 1) {
                         const boardRow = startRow + r;
                         const boardCol = startCol + c;
-                        
-                        // Tahta dışı
-                        if (boardRow < 0 || boardRow >= GRID_SIZE || boardCol < 0 || boardCol >= GRID_SIZE) {
-                            return false;
-                        }
-                        // Zaten dolu
-                        if (board[boardRow][boardCol] !== 0) {
-                            return false;
-                        }
+                        if (boardRow < 0 || boardRow >= GRID_SIZE || boardCol < 0 || boardCol >= GRID_SIZE) return false;
+                        if (board[boardRow][boardCol] !== 0) return false;
                     }
                 }
             }
             return true;
         }
 
-        // Grid'de önizleme gösterimi
         function drawPreview(matrix, startRow, startCol, isValid) {
             for (let r = 0; r < matrix.length; r++) {
                 for (let c = 0; c < matrix[0].length; c++) {
                     if (matrix[r][c] === 1) {
                         const boardRow = startRow + r;
                         const boardCol = startCol + c;
-                        
                         if (boardRow >= 0 && boardRow < GRID_SIZE && boardCol >= 0 && boardCol < GRID_SIZE) {
                             const cellDOM = document.getElementById(`cell-${boardRow}-${boardCol}`);
-                            if(isValid) {
-                                cellDOM.classList.add('preview');
-                            } else {
-                                cellDOM.classList.add('invalid');
-                            }
+                            // Eski classlar yerine v2 classları
+                            cellDOM.classList.add(isValid ? 'preview-valid' : 'preview-invalid');
                         }
                     }
                 }
@@ -888,13 +1337,11 @@
         }
 
         function clearPreviews() {
-            const cells = document.querySelectorAll('.cell.preview, .cell.invalid');
-            cells.forEach(c => {
-                c.classList.remove('preview', 'invalid');
+            document.querySelectorAll('.preview-valid, .preview-invalid').forEach(c => {
+                c.classList.remove('preview-valid', 'preview-invalid');
             });
         }
 
-        // Tahtaya blok yerleştirme
         function placeBlock(data, startRow, startCol) {
             for (let r = 0; r < data.matrix.length; r++) {
                 for (let c = 0; c < data.matrix[0].length; c++) {
@@ -906,92 +1353,80 @@
             updateBoardVisuals();
         }
 
-        // Satır ve Sütunları Temizleme
         function checkLines() {
             let linesToClear = { rows: [], cols: [] };
 
-            // Satırları kontrol et
             for (let r = 0; r < GRID_SIZE; r++) {
                 let isFull = true;
-                for (let c = 0; c < GRID_SIZE; c++) {
-                    if (board[r][c] === 0) {
-                        isFull = false; break;
-                    }
-                }
+                for (let c = 0; c < GRID_SIZE; c++) if (board[r][c] === 0) { isFull = false; break; }
                 if (isFull) linesToClear.rows.push(r);
             }
 
-            // Sütunları kontrol et
             for (let c = 0; c < GRID_SIZE; c++) {
                 let isFull = true;
-                for (let r = 0; r < GRID_SIZE; r++) {
-                    if (board[r][c] === 0) {
-                        isFull = false; break;
-                    }
-                }
+                for (let r = 0; r < GRID_SIZE; r++) if (board[r][c] === 0) { isFull = false; break; }
                 if (isFull) linesToClear.cols.push(c);
             }
 
             const totalLines = linesToClear.rows.length + linesToClear.cols.length;
             
             if (totalLines > 0) {
-                // Görsel animasyon ekle
+                // V2.0 STREAK (Seri) Sistemi
+                currentStreak++;
+                if(currentStreak > maxStreak) maxStreak = currentStreak;
+                updateStreakUI();
+
+                const animClass = totalLines > 1 ? 'mega-clearing' : 'clearing';
+                playSynth(totalLines > 1 ? 'mega' : 'clear');
+
                 linesToClear.rows.forEach(r => {
-                    for(let c=0; c<GRID_SIZE; c++) document.getElementById(`cell-${r}-${c}`).classList.add('clearing');
+                    for(let c=0; c<GRID_SIZE; c++) document.getElementById(`cell-${r}-${c}`).classList.add(animClass);
                 });
                 linesToClear.cols.forEach(c => {
-                    for(let r=0; r<GRID_SIZE; r++) document.getElementById(`cell-${r}-${c}`).classList.add('clearing');
+                    for(let r=0; r<GRID_SIZE; r++) document.getElementById(`cell-${r}-${c}`).classList.add(animClass);
                 });
 
-                // Puanı hesapla (1 satır = 10 puan, kombo katlayıcı)
-                const basePoints = totalLines * 10;
-                const comboMultiplier = totalLines; // 2 çizgi = 20 * 2 = 40p vs.
-                const earnedPoints = basePoints * comboMultiplier;
+                // Puanı hesapla (V2.0: Çoklu çizgi ve seri çarpımı)
+                const basePoints = totalLines * 20;
+                const earnedPoints = basePoints * totalLines * currentStreak;
                 
                 addScore(earnedPoints);
                 showFloatingText(`+${earnedPoints}`, true);
 
                 if(totalLines > 1) {
-                    showComboText(totalLines);
+                    showComboText(totalLines, currentStreak);
+                    uiBoard.classList.add('shake-effect'); // Mega clearde ekran sarsılır
+                    setTimeout(() => uiBoard.classList.remove('shake-effect'), 400);
                 }
 
-                // Animasyon bitince Array'i temizle ve DOM'u güncelle
                 setTimeout(() => {
-                    linesToClear.rows.forEach(r => {
-                        for(let c=0; c<GRID_SIZE; c++) board[r][c] = 0;
-                    });
-                    linesToClear.cols.forEach(c => {
-                        for(let r=0; r<GRID_SIZE; r++) board[r][c] = 0;
-                    });
+                    linesToClear.rows.forEach(r => { for(let c=0; c<GRID_SIZE; c++) board[r][c] = 0; });
+                    linesToClear.cols.forEach(c => { for(let r=0; r<GRID_SIZE; r++) board[r][c] = 0; });
                     
-                    document.querySelectorAll('.clearing').forEach(el => el.classList.remove('clearing'));
+                    document.querySelectorAll('.clearing, .mega-clearing').forEach(el => el.classList.remove('clearing', 'mega-clearing'));
                     updateBoardVisuals();
-                    
-                    // Temizlemeden sonra yer açıldığı için game over durumu iptal olabilir, tekrar kontrol et
                     checkGameOverStatus();
-                }, 400); // CSS animasyonu süresi ile uyumlu
+                }, totalLines > 1 ? 500 : 400); 
             } else {
+                // Çizgi temizlenmediyse seri sıfırlanır
+                currentStreak = 1;
+                updateStreakUI();
                 checkGameOverStatus();
             }
         }
 
-        // Tahtanın güncel durumunu CSS classlarına yansıt
         function updateBoardVisuals() {
             for (let r = 0; r < GRID_SIZE; r++) {
                 for (let c = 0; c < GRID_SIZE; c++) {
                     const cell = document.getElementById(`cell-${r}-${c}`);
-                    // Tüm renkleri sil
-                    cell.className = 'cell';
-                    
+                    cell.className = 'cell'; // Temizle
                     const val = board[r][c];
-                    if (val !== 0) {
-                        cell.classList.add('filled', `color-${val}`);
-                    }
+                    if (val !== 0) cell.classList.add('filled', `color-${val}`);
                 }
             }
         }
 
-        // --- SKOR VE EFEKTLER ---
+        // --- SKOR VE EFEKTLER (KORUNDU VE GÜÇLENDİRİLDİ) ---
         function addScore(points) {
             score += points;
             updateScoreUI();
@@ -1000,13 +1435,28 @@
         function updateScoreUI() {
             uiScore.innerText = score;
             uiScore.classList.remove('pulse');
-            void uiScore.offsetWidth; // Reflow tetikle (animasyonun yeniden başlaması için)
+            void uiScore.offsetWidth; 
             uiScore.classList.add('pulse');
         }
 
-        function showComboText(linesCount) {
+        function updateStreakUI() {
+            uiStreak.innerText = `x${currentStreak}`;
+            if(currentStreak > 1) {
+                uiStreak.style.color = 'var(--accent-pink)';
+                uiStreak.classList.remove('pulse');
+                void uiStreak.offsetWidth;
+                uiStreak.classList.add('pulse');
+            } else {
+                uiStreak.style.color = 'var(--accent-orange)';
+            }
+        }
+
+        function showComboText(linesCount, streak) {
             const el = document.getElementById('combo-text');
-            el.innerText = `KOMBO x${linesCount}!`;
+            const sub = document.getElementById('combo-sub');
+            el.childNodes[0].nodeValue = "MEGA TEMİZLİK";
+            sub.innerText = `${linesCount} Çizgi • Seri x${streak}`;
+            
             el.classList.remove('show');
             void el.offsetWidth;
             el.classList.add('show');
@@ -1018,46 +1468,279 @@
             el.innerText = text;
             if(isGood) el.style.color = 'var(--accent-green)';
             
-            // Rastgele hafif sapma ile board üzerinde çıkart
             const boardRect = uiBoard.getBoundingClientRect();
-            const left = boardRect.left + (boardRect.width / 2) + (Math.random()*40 - 20);
-            const top = boardRect.top + (boardRect.height / 2);
+            const left = boardRect.left + (boardRect.width / 2) + (Math.random()*60 - 30);
+            const top = boardRect.top + (boardRect.height / 2) + (Math.random()*40 - 20);
             
-            el.style.left = `${left}px`;
-            el.style.top = `${top}px`;
+            el.style.left = `${left}px`; el.style.top = `${top}px`;
             
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 1000);
         }
 
-        // --- GAME OVER KONTROLÜ ---
+        // --- GAME OVER KONTROLÜ (KORUNDU VE GÜVENİLİRLEŞTİRİLDİ) ---
         function checkGameOverStatus() {
-            // Elde kalan mevcut blokları al
             const activeBlocks = currentTrayBlocks.filter(b => b !== null);
-            if (activeBlocks.length === 0) return; // Henüz yeni bloklar üretilmediyse atla
+            if (activeBlocks.length === 0) return; 
 
             let canAnyBlockFit = false;
-
             outerLoop: for (let b of activeBlocks) {
-                // Bu blok board üzerinde HERHANGİ bir yere sığıyor mu?
                 for (let r = 0; r < GRID_SIZE; r++) {
                     for (let c = 0; c < GRID_SIZE; c++) {
                         if (checkFit(b.matrix, r, c)) {
                             canAnyBlockFit = true;
-                            break outerLoop; // Biri sığdıysa oyun devam eder
+                            break outerLoop; 
                         }
                     }
                 }
             }
 
-            if (!canAnyBlockFit) {
-                gameOver();
-            }
+            if (!canAnyBlockFit) gameOver();
         }
 
         // Uygulamayı başlat
         init();
 
+        // ===== 2.1 JS SYSTEM START =====
+        // (Aşağıdaki kodların tümü, var olan kodu DEĞİŞTİRMEDEN Wrapper Pattern ile özellikleri genişletir)
+        
+        // --- YENİ DEĞİŞKENLER (2.1) ---
+        let level = 1;
+        let comboMultiplier = 1;
+        let lastClearTime = 0;
+        let activeMission = null;
+
+        // --- UI INJECTION (2.1 - Mevcut HTML'i koruyarak arayüz ekleme) ---
+        const hudContainer = document.querySelector('.score-hud-container');
+        
+        // Level Kutusu
+        const levelBox = document.createElement('div');
+        levelBox.className = 'score-box highlight-level';
+        levelBox.innerHTML = `<span class="score-label">Seviye</span><span id="ui-level" class="score-value">1</span>`;
+        hudContainer.appendChild(levelBox);
+
+        // Dinamik Grid ayarı (4 Kutu için güvenli spacing)
+        hudContainer.style.gridTemplateColumns = 'repeat(4, 1fr)';
+        if(window.innerWidth < 400) {
+            hudContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        }
+
+        // Görev (Mission) Popup Alanı
+        const missionPopup = document.createElement('div');
+        missionPopup.id = 'mission-popup';
+        missionPopup.className = 'mission-popup';
+        missionPopup.innerHTML = `<span>🎯 Görev Tamamlandı!</span><br><small id="mission-desc"></small>`;
+        document.getElementById('app').appendChild(missionPopup);
+
+        // Arka Plan Pulse Efekt Alanı
+        const pulseOverlay = document.createElement('div');
+        pulseOverlay.className = 'bg-pulse-overlay';
+        document.body.appendChild(pulseOverlay);
+
+        // --- B) ADVANCED COMBO SİSTEMİ & E) LEVEL SİSTEMİ (Wrapper Hooks) ---
+        const _oldAddScore_v21 = addScore;
+        addScore = function(points) {
+            // Advanced Combo Multiplier hesapla
+            const now = Date.now();
+            if (now - lastClearTime < 5000) { // 5 saniye kombo penceresi
+                comboMultiplier += 0.1;
+            } else {
+                comboMultiplier = 1;
+            }
+            
+            const finalPoints = Math.floor(points * comboMultiplier);
+            _oldAddScore_v21(finalPoints);
+            
+            // Level Atla Mantığı (Skora Dayalı)
+            const nextLevelThreshold = level * 1500;
+            if (score >= nextLevelThreshold) {
+                level++;
+                document.getElementById('ui-level').innerText = level;
+                document.getElementById('ui-level').classList.add('pulse');
+                setTimeout(() => document.getElementById('ui-level').classList.remove('pulse'), 400);
+                showFloatingText("LEVEL ATLANDI!", true);
+                playSynth('mega');
+            }
+        };
+
+        const _oldPlaySynth_v21 = playSynth;
+        playSynth = function(type) {
+            _oldPlaySynth_v21(type);
+            // Satır/Sütun temizlendiğinde tetiklenir
+            if (type === 'clear' || type === 'mega') {
+                lastClearTime = Date.now();
+                checkMissions('clear', type === 'mega' ? 2 : 1);
+                
+                // UX Boost: Ekran Pulse Efekti
+                pulseOverlay.classList.add('active-pulse');
+                setTimeout(() => pulseOverlay.classList.remove('active-pulse'), 500);
+                
+                // UX Boost: Kombo arttıkça arka plan glow büyümesi
+                document.querySelector('.glow-1').style.transform = `scale(${1 + currentStreak*0.1})`;
+                document.querySelector('.glow-2').style.transform = `scale(${1 + currentStreak*0.1})`;
+            }
+        };
+
+        // --- C) SELECT CANCEL + SMART PREVIEW ---
+        const _oldSetClickSelection_v21 = setClickSelection;
+        setClickSelection = function(data, el) {
+            _oldSetClickSelection_v21(data, el);
+            showSmartPreview(data);
+        };
+
+        const _oldClearClickSelection_v21 = clearClickSelection;
+        clearClickSelection = function() {
+            _oldClearClickSelection_v21();
+            hideSmartPreview();
+        };
+
+        // Boş alana tıklayınca seçimi iptal et
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.tray') && !e.target.closest('.board-container') && clickSelectedData) {
+                clearClickSelection();
+                playSynth('error');
+            }
+        });
+
+        // Akıllı Önizleme Mantığı
+        function showSmartPreview(data) {
+            hideSmartPreview(); // Öncekileri sıfırla
+            let fitsAnywhere = false;
+            
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    if (checkFit(data.matrix, r, c)) {
+                        fitsAnywhere = true;
+                        const cell = document.getElementById(`cell-${r}-${c}`);
+                        if(cell) cell.classList.add('smart-hint');
+                    }
+                }
+            }
+            
+            // Eğer blok hiçbir yere sığmıyorsa tahta titrer (Smart alert)
+            if (!fitsAnywhere) {
+                uiBoard.classList.add('shake-effect');
+                setTimeout(() => uiBoard.classList.remove('shake-effect'), 400);
+            }
+        }
+
+        function hideSmartPreview() {
+            document.querySelectorAll('.smart-hint').forEach(c => c.classList.remove('smart-hint'));
+        }
+
+        // --- F) UX BOOST: Son Hamle Vurgusu (Last Move Highlight) ---
+        const _oldPlaceBlock_v21 = placeBlock;
+        placeBlock = function(data, startRow, startCol) {
+            document.querySelectorAll('.last-move').forEach(c => c.classList.remove('last-move'));
+            
+            _oldPlaceBlock_v21(data, startRow, startCol);
+            
+            for (let r = 0; r < data.matrix.length; r++) {
+                for (let c = 0; c < data.matrix[0].length; c++) {
+                    if (data.matrix[r][c] === 1) {
+                        const cell = document.getElementById(`cell-${startRow + r}-${startCol + c}`);
+                        if(cell) cell.classList.add('last-move');
+                    }
+                }
+            }
+            checkMissions('place', 1);
+        };
+
+        // --- A) SMART BLOCK SYSTEM (Akıllı Blok Üretimi) ---
+        const _oldGetRandomShape_v21 = getRandomShape;
+        getRandomShape = function() {
+            return smartGeneratePieces();
+        };
+
+        function smartGeneratePieces() {
+            let filledCount = 0;
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    if (board[r][c] !== 0) filledCount++;
+                }
+            }
+            
+            const isCrowded = filledCount > 40;
+            const isVeryCrowded = filledCount > 50;
+            
+            // Sıkışınca rahatlatıcı bloklar ver
+            if (isVeryCrowded) {
+                const safeShapes = [0, 1, 2]; // Çok küçük bloklar (1x1, 1x2, 2x1)
+                const r = Math.floor(Math.random() * safeShapes.length);
+                return JSON.parse(JSON.stringify(SHAPES[safeShapes[r]]));
+            }
+            
+            if (isCrowded && Math.random() > 0.5) {
+                const mediumShapes = [0, 1, 2, 3, 4, 9, 10, 11, 12];
+                const r = Math.floor(Math.random() * mediumShapes.length);
+                return JSON.parse(JSON.stringify(SHAPES[mediumShapes[r]]));
+            }
+            
+            // Seviye (Level) yüksekse ve sıkışıklık yoksa, zorlayıcı büyük blokları daha çok gönder
+            if (level >= 5 && !isCrowded && Math.random() > 0.7) {
+                const hardShapes = [8, 13, 14, 15, 16]; // 3x3 veya dev L'ler
+                const r = Math.floor(Math.random() * hardShapes.length);
+                return JSON.parse(JSON.stringify(SHAPES[hardShapes[r]]));
+            }
+            
+            // Diğer her durumda 2.0 orjinal dengesini kullan
+            return _oldGetRandomShape_v21();
+        }
+
+        // --- D) MINI MISSION SYSTEM (Görev Sistemi) ---
+        const missionsDataList = [
+            { type: 'clear', target: 3, desc: "3 Satır/Sütun Temizle", reward: 200, progress: 0 },
+            { type: 'place', target: 10, desc: "10 Blok Yerleştir", reward: 150, progress: 0 },
+            { type: 'combo', target: 2, desc: "Seri x2 Yap", reward: 300, progress: 0 }
+        ];
+
+        function generateNewMission() {
+            activeMission = JSON.parse(JSON.stringify(missionsDataList[Math.floor(Math.random() * missionsDataList.length)]));
+            setTimeout(() => showFloatingText("Görev: " + activeMission.desc), 1000);
+        }
+
+        function checkMissions(actionType, amount) {
+            if (!activeMission) return;
+            
+            if (activeMission.type === actionType) {
+                activeMission.progress += amount;
+                if (activeMission.progress >= activeMission.target) {
+                    completeMission();
+                }
+            } else if (activeMission.type === 'combo' && currentStreak >= activeMission.target) {
+                completeMission();
+            }
+        }
+
+        function completeMission() {
+            const popup = document.getElementById('mission-popup');
+            document.getElementById('mission-desc').innerText = activeMission.desc + " (+"+activeMission.reward+"P)";
+            
+            popup.classList.add('show');
+            playSynth('mega');
+            
+            // Direkt Puan eklemesi (Kombo katlayıcısından bağımsız, saf ödül)
+            _oldAddScore_v21(activeMission.reward);
+            
+            activeMission = null; // Eski görev sıfırlanır
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+                generateNewMission();
+            }, 3000);
+        }
+
+        // Görevi ve Level'ı Resetleyen Start Game Wrapper
+        const _oldStartGame_v21 = startGame;
+        startGame = function() {
+            _oldStartGame_v21();
+            level = 1;
+            comboMultiplier = 1;
+            if(document.getElementById('ui-level')) document.getElementById('ui-level').innerText = level;
+            generateNewMission();
+        };
+
+        // ===== 2.1 JS SYSTEM END =====
     </script>
 </body>
 </html>
