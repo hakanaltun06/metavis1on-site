@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>metavis1on | Borç Yönetim Paneli v3.0</title>
+    <title>metavis1on | Borç Yönetim Paneli v4.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
@@ -13,15 +13,15 @@
            1. CSS DEĞİŞKENLERİ VE TEMEL AYARLAR (METAVIS1ON TEMA)
            ========================================================================== */
         :root {
-            --bg-main: #070709;
-            --bg-surface: rgba(18, 18, 22, 0.7);
-            --bg-surface-hover: rgba(25, 25, 32, 0.9);
-            --bg-modal: rgba(10, 10, 12, 0.85);
-            --bg-locked: rgba(5, 5, 8, 0.6);
+            --bg-main: #050507;
+            --bg-surface: rgba(18, 18, 22, 0.75);
+            --bg-surface-hover: rgba(25, 25, 32, 0.95);
+            --bg-modal: rgba(8, 8, 10, 0.9);
+            --bg-locked: rgba(5, 5, 8, 0.7);
             
-            --border-light: rgba(255, 255, 255, 0.05);
-            --border-glow: rgba(0, 229, 255, 0.3);
-            --border-glow-admin: rgba(176, 38, 255, 0.4);
+            --border-light: rgba(255, 255, 255, 0.08);
+            --border-glow: rgba(0, 229, 255, 0.35);
+            --border-glow-admin: rgba(176, 38, 255, 0.5);
             
             --text-main: #FFFFFF;
             --text-muted: #8E8E9F;
@@ -36,7 +36,7 @@
             --font-main: 'Inter', sans-serif;
             --font-display: 'Rajdhani', sans-serif;
             
-            --glass-blur: blur(12px);
+            --glass-blur: blur(16px);
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
@@ -48,8 +48,8 @@
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
-            background-image: radial-gradient(circle at 10% 0%, rgba(0, 229, 255, 0.04) 0%, transparent 40%),
-                              radial-gradient(circle at 90% 100%, rgba(176, 38, 255, 0.04) 0%, transparent 40%);
+            background-image: radial-gradient(circle at 15% 0%, rgba(0, 229, 255, 0.05) 0%, transparent 40%),
+                              radial-gradient(circle at 85% 100%, rgba(176, 38, 255, 0.05) 0%, transparent 40%);
             background-attachment: fixed;
         }
 
@@ -68,7 +68,7 @@
             transition: var(--transition);
             position: relative;
         }
-        .glass-card:hover { border-color: var(--border-glow); box-shadow: 0 4px 20px rgba(0,229,255,0.05); }
+        .glass-card:hover { border-color: var(--border-glow); box-shadow: 0 4px 25px rgba(0,229,255,0.08); }
         
         h1, h2, h3, h4, .number-font { font-family: var(--font-display); letter-spacing: 0.5px; }
         
@@ -81,17 +81,22 @@
             cursor: pointer; transition: var(--transition);
             position: relative; overflow: hidden;
         }
-        .btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
-        .btn-primary { background: rgba(0, 229, 255, 0.1); border-color: var(--accent-blue); color: var(--accent-blue); }
-        .btn-primary:hover:not(:disabled) { background: var(--accent-blue); color: var(--bg-main); box-shadow: 0 0 15px rgba(0,229,255,0.4); }
-        .btn-danger { background: rgba(255, 51, 102, 0.05); border-color: var(--accent-red); color: var(--accent-red); }
-        .btn-danger:hover:not(:disabled) { background: var(--accent-red); color: white; box-shadow: 0 0 15px rgba(255,51,102,0.4); }
-        .btn-success { background: rgba(0, 230, 118, 0.05); border-color: var(--accent-green); color: var(--accent-green); }
-        .btn-success:hover:not(:disabled) { background: var(--accent-green); color: var(--bg-main); box-shadow: 0 0 15px rgba(0,230,118,0.4);}
-        .btn-admin { background: rgba(176, 38, 255, 0.1); border-color: var(--accent-purple); color: var(--accent-purple); }
-        .btn-admin:hover:not(:disabled) { background: var(--accent-purple); color: white; box-shadow: 0 0 15px rgba(176,38,255,0.4); }
+        .btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+        .btn:active:not(:disabled) { transform: translateY(0); }
         
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(100%); }
+        .btn-primary { background: rgba(0, 229, 255, 0.1); border-color: var(--accent-blue); color: var(--accent-blue); }
+        .btn-primary:hover:not(:disabled) { background: var(--accent-blue); color: var(--bg-main); box-shadow: 0 0 15px rgba(0,229,255,0.5); }
+        
+        .btn-danger { background: rgba(255, 51, 102, 0.05); border-color: var(--accent-red); color: var(--accent-red); }
+        .btn-danger:hover:not(:disabled) { background: var(--accent-red); color: white; box-shadow: 0 0 15px rgba(255,51,102,0.5); }
+        
+        .btn-success { background: rgba(0, 230, 118, 0.05); border-color: var(--accent-green); color: var(--accent-green); }
+        .btn-success:hover:not(:disabled) { background: var(--accent-green); color: var(--bg-main); box-shadow: 0 0 15px rgba(0,230,118,0.5);}
+        
+        .btn-admin { background: rgba(176, 38, 255, 0.1); border-color: var(--accent-purple); color: var(--accent-purple); }
+        .btn-admin:hover:not(:disabled) { background: var(--accent-purple); color: white; box-shadow: 0 0 15px rgba(176,38,255,0.5); }
+        
+        .btn:disabled { opacity: 0.3; cursor: not-allowed; filter: grayscale(100%); }
         .locked-icon { font-size: 0.8em; margin-left: 5px; opacity: 0.7; }
 
         /* Rozetler */
@@ -111,38 +116,39 @@
         /* ==========================================================================
            2. LAYOUT / YERLEŞİM BÖLÜMLERİ
            ========================================================================== */
-        .app-container { max-width: 1700px; margin: 0 auto; padding: 20px; animation: fadeIn 0.8s ease; }
+        .app-container { max-width: 1750px; margin: 0 auto; padding: 20px; animation: fadeIn 0.8s ease; }
 
         /* Header */
         header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0 30px 0; border-bottom: 1px solid var(--border-light); margin-bottom: 30px; position: relative; }
-        header::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 30%; height: 1px; background: linear-gradient(90deg, var(--accent-blue), transparent); }
+        header::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 30%; height: 2px; background: linear-gradient(90deg, var(--accent-blue), transparent); }
         .logo-area { display: flex; align-items: center; gap: 15px; }
-        .logo-area img { height: 45px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(0,229,255,0.3)); }
-        .logo-area h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header-slogan { font-size: 0.85rem; color: var(--accent-blue); font-family: var(--font-display); letter-spacing: 2px; text-transform: uppercase; margin-top: -2px;}
+        .logo-area img { height: 50px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(0,229,255,0.4)); }
+        .logo-area h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--text-muted)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: -5px;}
+        .header-slogan { font-size: 0.85rem; color: var(--accent-blue); font-family: var(--font-display); letter-spacing: 2px; text-transform: uppercase; }
         
-        .system-info { display: flex; align-items: center; gap: 25px; }
+        .system-info { display: flex; align-items: center; gap: 30px; }
         .clock-container { text-align: right; }
-        .clock-time { font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; color: var(--text-main); letter-spacing: 1px;}
-        .clock-date { font-size: 0.8rem; color: var(--text-muted); }
+        .clock-time { font-family: var(--font-display); font-size: 1.8rem; font-weight: 600; color: var(--text-main); letter-spacing: 1px;}
+        .clock-date { font-size: 0.85rem; color: var(--text-muted); }
         
-        .auth-status { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
-        .auth-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.5px; border: 1px solid; transition: var(--transition);}
+        .auth-status { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .auth-badge { padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.5px; border: 1px solid; transition: var(--transition);}
         .auth-guest { background: rgba(255,255,255,0.05); color: var(--text-muted); border-color: var(--border-light); }
         .auth-admin { background: rgba(176,38,255,0.1); color: var(--accent-purple); border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(176,38,255,0.2); }
 
-        /* İstatistik Kartları */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .stat-card { padding: 15px; border-radius: 10px; }
-        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--text-muted), transparent); opacity: 0.3; }
-        .stat-card.glow-blue::before { background: linear-gradient(90deg, transparent, var(--accent-blue), transparent); opacity: 0.8; }
-        .stat-card.glow-red::before { background: linear-gradient(90deg, transparent, var(--accent-red), transparent); opacity: 0.8; }
-        .stat-card.glow-green::before { background: linear-gradient(90deg, transparent, var(--accent-green), transparent); opacity: 0.8; }
-        .stat-card.glow-purple::before { background: linear-gradient(90deg, transparent, var(--accent-purple), transparent); opacity: 0.8; }
+        /* İstatistik Kartları V4 */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { padding: 18px; border-radius: 12px; }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--text-muted), transparent); opacity: 0.3; }
+        .stat-card.glow-blue::before { background: linear-gradient(90deg, transparent, var(--accent-blue), transparent); opacity: 0.9; }
+        .stat-card.glow-red::before { background: linear-gradient(90deg, transparent, var(--accent-red), transparent); opacity: 0.9; }
+        .stat-card.glow-green::before { background: linear-gradient(90deg, transparent, var(--accent-green), transparent); opacity: 0.9; }
+        .stat-card.glow-purple::before { background: linear-gradient(90deg, transparent, var(--accent-purple), transparent); opacity: 0.9; }
+        .stat-card.glow-orange::before { background: linear-gradient(90deg, transparent, var(--accent-orange), transparent); opacity: 0.9; }
         
-        .stat-icon { position: absolute; top: 15px; right: 15px; font-size: 1.2rem; opacity: 0.3; }
-        .stat-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-        .stat-value { font-size: 1.8rem; font-weight: 700; color: var(--text-main); }
+        .stat-icon { position: absolute; top: 15px; right: 15px; font-size: 1.4rem; opacity: 0.2; }
+        .stat-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .stat-value { font-size: 1.9rem; font-weight: 700; color: var(--text-main); }
         .stat-value.money { color: var(--accent-green); }
         .stat-value.danger { color: var(--accent-red); }
 
@@ -150,15 +156,16 @@
         .action-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
 
-        /* Kilitli Alan Overlay */
+        /* Kilitli Alan Overlay V4 */
         .locked-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-locked); backdrop-filter: blur(4px);
+            background: var(--bg-locked); backdrop-filter: blur(6px);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 10; border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);
+            z-index: 10; border-radius: 12px; border: 1px dashed rgba(176, 38, 255, 0.3);
         }
-        .locked-overlay i { font-size: 2rem; color: var(--text-muted); margin-bottom: 10px; }
-        .locked-overlay span { font-family: var(--font-display); color: var(--text-muted); font-size: 1.1rem; letter-spacing: 1px; }
+        .locked-overlay i { font-size: 2.5rem; color: var(--accent-purple); margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(176,38,255,0.5));}
+        .locked-overlay span { font-family: var(--font-display); color: var(--text-main); font-size: 1.2rem; letter-spacing: 1px; }
+        .locked-overlay p { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; }
 
         /* Form & Filtre Alanları */
         .panel-section { display: none; margin-bottom: 30px; animation: slideDown 0.4s ease forwards; position: relative;}
@@ -167,117 +174,141 @@
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-group label { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase;}
         .form-control { 
-            background: rgba(0,0,0,0.4); border: 1px solid var(--border-light); color: var(--text-main);
-            padding: 10px 12px; border-radius: 6px; font-family: var(--font-main); font-size: 0.9rem; outline: none; transition: var(--transition);
+            background: rgba(0,0,0,0.5); border: 1px solid var(--border-light); color: var(--text-main);
+            padding: 12px 15px; border-radius: 8px; font-family: var(--font-main); font-size: 0.9rem; outline: none; transition: var(--transition);
             width: 100%;
         }
-        .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 10px rgba(0,229,255,0.1); background: rgba(0,0,0,0.6); }
+        .form-control:focus { border-color: var(--accent-blue); box-shadow: 0 0 10px rgba(0,229,255,0.15); background: rgba(0,0,0,0.7); }
         .form-control::placeholder { color: rgba(255,255,255,0.2); }
-        .form-control:disabled { background: rgba(0,0,0,0.2); color: rgba(255,255,255,0.3); cursor: not-allowed; }
+        .form-control:disabled { background: rgba(0,0,0,0.2); color: rgba(255,255,255,0.3); cursor: not-allowed; border-color: transparent;}
         select.form-control option { background: var(--bg-main); color: var(--text-main); }
         
         .form-row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
         .form-row > * { flex: 1; min-width: 200px; }
 
-        /* Tablo Alanı V3 */
+        /* Tablo Alanı V4 */
         .table-container { width: 100%; overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-light); }
         table { width: 100%; border-collapse: collapse; min-width: 1200px; text-align: left; }
-        th { background: rgba(0,0,0,0.6); padding: 12px 15px; font-family: var(--font-display); font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-light); cursor: pointer; white-space: nowrap;}
+        th { background: rgba(0,0,0,0.8); padding: 15px; font-family: var(--font-display); font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-light); cursor: pointer; white-space: nowrap; position: sticky; top: 0;}
         th:hover { color: var(--accent-blue); }
-        td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.02); vertical-align: middle; font-size: 0.85rem; }
-        tr:hover td { background: rgba(255,255,255,0.03); }
-        tr.row-gecikmis td { background: linear-gradient(90deg, rgba(255,51,102,0.05), transparent); }
-        tr.row-odendi td { background: linear-gradient(90deg, rgba(0,230,118,0.02), transparent); opacity: 0.8; }
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.02); vertical-align: middle; font-size: 0.85rem; }
+        tr:hover td { background: rgba(255,255,255,0.04); }
+        tr.row-gecikmis td { background: linear-gradient(90deg, rgba(255,51,102,0.06), transparent); }
+        tr.row-odendi td { background: linear-gradient(90deg, rgba(0,230,118,0.03), transparent); opacity: 0.8; }
         
         .table-actions { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end;}
         .icon-btn { 
-            width: 30px; height: 30px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center;
             background: rgba(255,255,255,0.05); border: 1px solid transparent; color: var(--text-muted); cursor: pointer; transition: var(--transition); font-size: 0.9rem;
         }
-        .icon-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: var(--text-main); }
+        .icon-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: var(--text-main); transform: translateY(-2px);}
         .icon-btn.view:hover:not(:disabled) { color: var(--accent-blue); border-color: var(--accent-blue); }
         .icon-btn.edit:hover:not(:disabled) { color: var(--accent-orange); border-color: var(--accent-orange); }
         .icon-btn.delete:hover:not(:disabled) { color: var(--accent-red); border-color: var(--accent-red); }
         .icon-btn.pay:hover:not(:disabled) { color: var(--accent-green); border-color: var(--accent-green); }
         .icon-btn.fullpay:hover:not(:disabled) { color: var(--accent-purple); border-color: var(--accent-purple); background: rgba(176,38,255,0.1);}
-        .icon-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .icon-btn:disabled { opacity: 0.2; cursor: not-allowed; }
 
         /* Sayfalama */
         .pagination { display: flex; justify-content: flex-end; gap: 5px; margin-top: 15px; }
-        .page-btn { padding: 5px 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: var(--text-main); border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+        .page-btn { padding: 6px 14px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: var(--text-main); border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s;}
+        .page-btn:hover:not(.active) { background: rgba(255,255,255,0.1);}
         .page-btn.active { background: var(--accent-blue); color: var(--bg-main); border-color: var(--accent-blue); font-weight: bold;}
 
         /* Grafikler Bölümü */
-        .charts-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .chart-container { height: 220px; width: 100%; position: relative; display: flex; align-items: center; justify-content: center;}
+        .charts-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .chart-container { height: 240px; width: 100%; position: relative; display: flex; align-items: center; justify-content: center;}
 
-        /* Modallar V3 */
+        /* Modallar V4 */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--bg-modal); backdrop-filter: blur(8px); 
+            background: var(--bg-modal); backdrop-filter: blur(10px); 
             display: flex; align-items: center; justify-content: center; z-index: 2000;
             opacity: 0; visibility: hidden; transition: var(--transition);
         }
         .modal-overlay.active { opacity: 1; visibility: visible; }
         .modal-box { 
-            background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 12px;
-            width: 90%; max-width: 600px; padding: 25px; transform: scale(0.95) translateY(20px); transition: var(--transition);
-            box-shadow: 0 25px 60px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto;
+            background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 16px;
+            width: 90%; max-width: 600px; padding: 30px; transform: scale(0.95) translateY(20px); transition: var(--transition);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto;
+            position: relative;
         }
         .modal-overlay.active .modal-box { transform: scale(1) translateY(0); }
-        .modal-box.large { max-width: 800px; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; position: sticky; top: -25px; background: var(--bg-surface); z-index: 5;}
-        .modal-title { font-family: var(--font-display); font-size: 1.3rem; color: var(--accent-blue); display: flex; align-items: center; gap: 10px;}
-        .close-modal { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; transition: 0.2s;}
+        .modal-box.large { max-width: 850px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--border-light); padding-bottom: 15px; position: sticky; top: -30px; background: var(--bg-surface); z-index: 5;}
+        .modal-title { font-family: var(--font-display); font-size: 1.4rem; color: var(--text-main); display: flex; align-items: center; gap: 10px;}
+        .close-modal { background: none; border: none; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; transition: 0.2s;}
         .close-modal:hover { color: var(--accent-red); transform: rotate(90deg);}
         
-        /* Ödeme Geçmişi Timeline */
+        /* Ödeme Geçmişi Timeline V4 */
         .timeline { margin-top: 20px; padding-left: 15px; border-left: 2px solid rgba(255,255,255,0.1); }
-        .timeline-item { position: relative; margin-bottom: 15px; padding-left: 20px; }
-        .timeline-item::before { content: ''; position: absolute; left: -25px; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-blue); border: 2px solid var(--bg-surface); }
-        .timeline-item.payment::before { background: var(--accent-green); }
-        .timeline-item.create::before { background: var(--accent-purple); }
-        .timeline-date { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 3px; }
-        .timeline-content { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 0.85rem; border: 1px solid var(--border-light); }
+        .timeline-item { position: relative; margin-bottom: 20px; padding-left: 25px; }
+        .timeline-item::before { content: ''; position: absolute; left: -26px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-blue); border: 3px solid var(--bg-surface); box-shadow: 0 0 10px var(--accent-blue);}
+        .timeline-item.payment::before { background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green);}
+        .timeline-item.create::before { background: var(--accent-purple); box-shadow: 0 0 10px var(--accent-purple);}
+        .timeline-date { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px; display: flex; justify-content: space-between;}
+        .timeline-content { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; font-size: 0.85rem; border: 1px solid var(--border-light); }
         .timeline-content strong { color: var(--text-main); }
 
-        /* Mini Admin & Log Paneli */
-        #adminPanel { display: none; margin-bottom: 30px; border-color: var(--accent-purple); box-shadow: 0 0 20px rgba(176,38,255,0.1); animation: fadeIn 0.5s; }
-        #adminPanel.active { display: block; }
-        .log-box { background: rgba(0,0,0,0.5); border: 1px solid var(--border-light); border-radius: 6px; height: 150px; overflow-y: auto; padding: 10px; font-family: monospace; font-size: 0.8rem; }
-        .log-item { margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.02); display: flex; gap: 10px; }
-        .log-time { color: var(--accent-blue); }
-        .log-user { color: var(--accent-purple); }
-        .log-msg { color: var(--text-muted); }
-        
-        .firebase-status { font-size: 0.7rem; display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px; border-radius: 4px; margin-left: 10px;}
-        .fb-online { background: rgba(0, 230, 118, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green); }
-        .fb-offline { background: rgba(255, 145, 0, 0.1); color: var(--accent-orange); border: 1px solid var(--accent-orange); }
+        /* Detay Modal İçi */
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .detail-label { color: var(--text-muted); font-size: 0.85rem; }
+        .detail-val { font-weight: 600; text-align: right; font-size: 0.9rem; }
+        .progress-bar-container { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 15px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--accent-green); width: 0%; transition: width 1s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative;}
+        .progress-bar::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite;}
 
-        /* Toast Bildirimleri */
-        .toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; }
+        /* Mini Admin & Log Paneli V4 */
+        #adminPanel { display: none; margin-bottom: 30px; border-color: var(--accent-purple); box-shadow: 0 0 25px rgba(176,38,255,0.1); animation: fadeIn 0.5s; }
+        #adminPanel.active { display: block; }
+        .log-box { background: rgba(0,0,0,0.6); border: 1px solid var(--border-light); border-radius: 8px; height: 180px; overflow-y: auto; padding: 15px; font-family: monospace; font-size: 0.8rem; }
+        .log-item { margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; align-items: flex-start; gap: 10px; }
+        .log-time { color: var(--text-muted); font-size: 0.75rem; min-width: 130px;}
+        .log-type { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; min-width: 80px; text-align: center;}
+        
+        .log-type.AUTH_LOGIN_SUCCESS, .log-type.AUTH_LOGOUT { background: rgba(176, 38, 255, 0.2); color: var(--accent-purple); }
+        .log-type.AUTH_ERROR, .log-type.FIREBASE_ERROR { background: rgba(255, 51, 102, 0.2); color: var(--accent-red); }
+        .log-type.ADD { background: rgba(0, 229, 255, 0.2); color: var(--accent-blue); }
+        .log-type.EDIT { background: rgba(255, 145, 0, 0.2); color: var(--accent-orange); }
+        .log-type.DELETE { background: rgba(255, 51, 102, 0.2); color: var(--accent-red); }
+        .log-type.PAYMENT_ADD, .log-type.FULL_PAYMENT, .log-type.ONLINE_MODE { background: rgba(0, 230, 118, 0.2); color: var(--accent-green); }
+        .log-type.IMPORT_JSON, .log-type.EXPORT_JSON, .log-type.MIGRATE_LOCAL_TO_FIREBASE, .log-type.LOAD_DEMO, .log-type.RESET_SYSTEM { background: rgba(255, 255, 255, 0.1); color: var(--text-main); }
+        .log-type.OFFLINE_MODE { background: rgba(255, 145, 0, 0.2); color: var(--accent-orange); }
+        
+        .log-msg { color: #ccc; flex: 1; }
+        
+        .firebase-status { font-size: 0.75rem; display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; margin-left: 10px; font-weight: bold;}
+        .fb-online { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); border: 1px solid rgba(0,230,118,0.4); }
+        .fb-offline { background: rgba(255, 51, 102, 0.15); color: var(--accent-red); border: 1px solid rgba(255,51,102,0.4); animation: pulse-red 2s infinite;}
+
+        /* Toast Bildirimleri V4 */
+        .toast-container { position: fixed; bottom: 25px; right: 25px; display: flex; flex-direction: column; gap: 12px; z-index: 9999; }
         .toast { 
-            background: rgba(15, 15, 18, 0.95); border-left: 4px solid var(--accent-blue); backdrop-filter: blur(10px);
-            padding: 15px 20px; border-radius: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: rgba(12, 12, 16, 0.95); border-left: 5px solid var(--accent-blue); backdrop-filter: blur(12px);
+            padding: 16px 22px; border-radius: 8px; box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             color: white; font-size: 0.9rem; transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            display: flex; align-items: center; gap: 10px; min-width: 250px;
+            display: flex; align-items: center; gap: 12px; min-width: 280px; border-top: 1px solid var(--border-light); border-right: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);
         }
-        .toast i { font-size: 1.2rem; }
+        .toast i { font-size: 1.4rem; }
         .toast.show { transform: translateX(0); }
         .toast.success { border-left-color: var(--accent-green); }
         .toast.error { border-left-color: var(--accent-red); }
         .toast.warning { border-left-color: var(--accent-orange); }
+        .toast.info { border-left-color: var(--accent-purple); }
 
-        /* Footer */
-        footer { text-align: center; padding: 40px 0; margin-top: 40px; border-top: 1px solid var(--border-light); color: var(--text-muted); font-size: 0.85rem; }
+        /* Empty State */
+        .empty-state { text-align: center; padding: 50px 20px; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; margin-bottom: 15px; opacity: 0.5; display: block;}
 
         /* Animasyonlar */
-        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(255, 51, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0); } }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(255, 51, 102, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
         /* Responsive */
-        @media (max-width: 992px) {
+        @media (max-width: 1200px) {
             .charts-section { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 768px) {
@@ -288,9 +319,9 @@
             
             table, thead, tbody, th, td, tr { display: block; }
             thead tr { position: absolute; top: -9999px; left: -9999px; }
-            tr { border: 1px solid var(--border-light); border-radius: 8px; margin-bottom: 15px; background: var(--bg-surface); padding: 10px; }
-            td { border: none; border-bottom: 1px solid rgba(255,255,255,0.02); position: relative; padding-left: 45%; text-align: right; min-height: 40px;}
-            td::before { content: attr(data-label); position: absolute; left: 15px; width: 40%; text-align: left; font-weight: 600; color: var(--text-muted); font-size: 0.8rem; top: 12px; text-transform: uppercase;}
+            tr { border: 1px solid var(--border-light); border-radius: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px; }
+            td { border: none; border-bottom: 1px dashed rgba(255,255,255,0.05); position: relative; padding-left: 45%; text-align: right; min-height: 45px;}
+            td::before { content: attr(data-label); position: absolute; left: 15px; width: 40%; text-align: left; font-weight: 600; color: var(--text-muted); font-size: 0.8rem; top: 15px; text-transform: uppercase;}
             .table-actions { justify-content: flex-end; margin-top: 10px;}
         }
 
@@ -312,7 +343,7 @@
             <img src="assets/logo.png" alt="M" onerror="this.style.display='none'">
             <div>
                 <h1>metavis1on</h1>
-                <div class="header-slogan">Debt Management System v3.0 (Live)</div>
+                <div class="header-slogan">Debt Management System v4.1</div>
             </div>
         </div>
         <div class="system-info">
@@ -322,29 +353,32 @@
             </div>
             <div class="auth-status">
                 <div id="authBadge" class="auth-badge auth-guest">🔒 Misafir Modu</div>
-                <button class="btn btn-admin" id="authBtn" onclick="openLoginModal()" style="padding: 4px 10px; font-size: 0.75rem;">Yönetici Girişi</button>
+                <button class="btn btn-admin" id="authBtn" onclick="openLoginModal()" style="padding: 6px 14px; font-size: 0.8rem;">Yönetici Girişi</button>
             </div>
         </div>
     </header>
 
     <div id="adminPanel" class="glass-card">
-        <h3 style="color: var(--accent-purple); margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
-            <span><i style="font-style: normal;">⚙️</i> Sistem Yönetim Merkezi <span id="fbStatus" class="firebase-status fb-offline">☁️ Yerel Mod</span></span>
-            <span class="badge" style="background: rgba(176,38,255,0.2); color: var(--accent-purple);">Admin Yetkisi Aktif</span>
+        <h3 style="color: var(--accent-purple); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">
+            <span><i style="font-style: normal;">⚙️</i> Sistem Yönetim Merkezi <span id="fbStatus" class="firebase-status fb-offline">☁️ Bağlanıyor...</span></span>
+            <span class="badge" style="background: rgba(176,38,255,0.2); color: var(--accent-purple); font-size: 0.85rem;">🛡️ Admin Yetkisi Aktif</span>
         </h3>
         <div class="form-grid">
             <div>
-                <button class="btn btn-primary" onclick="migrateLocalToFirebase()" style="width: 100%; margin-bottom: 10px;" id="migrateBtn">☁️ Yerel Veriyi Firebase'e Aktar</button>
-                <button class="btn btn-admin" onclick="loadDemoDataAuth()" style="width: 100%; margin-bottom: 10px;">🧪 Demo Veri Yükle</button>
+                <button class="btn btn-primary" onclick="migrateLocalToFirebase()" style="width: 100%; margin-bottom: 12px;" id="migrateBtn">☁️ Yerel Veriyi Firebase'e Aktar</button>
+                <button class="btn btn-admin" onclick="loadDemoDataAuth()" style="width: 100%; margin-bottom: 12px;">🧪 Demo Veri Seti Yükle</button>
                 <button class="btn btn-danger" onclick="confirmResetDataAuth()" style="width: 100%;">🗑️ Tüm Sistemi Sıfırla</button>
             </div>
             <div>
-                <button class="btn" onclick="exportJSONAuth()" style="width: 100%; margin-bottom: 10px;">📥 Veritabanı Yedeği Al (JSON)</button>
-                <button class="btn" onclick="document.getElementById('importFile').click()" style="width: 100%;">📤 Yedek Yükle</button>
+                <button class="btn" onclick="exportJSONAuth()" style="width: 100%; margin-bottom: 12px;">📥 Veritabanı Yedeği Al (JSON)</button>
+                <button class="btn" onclick="document.getElementById('importFile').click()" style="width: 100%;">📤 JSON Yedek Yükle</button>
                 <input type="file" id="importFile" style="display:none" accept=".json" onchange="importJSONAuth(event)">
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px;">
+                    💡 İşlemler anlık olarak yansır ve yerelde de yedeklenir.
+                </div>
             </div>
             <div style="grid-column: span 2;">
-                <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 5px;">Sistem İşlem Günlüğü (Real-time Log)</label>
+                <label style="font-size: 0.85rem; color: var(--text-main); display: block; margin-bottom: 8px;">Sistem İşlem Günlüğü (Real-time Log)</label>
                 <div class="log-box" id="sysLogsContainer">
                     </div>
             </div>
@@ -354,7 +388,7 @@
     <div class="stats-grid">
         <div class="glass-card stat-card glow-blue">
             <div class="stat-icon">👥</div>
-            <div class="stat-title">Toplam Kayıtlı Kişi</div>
+            <div class="stat-title">Kayıtlı Kişi</div>
             <div class="stat-value number-font" id="stat-total-people">0</div>
         </div>
         <div class="glass-card stat-card glow-red">
@@ -372,6 +406,16 @@
             <div class="stat-title">Genel Tahsilat Oranı</div>
             <div class="stat-value number-font" id="stat-ratio">%0</div>
         </div>
+        <div class="glass-card stat-card glow-orange">
+            <div class="stat-icon">📅</div>
+            <div class="stat-title">Bu Hafta Vadesi Dolacak</div>
+            <div class="stat-value number-font" id="stat-week-due" style="color: var(--accent-orange);">0</div>
+        </div>
+        <div class="glass-card stat-card">
+            <div class="stat-icon">💳</div>
+            <div class="stat-title">Taksitli İşlem Sayısı</div>
+            <div class="stat-value number-font" id="stat-inst-count">0</div>
+        </div>
         <div class="glass-card stat-card glow-red">
             <div class="stat-icon">⚠️</div>
             <div class="stat-title">Gecikmiş / Kritik Borç</div>
@@ -381,6 +425,16 @@
             <div class="stat-icon">✅</div>
             <div class="stat-title">Tamamen Ödenenler</div>
             <div class="stat-value number-font" id="stat-paid-count">0</div>
+        </div>
+        <div class="glass-card stat-card">
+            <div class="stat-icon">📈</div>
+            <div class="stat-title">Bu Ay Eklenen Kayıt</div>
+            <div class="stat-value number-font" id="stat-month-added">0</div>
+        </div>
+        <div class="glass-card stat-card">
+            <div class="stat-icon">💎</div>
+            <div class="stat-title">En Yüksek Tek Borç</div>
+            <div class="stat-value number-font" id="stat-max-debt" style="font-size: 1.5rem;">₺0.00</div>
         </div>
     </div>
 
@@ -398,10 +452,14 @@
     <div id="addFormSection" class="panel-section glass-card">
         <div id="formOverlay" class="locked-overlay">
             <i>🔒</i>
-            <span>Veri Ekleme İçin Admin Girişi Gereklidir</span>
+            <span>Yönetim İzni Gerekiyor</span>
+            <p>Veri eklemek veya düzenlemek için admin girişi yapmalısınız.</p>
         </div>
 
-        <h3 style="margin-bottom: 20px; color: var(--accent-blue); border-bottom: 1px solid var(--border-light); padding-bottom: 10px;">Yeni Kayıt / Düzenleme</h3>
+        <h3 style="margin-bottom: 20px; color: var(--accent-blue); border-bottom: 1px solid var(--border-light); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+            Yeni Kayıt / Düzenleme
+            <span id="editBadge" class="badge badge-kismi" style="display:none;">Düzenleme Modu</span>
+        </h3>
         <form id="debtForm" onsubmit="handleFormSubmit(event)">
             <input type="hidden" id="editId">
             
@@ -416,7 +474,7 @@
                 </div>
                 <div class="form-group">
                     <label>Referans Kodu</label>
-                    <input type="text" id="f_ref" class="form-control admin-field" placeholder="Örn: PRJ-001" style="text-transform: uppercase;">
+                    <input type="text" id="f_ref" class="form-control admin-field" placeholder="Boş bırakılırsa oto üretilir" style="text-transform: uppercase;">
                 </div>
             </div>
 
@@ -426,13 +484,13 @@
                     <input type="number" id="f_amount" class="form-control admin-field" required min="0" step="0.01" placeholder="0.00">
                 </div>
                 <div class="form-group">
-                    <label>Şu Ana Kadar Ödenen (₺)</label>
+                    <label>Şu Ana Kadar Ödenen (₺) <span style="color:var(--accent-orange); font-size:0.7rem; font-weight:normal;">(Geçmişe Peşinat Olarak Ekler)</span></label>
                     <input type="number" id="f_paid" class="form-control admin-field" min="0" step="0.01" value="0" placeholder="0.00">
                 </div>
-                <div class="form-group" style="flex-direction: row; align-items: center; gap: 15px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-light); border-radius: 6px; padding: 10px;">
-                    <label style="margin: 0;">Taksitli mi?</label>
-                    <input type="checkbox" id="f_isInst" class="admin-field" onchange="toggleInst()">
-                    <input type="number" id="f_instCount" class="form-control admin-field" placeholder="Taksit Sayısı" min="2" max="36" style="width: 100px; display: none; padding: 5px;">
+                <div class="form-group" style="flex-direction: row; align-items: center; gap: 15px; background: rgba(0,0,0,0.5); border: 1px solid var(--border-light); border-radius: 8px; padding: 12px 15px;">
+                    <label style="margin: 0; font-size: 0.9rem; font-weight: bold; color: var(--text-main);">Taksitli İşlem?</label>
+                    <input type="checkbox" id="f_isInst" class="admin-field" onchange="toggleInst()" style="width: 18px; height: 18px; cursor: pointer;">
+                    <input type="number" id="f_instCount" class="form-control admin-field" placeholder="Taksit Sayısı" min="2" max="36" style="width: 120px; display: none; padding: 8px;">
                 </div>
             </div>
 
@@ -455,7 +513,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Etiket Grubu</label>
+                    <label>Etiket / Grup</label>
                     <select id="f_tag" class="form-control admin-field">
                         <option value="arkadas">Arkadaş</option>
                         <option value="aile">Aile</option>
@@ -465,13 +523,13 @@
                 </div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 20px;">
+            <div class="form-group" style="margin-bottom: 25px;">
                 <label>Açıklama / Detaylı Not</label>
                 <input type="text" id="f_note" class="form-control admin-field" placeholder="Borç verilme sebebi, alınan teminat, anlaşma detayları vs.">
             </div>
-            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                <button type="button" class="btn admin-field" onclick="resetForm()">Sıfırla</button>
-                <button type="submit" class="btn btn-primary admin-field" id="formSubmitBtn">Kayıt Ekle <i class="locked-icon">🔒</i></button>
+            <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                <button type="button" class="btn admin-field" onclick="resetForm()">Formu Sıfırla</button>
+                <button type="submit" class="btn btn-primary admin-field" id="formSubmitBtn" style="font-size: 1rem; padding: 10px 25px;">Kayıt Ekle <i class="locked-icon">🔒</i></button>
             </div>
         </form>
     </div>
@@ -505,7 +563,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Sıralama</label>
+                <label>Sıralama Ölçütü</label>
                 <select id="filter_sort" class="form-control" onchange="applyFilters()">
                     <option value="date_desc">Eklenme (En Yeni)</option>
                     <option value="date_asc">Eklenme (En Eski)</option>
@@ -515,82 +573,93 @@
                     <option value="due_asc">Vadeye Göre (Yaklaşan)</option>
                 </select>
             </div>
+            <div class="form-group" style="justify-content: flex-end;">
+                <select id="filter_per_page" class="form-control" onchange="changePerPage()">
+                    <option value="10">Sayfada 10 Kayıt</option>
+                    <option value="20">Sayfada 20 Kayıt</option>
+                    <option value="50">Sayfada 50 Kayıt</option>
+                </select>
+            </div>
         </div>
         <div style="text-align: right; margin-top: 10px; font-size: 0.85rem; color: var(--text-muted);">
-            Bulunan Kayıt: <strong id="filter_count" style="color:var(--accent-blue);">0</strong>
+            Bulunan Sonuç: <strong id="filter_count" style="color:var(--accent-blue); font-size:1.1rem;">0</strong>
         </div>
     </div>
 
     <div id="chartSection" class="panel-section charts-section">
         <div class="glass-card">
-            <h4 style="text-align: center; margin-bottom: 15px; color: var(--text-muted);">Durum Dağılımı</h4>
+            <h4 style="text-align: center; margin-bottom: 15px; color: var(--text-main); font-family: var(--font-display); letter-spacing: 1px;">Durum Dağılımı</h4>
             <div class="chart-container"><canvas id="statusChart"></canvas></div>
         </div>
         <div class="glass-card">
-            <h4 style="text-align: center; margin-bottom: 15px; color: var(--text-muted);">Öncelik Analizi</h4>
+            <h4 style="text-align: center; margin-bottom: 15px; color: var(--text-main); font-family: var(--font-display); letter-spacing: 1px;">Öncelik Analizi</h4>
             <div class="chart-container"><canvas id="priorityChart"></canvas></div>
         </div>
+        <div class="glass-card">
+            <h4 style="text-align: center; margin-bottom: 15px; color: var(--text-main); font-family: var(--font-display); letter-spacing: 1px;">Kategori Dağılımı</h4>
+            <div class="chart-container"><canvas id="tagChart"></canvas></div>
+        </div>
         <div class="glass-card" style="grid-column: 1 / -1;">
-            <h4 style="text-align: center; margin-bottom: 15px; color: var(--text-muted);">Aylık Borç Veriliş Hacmi Trendi (₺)</h4>
-            <div class="chart-container" style="height: 200px;"><canvas id="monthlyChart"></canvas></div>
+            <h4 style="text-align: center; margin-bottom: 15px; color: var(--text-main); font-family: var(--font-display); letter-spacing: 1px;">Aylık Borç Veriliş Hacmi Trendi (₺)</h4>
+            <div class="chart-container" style="height: 250px;"><canvas id="monthlyChart"></canvas></div>
         </div>
     </div>
 
-    <div class="glass-card" style="padding: 0; overflow: hidden;">
+    <div class="glass-card" style="padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
         <div class="table-container">
             <table id="debtTable">
                 <thead>
                     <tr>
-                        <th>Ref / Kişi</th>
-                        <th>Etiket</th>
-                        <th>Toplam / Kalan</th>
-                        <th>Veriliş / Vade</th>
+                        <th onclick="setSort('name')" title="İsme göre sırala">Ref / Kişi ↕</th>
+                        <th onclick="setSort('tag')">Etiket ↕</th>
+                        <th onclick="setSort('amount')">Toplam / Kalan ↕</th>
+                        <th onclick="setSort('due')">Veriliş / Vade ↕</th>
                         <th>Kalan Gün</th>
-                        <th>Durum</th>
-                        <th style="text-align: right;">Yönetim</th>
+                        <th onclick="setSort('status')">Durum ↕</th>
+                        <th style="text-align: right;">Yönetim İşlemleri</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
                     </tbody>
             </table>
         </div>
-        <div style="padding: 15px; border-top: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
-            <div style="font-size: 0.85rem; color: var(--text-muted);">Sayfa <span id="pageInfo">1 / 1</span></div>
+        <div style="padding: 15px 20px; border-top: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3);">
+            <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Sayfa: <span id="pageInfo" style="color: white;">1 / 1</span></div>
             <div class="pagination" id="pagination"></div>
         </div>
     </div>
 
     <footer>
-        <div style="font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 5px; color: #fff; letter-spacing: 1px;">metavis1on</div>
-        <div>Debt Management System &copy; 2026</div>
-        <div style="margin-top: 10px; font-size: 0.75rem; color: var(--accent-gray);">Tüm hakları saklıdır.</div>
+        <div style="font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 5px; color: #fff; letter-spacing: 2px;">metavis1on</div>
+        <div style="color: var(--accent-blue); font-weight: 500;">Debt Management System v4.1 &copy; 2026</div>
+        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--accent-gray);">Veriler güvenle korunmaktadır.</div>
     </footer>
 </div>
 
 <div class="modal-overlay" id="loginModal">
-    <div class="modal-box" style="max-width: 400px; text-align: center;">
-        <div style="font-size: 3rem; margin-bottom: 10px;">🛡️</div>
-        <h2 style="font-family: var(--font-display); color: var(--text-main); margin-bottom: 5px;">Yönetici Girişi</h2>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Sistem üzerinde değişiklik yapmak için yetkilendirme gereklidir.</p>
+    <div class="modal-box" style="max-width: 420px; text-align: center; padding: 40px 30px;">
+        <div style="font-size: 3.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 15px rgba(176,38,255,0.4));">🛡️</div>
+        <h2 style="font-family: var(--font-display); color: var(--text-main); margin-bottom: 5px; font-size: 2rem;">Yönetici Girişi</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px; padding: 0 20px;">Sistem üzerinde değişiklik yapmak için güvenli yetkilendirme gereklidir.</p>
         
         <div class="form-group" style="text-align: left; margin-bottom: 15px;">
-            <label>E-posta veya Kullanıcı Adı</label>
-            <input type="text" id="login_user" class="form-control" placeholder="admin@metavis1on.com">
+            <label style="color: var(--text-main);">E-posta veya Kullanıcı Adı</label>
+            <input type="text" id="login_user" class="form-control" placeholder="admin@metavis1on.com" style="padding: 12px;">
         </div>
-        <div class="form-group" style="text-align: left; margin-bottom: 25px;">
-            <label>Şifre</label>
-            <input type="password" id="login_pass" class="form-control" placeholder="••••••••">
+        <div class="form-group" style="text-align: left; margin-bottom: 30px;">
+            <label style="color: var(--text-main);">Sistem Şifresi</label>
+            <input type="password" id="login_pass" class="form-control" placeholder="••••••••" style="padding: 12px;" onkeypress="if(event.key === 'Enter') window.handleLogin()">
         </div>
         
-        <button class="btn btn-admin" onclick="handleLogin()" style="width: 100%; font-size: 1rem; padding: 10px;">Sisteme Giriş Yap</button>
-        <button class="btn" onclick="closeModal('loginModal')" style="width: 100%; margin-top: 10px; border: none;">Vazgeç</button>
+        <button class="btn btn-admin" id="loginBtn" onclick="handleLogin()" style="width: 100%; font-size: 1.1rem; padding: 12px; margin-bottom: 10px;">Giriş Yap ve Yetkiyi Al</button>
+        <button class="btn" onclick="closeModal('loginModal')" style="width: 100%; border: none; background: transparent;">İptal</button>
     </div>
 </div>
 
 <div class="modal-overlay" id="detailModal">
     <div class="modal-box large">
         <div class="modal-header">
-            <div class="modal-title">📋 Kayıt Detayı ve Geçmişi</div>
+            <div class="modal-title">📋 Kayıt Detayı & Finansal Geçmiş</div>
             <button class="close-modal" onclick="closeModal('detailModal')">&times;</button>
         </div>
         <div id="detailContent">
@@ -599,41 +668,57 @@
 </div>
 
 <div class="modal-overlay" id="paymentModal">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width: 450px;">
         <div class="modal-header">
-            <div class="modal-title">💵 Tahsilat / Ödeme Girişi</div>
+            <div class="modal-title">💵 Yeni Tahsilat Girişi</div>
             <button class="close-modal" onclick="closeModal('paymentModal')">&times;</button>
         </div>
         
-        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed var(--border-light);">
-            <div class="detail-row" style="border:none; margin:0; padding:0;"><span class="detail-label">Kişi:</span> <span class="detail-val" id="pay_name_display"></span></div>
-            <div class="detail-row" style="border:none; margin:0; padding:0; margin-top:5px;"><span class="detail-label">Kalan Borç:</span> <span class="detail-val" id="pay_rem_display" style="color:var(--accent-red); font-size: 1.1rem;"></span></div>
+        <div style="background: rgba(0,0,0,0.4); padding: 18px; border-radius: 10px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.08); position: relative; overflow: hidden;">
+            <div style="position: absolute; top:0; left:0; width:4px; height:100%; background:var(--accent-orange);"></div>
+            <div class="detail-row" style="border:none; margin:0; padding:0; margin-bottom: 8px;"><span class="detail-label">Borçlu Kişi:</span> <span class="detail-val" id="pay_name_display" style="color: white; font-size: 1rem;"></span></div>
+            <div class="detail-row" style="border:none; margin:0; padding:0;"><span class="detail-label">Güncel Kalan Borç:</span> <span class="detail-val" id="pay_rem_display" style="color:var(--accent-red); font-size: 1.3rem; font-family: var(--font-display);"></span></div>
         </div>
 
         <div class="form-group" style="margin-bottom: 15px;">
-            <label>Tahsil Edilen Miktar (₺) *</label>
-            <input type="number" id="pay_amount" class="form-control" min="0.01" step="0.01" required>
+            <label style="color: var(--text-main);">Tahsil Edilen Miktar (₺) *</label>
+            <input type="number" id="pay_amount" class="form-control" min="0.01" step="0.01" required style="font-size: 1.2rem; font-weight: bold; color: var(--accent-green);" oninput="previewRemaining()">
         </div>
+        <div style="text-align: right; font-size: 0.8rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 15px;">
+            İşlem Sonrası Kalan: <strong id="pay_preview" style="color: white;">-</strong>
+        </div>
+
         <div class="form-group" style="margin-bottom: 15px;">
-            <label>Ödeme Notu / Açıklama</label>
-            <input type="text" id="pay_note" class="form-control" placeholder="Örn: Elden alındı, Havale geldi vb.">
+            <label>Ödeme Türü / Kanalı</label>
+            <select id="pay_type" class="form-control">
+                <option value="Nakit / Elden">Nakit / Elden</option>
+                <option value="Havale / EFT">Havale / EFT</option>
+                <option value="Kredi Kartı">Kredi Kartı</option>
+                <option value="Kripto">Kripto</option>
+                <option value="Diğer">Diğer</option>
+            </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 20px;">
+            <label>İşlem Notu (Opsiyonel)</label>
+            <input type="text" id="pay_note" class="form-control" placeholder="Örn: 2. Taksit ödendi">
         </div>
         <input type="hidden" id="pay_id">
-        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px;">
-            <button class="btn" onclick="closeModal('paymentModal')">İptal</button>
-            <button class="btn btn-success" onclick="savePaymentAuth()"><i class="locked-icon">🔒</i> Ödemeyi İşle</button>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; border-top: 1px solid var(--border-light); padding-top: 20px;">
+            <button class="btn" onclick="closeModal('paymentModal')">Vazgeç</button>
+            <button class="btn btn-success" onclick="savePaymentAuth()" style="padding: 10px 25px; font-size: 1rem;"><i class="locked-icon">🔒</i> Tahsilatı Onayla</button>
         </div>
     </div>
 </div>
 
 <div class="modal-overlay" id="confirmModal">
-    <div class="modal-box" style="text-align: center; max-width: 400px;">
-        <div style="font-size: 3rem; margin-bottom: 15px; color: var(--accent-red);">⚠️</div>
-        <h3 style="margin-bottom: 15px; font-family: var(--font-display);">Kritik İşlem Onayı</h3>
-        <p style="color: var(--text-muted); margin-bottom: 25px;" id="confirmText">Bu işlemi geri alamazsınız.</p>
+    <div class="modal-box" style="text-align: center; max-width: 420px; padding: 40px 30px;">
+        <div style="font-size: 4rem; margin-bottom: 15px; color: var(--accent-red); filter: drop-shadow(0 0 15px rgba(255,51,102,0.4));">⚠️</div>
+        <h3 style="margin-bottom: 15px; font-family: var(--font-display); font-size: 1.8rem; color: white;">Kritik İşlem Onayı</h3>
+        <p style="color: var(--text-muted); margin-bottom: 30px; font-size: 0.95rem; line-height: 1.5;" id="confirmText">Bu işlemi geri alamazsınız.</p>
         <div style="display: flex; justify-content: center; gap: 15px;">
-            <button class="btn" onclick="closeModal('confirmModal')">Vazgeç</button>
-            <button class="btn btn-danger" id="confirmActionBtn"><i class="locked-icon">🔒</i> Evet, Onaylıyorum</button>
+            <button class="btn" onclick="closeModal('confirmModal')" style="padding: 10px 20px;">İptal Et</button>
+            <button class="btn btn-danger" id="confirmActionBtn" style="padding: 10px 20px;"><i class="locked-icon">🔒</i> Evet, Kesinlikle Onaylıyorum</button>
         </div>
     </div>
 </div>
@@ -641,13 +726,47 @@
 <div class="toast-container" id="toastContainer"></div>
 
 <script type="module">
-    // Firebase Modular Import
+    /* ========================================================================
+       1. GLOBAL TOAST VE BINDING SISTEMI (EN ÜSTTE TANIMLANMALI - HATA ÇÖZÜMÜ)
+       ======================================================================== */
+    window.showToast = function(message, type = "success") {
+        try {
+            let container = document.getElementById('toastContainer');
+            if(!container) {
+                container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let icon = "✅";
+            if(type === 'error') icon = "❌";
+            if(type === 'warning') icon = "⚠️";
+            if(type === 'info') icon = "ℹ️";
+
+            toast.innerHTML = `<i>${icon}</i> <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 3500);
+        } catch(e) {
+            console.error("Toast Bildirim Hatası:", e, message);
+        }
+    };
+    const showToast = window.showToast; // Local referans oluştur
+
+    // Modüler Importlar
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, writeBatch, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     /* ========================================================================
-       FIREBASE CONFIG ALANI (LÜTFEN BURAYI KENDİ BİLGİLERİNİZLE DOLDURUN)
+       FIREBASE CONFIG ALANI
        ======================================================================== */
     const firebaseConfig = {
         apiKey: "AIzaSyC4XKSOahPX4Fx_URt7kPQfKBjLk2qoazw",
@@ -662,60 +781,79 @@
     let debts = [];
     let filteredDebts = [];
     let sysLogs = [];
-    const ITEMS_PER_PAGE = 10;
+    let ITEMS_PER_PAGE = 10;
     let currentPage = 1;
     let confirmCallback = null;
+    let currentSortCol = 'date_desc';
+    let isOnline = navigator.onLine;
     
     // Auth State
     let isAdmin = false;
     let ADMIN_USER = "admin";
-    const FALLBACK_PASS = "metavis1on_admin_2026"; // Firebase bağlanamazsa geçerli olacak lokal şifre
+    const FALLBACK_PASS = "metavis1on_admin_2026"; 
 
     let useFirebase = false;
     let app, auth, db;
 
     const COLORS = { blue: '#00E5FF', purple: '#B026FF', red: '#FF3366', green: '#00E676', orange: '#FF9100', gray: '#5A5A6E' };
 
-    // --- INIT & HIBRIT KONTROL ---
+    // --- INIT & BAĞLANTI İZLEME ---
     document.addEventListener("DOMContentLoaded", () => {
         initClock();
+        setupNetworkListeners();
 
-        // Firebase Başlatma Denemesi
         try {
             if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
                 app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
                 useFirebase = true;
-                document.getElementById('fbStatus').className = "firebase-status fb-online";
-                document.getElementById('fbStatus').innerHTML = "☁️ Bulut Aktif";
+                updateConnectionStatus(true);
                 initFirebaseAuth();
             } else {
-                console.warn("Firebase ayarları girilmemiş. Lokal mod (localStorage) ile devam ediliyor.");
-                document.getElementById('migrateBtn').style.display = 'none'; // Sadece Firebase aktifse aktarım yapılabilir
+                console.warn("Firebase ayarları girilmemiş. Lokal mod ile devam ediliyor.");
+                useFirebase = false;
+                updateConnectionStatus(false, "☁️ Lokal Mod (Bağlantı Yok)");
+                const migrateBtn = document.getElementById('migrateBtn');
+                if(migrateBtn) migrateBtn.style.display = 'none'; 
                 checkLocalAuth();
                 loadDataLocal();
                 loadLogsLocal();
             }
         } catch (error) {
             console.error("Firebase başlatılırken hata:", error);
+            useFirebase = false;
+            updateConnectionStatus(false, "☁️ Lokal Mod (Hata)");
             checkLocalAuth();
             loadDataLocal();
             loadLogsLocal();
         }
 
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('f_issueDate').value = today;
-        document.getElementById('f_dueDate').value = today;
+        const fIssue = document.getElementById('f_issueDate');
+        const fDue = document.getElementById('f_dueDate');
+        if(fIssue) fIssue.value = today;
+        if(fDue) fDue.value = today;
 
         const fAmount = document.getElementById('f_amount');
         const fPaid = document.getElementById('f_paid');
-        fPaid.addEventListener('input', () => {
-            if(parseFloat(fPaid.value) > parseFloat(fAmount.value)) {
-                fPaid.value = fAmount.value;
-                showToast("Ödenen tutar toplam borcu aşamaz.", "warning");
-            }
-        });
+        if(fPaid && fAmount) {
+            fPaid.addEventListener('input', () => {
+                if(parseFloat(fPaid.value) > parseFloat(fAmount.value)) {
+                    fPaid.value = fAmount.value;
+                    showToast("Ödenen tutar, toplam borcu aşamaz.", "warning");
+                }
+            });
+        }
+        
+        if(fDue && fIssue) {
+            fDue.addEventListener('change', () => {
+                if(fDue.value < fIssue.value) {
+                    showToast("Son ödeme tarihi, veriliş tarihinden önce olamaz.", "warning");
+                    fDue.value = fIssue.value;
+                }
+            });
+        }
     });
 
     function initClock() {
@@ -723,19 +861,48 @@
         const dateEl = document.getElementById('live-date');
         setInterval(() => {
             const now = new Date();
-            timeEl.innerText = now.toLocaleTimeString('tr-TR');
+            if(timeEl) timeEl.innerText = now.toLocaleTimeString('tr-TR');
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            dateEl.innerText = now.toLocaleDateString('tr-TR', options);
+            if(dateEl) dateEl.innerText = now.toLocaleDateString('tr-TR', options);
         }, 1000);
     }
 
-    // --- AUTHENTICATION ---
+    function setupNetworkListeners() {
+        window.addEventListener('online', () => {
+            isOnline = true;
+            if(useFirebase) updateConnectionStatus(true);
+            showToast("İnternet bağlantısı yeniden sağlandı.", "success");
+            addLog("ONLINE_MODE", "Sistem tekrar çevrimiçi oldu.");
+        });
+        window.addEventListener('offline', () => {
+            isOnline = false;
+            updateConnectionStatus(false, "⚠️ Çevrimdışı");
+            showToast("İnternet bağlantısı koptu. Sadece okunabilir mod.", "warning");
+            addLog("OFFLINE_MODE", "Sistem çevrimdışı. Bulut işlemleri durduruldu.");
+        });
+    }
+
+    function updateConnectionStatus(online, text = "☁️ Bulut Aktif") {
+        const statusEl = document.getElementById('fbStatus');
+        if(!statusEl) return;
+        if(online && isOnline) {
+            statusEl.className = "firebase-status fb-online";
+            statusEl.innerHTML = text;
+        } else {
+            statusEl.className = "firebase-status fb-offline";
+            statusEl.innerHTML = text;
+        }
+    }
+
+    // --- AUTHENTICATION (STABILIZED) ---
     function initFirebaseAuth() {
         onAuthStateChanged(auth, (user) => {
             if(user) {
                 isAdmin = true;
                 ADMIN_USER = user.email.split('@')[0];
-                showToast("Yönetici yetkisi doğrulandı (Bulut).", "success");
+                // Sayfa ilk yüklendiğinde de açık oturum varsa toast göster
+                // Ama her onAuthStateChanged tetiklendiğinde spama düşmemesi için hafif kontrol eklenebilir. 
+                // Şimdilik sorunsuz.
             } else {
                 isAdmin = false;
             }
@@ -752,110 +919,157 @@
     }
 
     async function handleLogin() {
-        const u = document.getElementById('login_user').value;
-        const p = document.getElementById('login_pass').value;
+        const btn = document.getElementById('loginBtn');
+        const userEl = document.getElementById('login_user');
+        const passEl = document.getElementById('login_pass');
+        
+        if(!userEl || !passEl || !btn) return;
 
-        if (useFirebase) {
-            // Firebase Login
-            let email = u.includes('@') ? u : u + '@metavis1on.com'; // 'admin' yazılırsa admin@metavis1on.com'a çevir
-            try {
+        const u = userEl.value.trim();
+        const p = passEl.value;
+        
+        if(!u || !p) return showToast("Lütfen kullanıcı adı ve şifreyi eksiksiz girin.", "warning");
+
+        const originalBtnText = btn.innerHTML;
+        btn.innerHTML = "⏳ Bağlanıyor...";
+        btn.disabled = true;
+
+        try {
+            if (useFirebase && isOnline) {
+                let email = u.includes('@') ? u : u + '@metavis1on.com';
                 await signInWithEmailAndPassword(auth, email, p);
                 closeModal('loginModal');
-                addLog("AUTH", "Yönetici girişi başarılı.");
-            } catch(e) {
-                showToast("Hatalı kullanıcı adı veya şifre.", "error");
-            }
-        } else {
-            // Local Fallback Login
-            if((u === "admin" || u === "admin@metavis1on.com") && p === FALLBACK_PASS) {
-                isAdmin = true;
-                sessionStorage.setItem('metavis1on_admin', 'true');
-                closeModal('loginModal');
-                addLog("AUTH", "Yönetici girişi başarılı.");
-                showToast("Yönetici girişi başarılı. (Lokal)", "success");
-                updateUIForAuth();
+                addLog("AUTH_LOGIN_SUCCESS", `[${email}] Yönetici bulut sistemine giriş yaptı.`);
+                showToast("Yönetici girişi başarılı.", "success");
             } else {
-                showToast("Hatalı kullanıcı adı veya şifre.", "error");
+                // Local Fallback
+                if((u === "admin" || u === "admin@metavis1on.com") && p === FALLBACK_PASS) {
+                    isAdmin = true;
+                    sessionStorage.setItem('metavis1on_admin', 'true');
+                    closeModal('loginModal');
+                    addLog("AUTH_LOGIN_SUCCESS", "Yönetici lokal sisteme giriş yaptı.");
+                    showToast("Yönetici girişi başarılı. (Lokal)", "success");
+                    updateUIForAuth();
+                } else {
+                    showToast("Hatalı kullanıcı bilgisi veya çevrimdışısınız.", "error");
+                    addLog("AUTH_ERROR", "Başarısız lokal giriş denemesi.");
+                }
             }
+        } catch(e) {
+            console.error("Giriş Hatası:", e);
+            let errMsg = "Bilinmeyen bir hata oluştu.";
+            if(e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') errMsg = "Hatalı şifre veya e-posta.";
+            else if(e.code === 'auth/user-not-found') errMsg = "Kullanıcı bulunamadı.";
+            else if(e.code === 'auth/network-request-failed') errMsg = "Ağ hatası. İnternet bağlantınızı kontrol edin.";
+            
+            showToast("Giriş Başarısız: " + errMsg, "error");
+            addLog("AUTH_ERROR", `Başarısız bulut giriş denemesi: ${u}`);
+        } finally {
+            btn.innerHTML = originalBtnText;
+            btn.disabled = false;
         }
     }
 
     async function openLoginModal() {
         if(isAdmin) {
-            if(useFirebase) {
-                await signOut(auth);
-                addLog("AUTH", "Yönetici çıkış yaptı.");
-                showToast("Misafir moduna dönüldü.", "info");
+            if(useFirebase && isOnline) {
+                try {
+                    await signOut(auth);
+                    addLog("AUTH_LOGOUT", "Yönetici buluttan çıkış yaptı.");
+                    showToast("Misafir moduna dönüldü.", "info");
+                } catch(e) {
+                    showToast("Çıkış yapılırken bir hata oluştu.", "error");
+                }
             } else {
                 isAdmin = false;
                 sessionStorage.removeItem('metavis1on_admin');
-                addLog("AUTH", "Yönetici çıkış yaptı.");
+                addLog("AUTH_LOGOUT", "Yönetici lokalden çıkış yaptı.");
                 showToast("Misafir moduna dönüldü.", "info");
                 updateUIForAuth();
             }
         } else {
-            document.getElementById('login_user').value = '';
-            document.getElementById('login_pass').value = '';
+            const userEl = document.getElementById('login_user');
+            const passEl = document.getElementById('login_pass');
+            if(userEl) userEl.value = '';
+            if(passEl) passEl.value = '';
             openModal('loginModal');
+            // Modal açılınca input'a focuslan
+            setTimeout(() => { if(userEl) userEl.focus(); }, 100);
         }
     }
 
     function updateUIForAuth() {
-        const badge = document.getElementById('authBadge');
-        const btn = document.getElementById('authBtn');
-        const overlay = document.getElementById('formOverlay');
-        const adminPanel = document.getElementById('adminPanel');
-        const adminFields = document.querySelectorAll('.admin-field');
-        const lockedIcons = document.querySelectorAll('.locked-icon');
+        try {
+            const badge = document.getElementById('authBadge');
+            const btn = document.getElementById('authBtn');
+            const overlay = document.getElementById('formOverlay');
+            const adminPanel = document.getElementById('adminPanel');
+            const adminFields = document.querySelectorAll('.admin-field');
+            const lockedIcons = document.querySelectorAll('.locked-icon');
+            const editBadge = document.getElementById('editBadge');
 
-        if(isAdmin) {
-            badge.className = "auth-badge auth-admin";
-            badge.innerHTML = "🔓 Yönetici Modu";
-            btn.innerText = "Sistemden Çıkış Yap";
-            btn.classList.replace('btn-admin', 'btn-danger');
-            
-            overlay.style.display = "none";
-            adminPanel.classList.add('active');
-            
-            adminFields.forEach(f => f.disabled = false);
-            lockedIcons.forEach(i => i.style.display = "none");
-        } else {
-            badge.className = "auth-badge auth-guest";
-            badge.innerHTML = "🔒 Salt Okunur Mod";
-            btn.innerText = "Yönetici Girişi";
-            btn.classList.replace('btn-danger', 'btn-admin');
-            
-            overlay.style.display = "flex";
-            adminPanel.classList.remove('active');
-            
-            adminFields.forEach(f => f.disabled = true);
-            lockedIcons.forEach(i => i.style.display = "inline");
+            if(isAdmin) {
+                if(badge) { badge.className = "auth-badge auth-admin"; badge.innerHTML = `🔓 Yönetici: ${ADMIN_USER}`; }
+                if(btn) { btn.innerText = "Sistemden Çıkış Yap"; btn.className = "btn btn-danger"; }
+                if(overlay) overlay.style.display = "none";
+                if(adminPanel) adminPanel.classList.add('active');
+                
+                adminFields.forEach(f => f.disabled = false);
+                lockedIcons.forEach(i => i.style.display = "none");
+            } else {
+                if(badge) { badge.className = "auth-badge auth-guest"; badge.innerHTML = "🔒 Salt Okunur Mod"; }
+                if(btn) { btn.innerText = "Yönetici Girişi"; btn.className = "btn btn-admin"; }
+                if(overlay) overlay.style.display = "flex";
+                if(adminPanel) adminPanel.classList.remove('active');
+                
+                adminFields.forEach(f => f.disabled = true);
+                lockedIcons.forEach(i => i.style.display = "inline");
+                if(editBadge) editBadge.style.display = "none";
+                
+                // Formu temizle (Güvenlik)
+                if(window.resetForm && typeof window.resetForm === "function") {
+                    const editIdEl = document.getElementById('editId');
+                    if(editIdEl && editIdEl.value !== "") window.resetForm();
+                }
+            }
+            renderTable();
+        } catch(e) {
+            console.error("UI Güncelleme Hatası:", e);
         }
-        renderTable();
     }
 
     function requireAdmin() {
         if(!isAdmin) {
-            showToast("Bu işlem için yönetici yetkisi gereklidir. Lütfen giriş yapın.", "error");
+            showToast("Bu işlem için yönetici yetkisi gereklidir.", "error");
             openLoginModal();
+            return false;
+        }
+        if(!isOnline && useFirebase) {
+            showToast("Şu an çevrimdışısınız. Bulut işlemi yapılamaz.", "warning");
             return false;
         }
         return true;
     }
 
-    // --- LOG SİSTEMİ (FIREBASE / LOCAL) ---
+    // --- LOG SİSTEMİ V4.1 ---
     function loadLogsFirebase() {
-        const qLogs = query(collection(db, "sysLogs"), orderBy("timestamp", "desc"));
-        onSnapshot(qLogs, (snapshot) => {
-            sysLogs = [];
-            snapshot.forEach(doc => sysLogs.push(doc.data()));
-            renderLogs();
-        });
+        try {
+            const qLogs = query(collection(db, "sysLogs"), orderBy("timestamp", "desc"));
+            onSnapshot(qLogs, (snapshot) => {
+                sysLogs = [];
+                snapshot.forEach(doc => sysLogs.push(doc.data()));
+                renderLogs();
+            }, (error) => {
+                console.error("Log okuma hatası:", error);
+            });
+        } catch(e) { console.error("Log Query hatası:", e); }
     }
 
     function loadLogsLocal() {
         const stored = localStorage.getItem('metavis1on_logs');
-        if (stored) sysLogs = JSON.parse(stored);
+        if (stored) {
+            try { sysLogs = JSON.parse(stored); } catch(e) { sysLogs = []; }
+        }
         renderLogs();
     }
 
@@ -867,11 +1081,15 @@
             msg: msg
         };
 
-        if (useFirebase) {
-            await addDoc(collection(db, "sysLogs"), logData);
+        if (useFirebase && isOnline) {
+            try {
+                await addDoc(collection(db, "sysLogs"), logData);
+            } catch(e) {
+                console.error("Log Firebase'e yazılamadı:", e);
+            }
         } else {
             sysLogs.unshift(logData);
-            if(sysLogs.length > 50) sysLogs.pop();
+            if(sysLogs.length > 100) sysLogs.pop(); 
             localStorage.setItem('metavis1on_logs', JSON.stringify(sysLogs));
             renderLogs();
         }
@@ -881,47 +1099,89 @@
         const container = document.getElementById('sysLogsContainer');
         if(!container) return;
         container.innerHTML = '';
-        if(sysLogs.length === 0) {
-            container.innerHTML = '<div class="log-item">Sistem kaydı bulunmuyor.</div>';
+        if(!sysLogs || sysLogs.length === 0) {
+            container.innerHTML = '<div class="log-item" style="color:var(--text-muted);">Sistem kaydı bulunmuyor.</div>';
             return;
         }
-        sysLogs.forEach(l => {
+        
+        const renderList = sysLogs.slice(0, 50);
+        renderList.forEach(l => {
             const div = document.createElement('div');
             div.className = 'log-item';
-            div.innerHTML = `<span class="log-time">[${l.time}]</span> <span class="log-user">[${l.type}]</span> <span class="log-msg">${l.msg}</span>`;
+            
+            // Renkleri CSS'te tanımlanan class'lara göre alacak
+            div.innerHTML = `
+                <span class="log-time">${l.time || ""}</span> 
+                <span class="log-type ${l.type || "SYSTEM"}">${l.type || "SYSTEM"}</span> 
+                <span class="log-msg">${l.msg || ""}</span>
+            `;
             container.appendChild(div);
         });
     }
 
-    // --- VERİ YÖNETİMİ (REAL-TIME FIREBASE / LOCAL BACKUP) ---
+    // --- VERİ YÖNETİMİ (NORMALIZATION V4.1) ---
+    function normalizeDebt(d, docId = null) {
+        if(!d) return null;
+        return {
+            id: docId || d.id || generateId(),
+            refCode: d.refCode || ("SYS-" + Math.floor(Math.random()*100000)),
+            name: d.name || "Bilinmiyor",
+            phone: d.phone || "",
+            amount: parseFloat(d.amount) || 0,
+            paid: parseFloat(d.paid) || 0,
+            isInst: Boolean(d.isInst),
+            instCount: parseInt(d.instCount) || null,
+            issueDate: d.issueDate || new Date().toISOString().split('T')[0],
+            dueDate: d.dueDate || new Date().toISOString().split('T')[0],
+            priority: d.priority || "normal",
+            tag: d.tag || "diger",
+            note: d.note || "",
+            createdAt: d.createdAt || new Date().toISOString(),
+            updatedAt: d.updatedAt || new Date().toISOString(),
+            payments: Array.isArray(d.payments) ? d.payments : []
+        };
+    }
+
     function loadDataFirebase() {
-        onSnapshot(collection(db, "debts"), (snapshot) => {
-            debts = [];
-            snapshot.forEach(doc => {
-                let data = doc.data();
-                data.id = doc.id; // Firestore Document ID kullanılıyor
-                debts.push(data);
+        try {
+            onSnapshot(collection(db, "debts"), (snapshot) => {
+                debts = [];
+                snapshot.forEach(doc => {
+                    let data = normalizeDebt(doc.data(), doc.id);
+                    if(data) debts.push(data);
+                });
+                
+                // Backup mechanism
+                localStorage.setItem('metavis1on_debts_backup', JSON.stringify(debts));
+                localStorage.setItem('metavis1on_last_backup', new Date().toLocaleString());
+                
+                updateAllStatuses();
+                applyFilters();
+                updateStats();
+                drawCharts();
+            }, (error) => {
+                console.error("Veri onSnapshot hatası:", error);
+                if(error.code === 'permission-denied') {
+                    showToast("Veri okuma reddedildi: Firebase kuralları veya yetki sorunu.", "error");
+                }
             });
-            // Firebase'den gelen canlı veriyi, çevrimdışı durumlar için yedeğe al (Kayıpsız geçiş kuralı)
-            localStorage.setItem('metavis1on_debts_backup', JSON.stringify(debts));
-            
-            updateAllStatuses();
-            applyFilters();
-            updateStats();
-            drawCharts();
-        });
+        } catch (e) {
+            console.error("loadDataFirebase Setup Error:", e);
+        }
     }
 
     function loadDataLocal() {
         const stored = localStorage.getItem('metavis1on_debts') || localStorage.getItem('metavis1on_debts_backup');
         if (stored) {
-            debts = JSON.parse(stored).map(d => {
-                if(!d.payments) d.payments = [];
-                if(!d.createdAt) d.createdAt = new Date().toISOString();
-                if(!d.updatedAt) d.updatedAt = new Date().toISOString();
-                if(!d.refCode) d.refCode = "SYS-" + Math.floor(Math.random()*1000);
-                return d;
-            });
+            try {
+                let parsed = JSON.parse(stored);
+                if(Array.isArray(parsed)) {
+                    debts = parsed.map(d => normalizeDebt(d)).filter(d => d !== null);
+                }
+            } catch(e) {
+                console.error("Lokal veri parse edilemedi.", e);
+                debts = [];
+            }
             updateAllStatuses();
         } else {
             debts = [];
@@ -939,30 +1199,39 @@
         drawCharts();
     }
 
-    // Eski yerel verileri buluta aktar
+    // Migration
     async function migrateLocalToFirebase() {
         if(!requireAdmin() || !useFirebase) return;
         const localData = localStorage.getItem('metavis1on_debts') || localStorage.getItem('metavis1on_debts_backup');
         if(!localData) return showToast("Aktarılacak yerel veri bulunamadı.", "warning");
         
-        let parsed = JSON.parse(localData);
-        if(parsed.length === 0) return showToast("Yerel veri tabanı zaten boş.", "info");
+        let parsed = [];
+        try { parsed = JSON.parse(localData); } catch(e) { return showToast("Yerel veri bozuk.", "error"); }
+        if(!Array.isArray(parsed) || parsed.length === 0) return showToast("Yerel veri tabanı zaten boş.", "info");
 
-        showToast("Veriler Firebase'e aktarılıyor... Lütfen bekleyin.", "info");
+        const btn = document.getElementById('migrateBtn');
+        if(btn) { btn.innerText = "⏳ Aktarılıyor..."; btn.disabled = true; }
+        showToast("Veriler Firebase'e aktarılıyor...", "info");
+
         try {
             const batch = writeBatch(db);
             parsed.forEach(d => {
-                const docRef = doc(collection(db, "debts")); // Create new ref
-                const dataToSave = {...d};
-                delete dataToSave.id; // Eski ID'yi sil, firestore kendi ID versin
-                batch.set(docRef, dataToSave);
+                const docRef = doc(collection(db, "debts"));
+                const dataToSave = normalizeDebt(d);
+                if(dataToSave) {
+                    delete dataToSave.id; 
+                    batch.set(docRef, dataToSave);
+                }
             });
             await batch.commit();
-            localStorage.removeItem('metavis1on_debts'); // Aktarım bitince eskiyi temizle, backup kalabilir
-            addLog("SYSTEM", "Yerel veriler başarıyla Firebase'e aktarıldı.");
+            localStorage.removeItem('metavis1on_debts'); 
+            addLog("MIGRATE_LOCAL_TO_FIREBASE", `${parsed.length} adet yerel kayıt buluta aktarıldı.`);
             showToast("Aktarım başarılı!", "success");
         } catch(e) {
-            showToast("Aktarım sırasında hata: " + e.message, "error");
+            console.error("Migrate Hatası:", e);
+            showToast("Aktarım başarısız: " + (e.message || "Bilinmeyen hata"), "error");
+        } finally {
+            if(btn) { btn.innerText = "☁️ Yerel Veriyi Firebase'e Aktar"; btn.disabled = false; }
         }
     }
 
@@ -974,100 +1243,143 @@
         const lastWeek = new Date(today); lastWeek.setDate(lastWeek.getDate() - 7);
 
         const demoSet = [
-            { refCode: "DEMO-001", name: "Kuzey Yılmaz", phone: "05551234567", amount: 15000, paid: 5000, issueDate: lastWeek.toISOString().split('T')[0], dueDate: nextWeek.toISOString().split('T')[0], priority: "yuksek", tag: "is", note: "Proje avansı", isInst: true, instCount: 3, createdAt: lastWeek.toISOString(), updatedAt: today.toISOString(), payments: [{date: today.toISOString(), amount: 5000, note: "İlk Taksit", admin: ADMIN_USER, remaining: 10000}] },
-            { refCode: "DEMO-002", name: "Selin Yılmaz", phone: "05329876543", amount: 1200, paid: 1200, issueDate: lastWeek.toISOString().split('T')[0], dueDate: today.toISOString().split('T')[0], priority: "normal", tag: "arkadas", note: "Yemek hesabı", isInst: false, instCount: null, createdAt: lastWeek.toISOString(), updatedAt: today.toISOString(), payments: [{date: today.toISOString(), amount: 1200, note: "Tamamı ödendi", admin: ADMIN_USER, remaining: 0}] }
+            { refCode: "DEMO-101", name: "Hakan Altun", phone: "05551234567", amount: 25000, paid: 5000, issueDate: lastWeek.toISOString().split('T')[0], dueDate: nextWeek.toISOString().split('T')[0], priority: "yuksek", tag: "is", note: "Web Projesi Peşinatı", isInst: true, instCount: 5, createdAt: lastWeek.toISOString(), updatedAt: today.toISOString(), payments: [{date: today.toISOString(), amount: 5000, note: "Peşinat (Nakit)", admin: ADMIN_USER, remaining: 20000}] },
+            { refCode: "DEMO-102", name: "Yazılım Şti.", phone: "08501234567", amount: 8000, paid: 8000, issueDate: lastWeek.toISOString().split('T')[0], dueDate: today.toISOString().split('T')[0], priority: "normal", tag: "is", note: "Aylık bakım", isInst: false, instCount: null, createdAt: lastWeek.toISOString(), updatedAt: today.toISOString(), payments: [{date: today.toISOString(), amount: 8000, note: "Tamamı ödendi (EFT)", admin: ADMIN_USER, remaining: 0}] },
+            { refCode: "DEMO-103", name: "Ev Sahibi", phone: "", amount: 15000, paid: 0, issueDate: lastWeek.toISOString().split('T')[0], dueDate: today.toISOString().split('T')[0], priority: "kritik", tag: "diger", note: "Eksik kira", isInst: false, instCount: null, createdAt: lastWeek.toISOString(), updatedAt: lastWeek.toISOString(), payments: [] }
         ];
 
-        if(useFirebase) {
-            const batch = writeBatch(db);
-            demoSet.forEach(d => {
-                const ref = doc(collection(db, "debts"));
-                batch.set(ref, d);
-            });
-            await batch.commit();
+        if(useFirebase && isOnline) {
+            try {
+                const batch = writeBatch(db);
+                demoSet.forEach(d => {
+                    const ref = doc(collection(db, "debts"));
+                    batch.set(ref, normalizeDebt(d));
+                });
+                await batch.commit();
+                addLog("LOAD_DEMO", "Demo veriler buluta yüklendi.");
+                showToast("Demo veriler yüklendi.", "success");
+            } catch(e) { showToast("Hata: "+e.message, "error"); }
         } else {
-            demoSet.forEach(d => { d.id = generateId(); debts.push(d); });
+            demoSet.forEach(d => { 
+                let normalized = normalizeDebt(d, generateId());
+                if(normalized) debts.push(normalized); 
+            });
             saveDataLocalOnly();
+            addLog("LOAD_DEMO", "Demo veriler lokale yüklendi.");
+            showToast("Demo veriler yüklendi.", "success");
         }
-        addLog("SYSTEM", "Demo veriler sisteme yüklendi.");
-        showToast("Demo veriler yüklendi.", "success");
     }
 
     function confirmResetDataAuth() {
         if(!requireAdmin()) return;
-        document.getElementById('confirmText').innerText = "TÜM veriler, loglar ve geçmiş silinecek! Bu işlemi geri alamazsınız.";
+        document.getElementById('confirmText').innerHTML = "TÜM borç verileri, grafikler ve geçmiş silinecek!<br><br><strong style='color:var(--accent-red);'>Bu işlem geri döndürülemez.</strong>";
         openModal('confirmModal');
+        
         confirmCallback = async () => {
-            if(useFirebase) {
-                const snap = await getDocs(collection(db, "debts"));
-                const batch = writeBatch(db);
-                snap.forEach(d => batch.delete(d.ref));
-                await batch.commit();
-            } else {
-                debts = [];
-                sysLogs = [];
-                localStorage.removeItem('metavis1on_logs');
-                saveDataLocalOnly();
+            const btn = document.getElementById('confirmActionBtn');
+            btn.innerText = "Siliniyor... ⏳"; btn.disabled = true;
+
+            try {
+                if(useFirebase && isOnline) {
+                    const snap = await getDocs(collection(db, "debts"));
+                    const batch = writeBatch(db);
+                    snap.forEach(d => batch.delete(d.ref));
+                    await batch.commit();
+                    addLog("RESET_SYSTEM", `Sistem sıfırlandı. ${snap.size} bulut kaydı silindi.`);
+                    showToast("Tüm bulut verileri sıfırlandı.", "success");
+                } else {
+                    let s = debts.length;
+                    debts = [];
+                    saveDataLocalOnly();
+                    localStorage.removeItem('metavis1on_debts_backup');
+                    addLog("RESET_SYSTEM", `Sistem sıfırlandı. ${s} lokal kayıt silindi.`);
+                    showToast("Tüm lokal veriler sıfırlandı.", "success");
+                }
+            } catch(e) {
+                console.error("Reset Error:", e);
+                showToast("Sıfırlama sırasında hata oluştu.", "error");
+            } finally {
+                btn.innerHTML = `<i class="locked-icon">🔒</i> Evet, Kesinlikle Onaylıyorum`; 
+                btn.disabled = false;
+                closeModal('confirmModal');
             }
-            closeModal('confirmModal');
-            addLog("SYSTEM", "Sistem tamamen sıfırlandı.");
-            showToast("Tüm veriler sıfırlandı.", "success");
         };
         document.getElementById('confirmActionBtn').onclick = confirmCallback;
     }
 
     function generateId() { return 'debt_' + Math.random().toString(36).substr(2, 9); }
+    
     function calculateStatus(debt) {
-        const amount = parseFloat(debt.amount);
-        const paid = parseFloat(debt.paid);
+        if(!debt) return 'aktif';
+        const amount = parseFloat(debt.amount) || 0;
+        const paid = parseFloat(debt.paid) || 0;
         const due = new Date(debt.dueDate);
         const today = new Date(); today.setHours(0,0,0,0);
-        if (paid >= amount) return 'odendi';
+        if (amount > 0 && paid >= amount) return 'odendi';
         if (paid > 0) return 'kismi';
         if (due < today) return 'gecikmis';
         return 'aktif';
     }
-    function updateAllStatuses() { debts.forEach(d => { d.status = calculateStatus(d); }); }
+    
+    function updateAllStatuses() { 
+        debts.forEach(d => { if(d) d.status = calculateStatus(d); }); 
+    }
+    
     function getDaysLeft(dueDateStr) {
+        if(!dueDateStr) return 0;
         const due = new Date(dueDateStr);
         const today = new Date(); today.setHours(0,0,0,0);
         return Math.ceil((due - today) / (1000 * 60 * 60 * 24));
     }
-    function formatMoney(amount) { return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(amount); }
+    
+    function formatMoney(amount) { 
+        let num = parseFloat(amount) || 0;
+        return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' }).format(num); 
+    }
+    
     function formatDate(dateStr) {
         if(!dateStr) return '-';
         const d = new Date(dateStr);
         return isNaN(d) ? '-' : d.toLocaleDateString('tr-TR');
     }
 
-    // --- FORM İŞLEMLERİ ---
+    // --- FORM İŞLEMLERİ V4.1 ---
     function toggleSection(id) {
         const sec = document.getElementById(id);
+        if(!sec) return;
         sec.classList.contains('active') ? sec.classList.remove('active') : sec.classList.add('active');
     }
 
     function toggleInst() {
-        const chk = document.getElementById('f_isInst').checked;
+        const chk = document.getElementById('f_isInst');
         const inp = document.getElementById('f_instCount');
-        inp.style.display = chk ? 'inline-block' : 'none';
-        if(!chk) inp.value = '';
+        if(!chk || !inp) return;
+        inp.style.display = chk.checked ? 'inline-block' : 'none';
+        if(!chk.checked) inp.value = '';
     }
 
     async function handleFormSubmit(e) {
         e.preventDefault();
         if(!requireAdmin()) return;
         
+        const btn = document.getElementById('formSubmitBtn');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "⏳ İşleniyor..."; 
+        btn.disabled = true;
+
         const id = document.getElementById('editId').value;
-        const amount = parseFloat(document.getElementById('f_amount').value);
+        const amount = parseFloat(document.getElementById('f_amount').value) || 0;
         let paid = parseFloat(document.getElementById('f_paid').value) || 0;
         if(paid > amount) paid = amount;
 
-        const isInst = document.getElementById('f_isInst').checked;
+        const isInstEl = document.getElementById('f_isInst');
+        const isInst = isInstEl ? isInstEl.checked : false;
         const instCount = isInst ? parseInt(document.getElementById('f_instCount').value) : null;
-        const refCodeInput = document.getElementById('f_ref').value.trim().toUpperCase();
+        let refCodeInput = document.getElementById('f_ref').value.trim().toUpperCase();
+        if(!refCodeInput) refCodeInput = "SYS-" + Math.floor(Math.random()*100000);
 
-        const debtObj = {
-            refCode: refCodeInput || ("SYS-" + Math.floor(Math.random()*10000)),
+        const debtObj = normalizeDebt({
+            refCode: refCodeInput,
             name: document.getElementById('f_name').value.trim(),
             phone: document.getElementById('f_phone').value.trim(),
             amount: amount,
@@ -1080,59 +1392,86 @@
             tag: document.getElementById('f_tag').value,
             note: document.getElementById('f_note').value.trim(),
             updatedAt: new Date().toISOString()
-        };
+        });
 
-        if (id) {
-            // Düzenleme
-            const existing = debts.find(d => d.id === id);
-            debtObj.createdAt = existing ? existing.createdAt : new Date().toISOString();
-            debtObj.payments = existing ? existing.payments : [];
-            
-            if(existing && paid > existing.paid) {
-                debtObj.payments.push({ date: new Date().toISOString(), amount: paid - existing.paid, note: "Bakiye Güncellemesi", admin: ADMIN_USER, remaining: amount - paid });
-            }
+        try {
+            if (id) {
+                // Düzenleme Modu
+                const existing = debts.find(d => d.id === id);
+                debtObj.createdAt = existing ? existing.createdAt : new Date().toISOString();
+                debtObj.payments = existing ? (existing.payments || []) : [];
+                
+                if(existing && paid > existing.paid) {
+                    debtObj.payments.push({ date: new Date().toISOString(), amount: paid - existing.paid, note: "Formdan Bakiye Güncellemesi", admin: ADMIN_USER, remaining: amount - paid });
+                }
 
-            if(useFirebase) {
-                await updateDoc(doc(db, "debts", id), debtObj);
+                if(useFirebase && isOnline) {
+                    delete debtObj.id; 
+                    await updateDoc(doc(db, "debts", id), debtObj);
+                } else {
+                    debtObj.id = id;
+                    const index = debts.findIndex(d => d.id === id);
+                    if(index !== -1) debts[index] = debtObj;
+                    saveDataLocalOnly();
+                }
+                addLog("EDIT", `[${debtObj.refCode}] referanslı kayıt düzenlendi.`);
+                showToast("Kayıt başarıyla güncellendi.", "success");
+
             } else {
-                const index = debts.findIndex(d => d.id === id);
-                debts[index] = {id: id, ...debtObj};
-                saveDataLocalOnly();
+                // Yeni Kayıt Modu
+                debtObj.createdAt = new Date().toISOString();
+                debtObj.payments = [];
+                if(paid > 0) {
+                     debtObj.payments.push({ date: new Date().toISOString(), amount: paid, note: "Peşinat", admin: ADMIN_USER, remaining: amount - paid });
+                }
+                
+                if(useFirebase && isOnline) {
+                    delete debtObj.id;
+                    await addDoc(collection(db, "debts"), debtObj);
+                } else {
+                    debts.push(debtObj);
+                    saveDataLocalOnly();
+                }
+                addLog("ADD", `[${debtObj.refCode}] referanslı yeni kayıt açıldı.`);
+                showToast("Yeni kayıt eklendi.", "success");
             }
-            addLog("EDIT", `${debtObj.refCode} referanslı kayıt güncellendi.`);
-            showToast("Kayıt başarıyla güncellendi.", "success");
-
-        } else {
-            // Yeni Kayıt
-            debtObj.createdAt = new Date().toISOString();
-            debtObj.payments = [];
-            if(paid > 0) {
-                 debtObj.payments.push({ date: new Date().toISOString(), amount: paid, note: "Peşinat", admin: ADMIN_USER, remaining: amount - paid });
-            }
-            
-            if(useFirebase) {
-                await addDoc(collection(db, "debts"), debtObj);
-            } else {
-                debts.push({id: generateId(), ...debtObj});
-                saveDataLocalOnly();
-            }
-            addLog("ADD", `${debtObj.refCode} referanslı yeni kayıt oluşturuldu.`);
-            showToast("Yeni kayıt eklendi.", "success");
+            resetForm();
+        } catch(err) {
+            console.error("Form Submit Hatası:", err);
+            let eMsg = "İşlem reddedildi.";
+            if(err.code === 'permission-denied') eMsg = "Yazma izni reddedildi (Güvenlik Kuralı).";
+            showToast("Kayıt hatası: " + eMsg, "error");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            updateUIForAuth(); 
         }
-
-        resetForm();
     }
 
     function resetForm() {
-        document.getElementById('debtForm').reset();
-        document.getElementById('editId').value = "";
-        document.getElementById('f_isInst').checked = false;
+        const form = document.getElementById('debtForm');
+        if(form) form.reset();
+        
+        const editIdEl = document.getElementById('editId');
+        if(editIdEl) editIdEl.value = "";
+        
+        const isInstEl = document.getElementById('f_isInst');
+        if(isInstEl) isInstEl.checked = false;
+        
+        const editBadge = document.getElementById('editBadge');
+        if(editBadge) editBadge.style.display = "none";
+        
         toggleInst();
+        
         const icon = isAdmin ? "" : "<i class='locked-icon'>🔒</i>";
-        document.getElementById('formSubmitBtn').innerHTML = `Kayıt Ekle ${icon}`;
+        const btn = document.getElementById('formSubmitBtn');
+        if(btn) btn.innerHTML = `Kayıt Ekle ${icon}`;
+        
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('f_issueDate').value = today;
-        document.getElementById('f_dueDate').value = today;
+        const fIssue = document.getElementById('f_issueDate');
+        const fDue = document.getElementById('f_dueDate');
+        if(fIssue) fIssue.value = today;
+        if(fDue) fDue.value = today;
     }
 
     function editDebtAuth(id) {
@@ -1140,36 +1479,65 @@
         const debt = debts.find(d => d.id === id);
         if(!debt) return;
 
-        document.getElementById('editId').value = debt.id;
+        document.getElementById('editId').value = debt.id || '';
         document.getElementById('f_ref').value = debt.refCode || '';
-        document.getElementById('f_name').value = debt.name;
-        document.getElementById('f_phone').value = debt.phone;
-        document.getElementById('f_amount').value = debt.amount;
-        document.getElementById('f_paid').value = debt.paid;
+        document.getElementById('f_name').value = debt.name || '';
+        document.getElementById('f_phone').value = debt.phone || '';
+        document.getElementById('f_amount').value = debt.amount || 0;
+        document.getElementById('f_paid').value = debt.paid || 0;
         document.getElementById('f_isInst').checked = debt.isInst || false;
         document.getElementById('f_instCount').value = debt.instCount || '';
         toggleInst();
-        document.getElementById('f_issueDate').value = debt.issueDate;
-        document.getElementById('f_dueDate').value = debt.dueDate;
-        document.getElementById('f_priority').value = debt.priority;
-        document.getElementById('f_tag').value = debt.tag;
-        document.getElementById('f_note').value = debt.note;
+        document.getElementById('f_issueDate').value = debt.issueDate || '';
+        document.getElementById('f_dueDate').value = debt.dueDate || '';
+        document.getElementById('f_priority').value = debt.priority || 'normal';
+        document.getElementById('f_tag').value = debt.tag || 'diger';
+        document.getElementById('f_note').value = debt.note || '';
 
-        document.getElementById('formSubmitBtn').innerHTML = `Kaydı Güncelle <i class='locked-icon' style='display:none'>🔒</i>`;
+        const editBadge = document.getElementById('editBadge');
+        if(editBadge) editBadge.style.display = "inline-block";
+        
+        const btn = document.getElementById('formSubmitBtn');
+        if(btn) btn.innerHTML = `Kaydı Güncelle`;
+        
         const formSec = document.getElementById('addFormSection');
-        if(!formSec.classList.contains('active')) toggleSection('addFormSection');
-        formSec.scrollIntoView({ behavior: 'smooth' });
+        if(formSec && !formSec.classList.contains('active')) toggleSection('addFormSection');
+        if(formSec) formSec.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // --- TABLO VE FİLTRELEME ---
+    // --- TABLO VE FİLTRELEME V4.1 ---
+    function setSort(col) {
+        if(currentSortCol === col+'_desc') currentSortCol = col+'_asc';
+        else currentSortCol = col+'_desc';
+        document.getElementById('filter_sort').value = currentSortCol;
+        applyFilters();
+    }
+
+    function changePerPage() {
+        const sel = document.getElementById('filter_per_page');
+        if(sel) ITEMS_PER_PAGE = parseInt(sel.value) || 10;
+        currentPage = 1;
+        renderTable();
+    }
+
     function applyFilters() {
-        const text = document.getElementById('filter_text').value.toLowerCase();
-        const status = document.getElementById('filter_status').value;
-        const priority = document.getElementById('filter_priority').value;
-        const sort = document.getElementById('filter_sort').value;
+        const textEl = document.getElementById('filter_text');
+        const text = textEl ? textEl.value.toLowerCase() : "";
+        const statusEl = document.getElementById('filter_status');
+        const status = statusEl ? statusEl.value : "all";
+        const priorityEl = document.getElementById('filter_priority');
+        const priority = priorityEl ? priorityEl.value : "all";
+        const sortEl = document.getElementById('filter_sort');
+        const sort = sortEl ? (sortEl.value || currentSortCol) : currentSortCol;
 
         filteredDebts = debts.filter(d => {
-            const matchText = d.name.toLowerCase().includes(text) || d.note.toLowerCase().includes(text) || d.phone.includes(text) || (d.refCode && d.refCode.toLowerCase().includes(text));
+            if(!d) return false;
+            const sName = (d.name||"").toLowerCase();
+            const sNote = (d.note||"").toLowerCase();
+            const sPhone = (d.phone||"");
+            const sRef = (d.refCode||"").toLowerCase();
+            
+            const matchText = sName.includes(text) || sNote.includes(text) || sPhone.includes(text) || sRef.includes(text);
             const matchStatus = status === 'all' || d.status === status;
             
             let matchPriority = true;
@@ -1180,26 +1548,40 @@
         });
 
         filteredDebts.sort((a, b) => {
-            if(sort === 'date_desc') return new Date(b.createdAt || b.issueDate) - new Date(a.createdAt || a.issueDate);
-            if(sort === 'date_asc') return new Date(a.createdAt || a.issueDate) - new Date(b.createdAt || b.issueDate);
-            if(sort === 'amount_desc') return b.amount - a.amount;
-            if(sort === 'amount_asc') return a.amount - b.amount;
-            if(sort === 'rem_desc') return (b.amount - b.paid) - (a.amount - a.paid);
-            if(sort === 'due_asc') return new Date(a.dueDate) - new Date(b.dueDate);
+            if(sort === 'date_desc') return new Date(b.createdAt||0) - new Date(a.createdAt||0);
+            if(sort === 'date_asc') return new Date(a.createdAt||0) - new Date(b.createdAt||0);
+            if(sort === 'amount_desc') return (b.amount||0) - (a.amount||0);
+            if(sort === 'amount_asc') return (a.amount||0) - (b.amount||0);
+            if(sort === 'rem_desc') return ((b.amount||0) - (b.paid||0)) - ((a.amount||0) - (a.paid||0));
+            if(sort === 'due_asc') return new Date(a.dueDate||0) - new Date(b.dueDate||0);
+            if(sort === 'name_asc') return (a.name||"").localeCompare(b.name||"");
+            if(sort === 'name_desc') return (b.name||"").localeCompare(a.name||"");
+            if(sort === 'status_asc') return (a.status||"").localeCompare(b.status||"");
+            if(sort === 'status_desc') return (b.status||"").localeCompare(a.status||"");
+            if(sort === 'tag_asc') return (a.tag||"").localeCompare(b.tag||"");
+            if(sort === 'tag_desc') return (b.tag||"").localeCompare(a.tag||"");
             return 0;
         });
 
-        document.getElementById('filter_count').innerText = filteredDebts.length;
+        const fCount = document.getElementById('filter_count');
+        if(fCount) fCount.innerText = filteredDebts.length;
         currentPage = 1; 
         renderTable();
     }
 
     function renderTable() {
         const tbody = document.getElementById('tableBody');
+        if(!tbody) return;
         tbody.innerHTML = '';
 
-        if (filteredDebts.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:40px;">Aradığınız kriterlerde kayıt bulunamadı.</td></tr>`;
+        if (!filteredDebts || filteredDebts.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7">
+                <div class="empty-state">
+                    <i>📁</i>
+                    <h3>Veri Bulunamadı</h3>
+                    <p>Mevcut filtrelere uygun borç kaydı yok veya liste tamamen boş.</p>
+                </div>
+            </td></tr>`;
             renderPagination();
             return;
         }
@@ -1209,14 +1591,17 @@
         const paginated = filteredDebts.slice(start, end);
 
         paginated.forEach(d => {
-            const rem = d.amount - d.paid;
+            if(!d) return;
+            const amt = parseFloat(d.amount)||0;
+            const pd = parseFloat(d.paid)||0;
+            const rem = amt - pd;
             const daysLeft = getDaysLeft(d.dueDate);
             
             let daysText = `<span style="color:var(--text-muted)">-</span>`;
             if(d.status !== 'odendi') {
-                if(daysLeft < 0) daysText = `<span style="color:var(--accent-red); font-weight:bold;">${Math.abs(daysLeft)} gün gecikti</span>`;
-                else if(daysLeft === 0) daysText = `<span style="color:var(--accent-orange); font-weight:bold;">Bugün son</span>`;
-                else daysText = `<span>${daysLeft} gün</span>`;
+                if(daysLeft < 0) daysText = `<span style="color:var(--accent-red); font-weight:bold; background:rgba(255,51,102,0.1); padding:2px 6px; border-radius:4px;">${Math.abs(daysLeft)} gün gecikti</span>`;
+                else if(daysLeft === 0) daysText = `<span style="color:var(--accent-orange); font-weight:bold;">Bugün son gün</span>`;
+                else daysText = `<span style="color:var(--accent-green);">${daysLeft} gün kaldı</span>`;
             }
 
             let statusBadge = '';
@@ -1225,10 +1610,10 @@
             else if(d.status === 'kismi') statusBadge = '<span class="badge badge-kismi">Kısmi</span>';
             else if(d.status === 'odendi') statusBadge = '<span class="badge badge-odendi">Ödendi</span>';
 
-            if(d.isInst) statusBadge += ` <span class="badge badge-taksit" title="Taksitli İşlem">${d.instCount} Taksit</span>`;
+            if(d.isInst) statusBadge += ` <span class="badge badge-taksit" title="Taksitli İşlem">💳 ${d.instCount || "?"} Taksit</span>`;
 
             const tagMap = { 'arkadas': 'Arkadaş', 'aile': 'Aile', 'is': 'İş', 'diger': 'Diğer' };
-            const dis = !isAdmin ? 'disabled' : ''; 
+            const dis = (!isAdmin || (!isOnline && useFirebase)) ? 'disabled' : ''; 
             
             const tr = document.createElement('tr');
             if(d.status === 'gecikmis') tr.classList.add('row-gecikmis');
@@ -1236,28 +1621,28 @@
 
             tr.innerHTML = `
                 <td data-label="Ref / Kişi">
-                    <div style="font-size:0.75rem; color:var(--accent-blue); font-family:var(--font-display);">${d.refCode}</div>
-                    <div style="font-weight:600; margin:2px 0;">
-                        <i class="priority-dot p-${d.priority}"></i> ${d.name}
+                    <div style="font-size:0.75rem; color:var(--accent-blue); font-family:var(--font-display); letter-spacing:0.5px;">${d.refCode || "-"}</div>
+                    <div style="font-weight:600; margin:3px 0; font-size:1rem;">
+                        <i class="priority-dot p-${d.priority||"normal"}" title="Öncelik: ${d.priority||"normal"}"></i> ${d.name || "İsimsiz"}
                     </div>
                     <div style="font-size:0.8rem; color:var(--text-muted);">${d.phone || '-'}</div>
                 </td>
-                <td data-label="Etiket"><span style="color:var(--text-main); font-size:0.85rem; background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:4px;">#${tagMap[d.tag]}</span></td>
+                <td data-label="Etiket"><span style="color:var(--text-main); font-size:0.8rem; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.1);">#${tagMap[d.tag||'diger']}</span></td>
                 <td data-label="Tutar">
-                    <div style="font-weight:600; font-family:var(--font-display); font-size:1.1rem;">${formatMoney(d.amount)}</div>
-                    <div style="font-size:0.8rem; color:${rem > 0 ? 'var(--accent-orange)' : 'var(--accent-green)'};">Kalan: ${formatMoney(rem)}</div>
+                    <div style="font-weight:700; font-family:var(--font-display); font-size:1.2rem; color:white;">${formatMoney(amt)}</div>
+                    <div style="font-size:0.85rem; color:${rem > 0 ? 'var(--accent-orange)' : 'var(--accent-green)'}; font-weight:500;">Kalan: ${formatMoney(rem)}</div>
                 </td>
                 <td data-label="Veriliş / Vade">
-                    <div style="font-size:0.8rem; color:var(--text-muted);">${formatDate(d.issueDate)}</div>
-                    <div>${formatDate(d.dueDate)}</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:2px;">Veriliş: ${formatDate(d.issueDate)}</div>
+                    <div style="font-weight:500;">Vade: ${formatDate(d.dueDate)}</div>
                 </td>
                 <td data-label="Kalan Gün">${daysText}</td>
                 <td data-label="Durum">${statusBadge}</td>
                 <td data-label="Yönetim" style="text-align: right;">
                     <div class="table-actions">
                         <button class="icon-btn view" onclick="showDetail('${d.id}')" title="Detayı İncele">👁️</button>
-                        ${d.status !== 'odendi' ? `<button class="icon-btn pay" ${dis} onclick="openPaymentModalAuth('${d.id}')" title="Kısmi Tahsilat Ekle">💵</button>` : ''}
-                        ${d.status !== 'odendi' ? `<button class="icon-btn fullpay" ${dis} onclick="fullPayAuth('${d.id}')" title="Tamamını Tahsil Et">✅</button>` : ''}
+                        ${d.status !== 'odendi' ? `<button class="icon-btn pay" ${dis} onclick="openPaymentModalAuth('${d.id}')" title="Kısmi Tahsilat İşle">💵</button>` : ''}
+                        ${d.status !== 'odendi' ? `<button class="icon-btn fullpay" ${dis} onclick="fullPayAuth('${d.id}')" title="Tamamını Tek Seferde Kapat">✅</button>` : ''}
                         <button class="icon-btn edit" ${dis} onclick="editDebtAuth('${d.id}')" title="Düzenle">✏️</button>
                         <button class="icon-btn delete" ${dis} onclick="confirmDeleteAuth('${d.id}')" title="Sil">🗑️</button>
                     </div>
@@ -1270,247 +1655,400 @@
 
     function renderPagination() {
         const totalPages = Math.ceil(filteredDebts.length / ITEMS_PER_PAGE) || 1;
-        document.getElementById('pageInfo').innerText = `${currentPage} / ${totalPages}`;
+        const pageInfo = document.getElementById('pageInfo');
+        if(pageInfo) pageInfo.innerText = `${currentPage} / ${totalPages}`;
         
         const pagDiv = document.getElementById('pagination');
+        if(!pagDiv) return;
         pagDiv.innerHTML = '';
         if(totalPages <= 1) return;
 
-        for(let i=1; i<=totalPages; i++) {
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, startPage + 4);
+        if(endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+
+        if(startPage > 1) {
+            const first = document.createElement('button');
+            first.className = `page-btn`; first.innerText = "1..";
+            first.onclick = () => { currentPage = 1; renderTable(); };
+            pagDiv.appendChild(first);
+        }
+
+        for(let i=startPage; i<=endPage; i++) {
             const btn = document.createElement('button');
             btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
             btn.innerText = i;
             btn.onclick = () => { currentPage = i; renderTable(); };
             pagDiv.appendChild(btn);
         }
+
+        if(endPage < totalPages) {
+            const last = document.createElement('button');
+            last.className = `page-btn`; last.innerText = ".."+totalPages;
+            last.onclick = () => { currentPage = totalPages; renderTable(); };
+            pagDiv.appendChild(last);
+        }
     }
 
-    // --- AKSİYONLAR & MODALLAR ---
-    function openModal(id) { document.getElementById(id).classList.add('active'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    // --- MODALLAR V4.1 ---
+    function openModal(id) { 
+        const m = document.getElementById(id);
+        if(m) m.classList.add('active'); 
+    }
+    
+    function closeModal(id) { 
+        const m = document.getElementById(id);
+        if(m) m.classList.remove('active'); 
+    }
 
     function showDetail(id) {
         const d = debts.find(x => x.id === id);
         if(!d) return;
 
-        const rem = d.amount - d.paid;
-        const percent = d.amount > 0 ? Math.min(100, Math.round((d.paid / d.amount) * 100)) : 0;
+        const amt = parseFloat(d.amount)||0;
+        const pd = parseFloat(d.paid)||0;
+        const rem = amt - pd;
+        const percent = amt > 0 ? Math.min(100, Math.round((pd / amt) * 100)) : 0;
         
-        let statusText = d.status.toUpperCase();
+        let statusText = (d.status || "AKTİF").toUpperCase();
         let sColor = 'var(--accent-blue)';
         if(d.status==='gecikmis') sColor='var(--accent-red)';
         if(d.status==='odendi') sColor='var(--accent-green)';
         if(d.status==='kismi') sColor='var(--accent-orange)';
 
-        let paymentsHtml = '<div style="color:var(--text-muted); font-size:0.85rem; padding:10px;">Henüz ödeme geçmişi yok.</div>';
-        if(d.payments && d.payments.length > 0) {
-            paymentsHtml = d.payments.map(p => `
+        let paymentsHtml = '<div style="color:var(--text-muted); font-size:0.9rem; padding:15px; text-align:center; border:1px dashed rgba(255,255,255,0.1); border-radius:8px;">Henüz ödeme/tahsilat geçmişi yok.</div>';
+        if(Array.isArray(d.payments) && d.payments.length > 0) {
+            const sortedPayments = [...d.payments].sort((a,b) => new Date(b.date||0) - new Date(a.date||0));
+            paymentsHtml = sortedPayments.map(p => `
                 <div class="timeline-item payment">
-                    <div class="timeline-date">${formatDate(p.date)} - Yapan: ${p.admin}</div>
+                    <div class="timeline-date">
+                        <span>${formatDate(p.date)}</span>
+                        <span style="color:var(--accent-purple); font-weight:bold;">${p.admin || 'Bilinmiyor'}</span>
+                    </div>
                     <div class="timeline-content">
-                        <strong>${formatMoney(p.amount)}</strong> tahsil edildi. 
-                        <span style="color:var(--text-muted); font-size:0.8rem;">(Not: ${p.note || '-'})</span><br>
-                        <span style="font-size:0.8rem; color:var(--accent-orange);">Kalan Bakiye: ${formatMoney(p.remaining)}</span>
+                        <strong style="color:var(--accent-green); font-size:1.1rem;">+ ${formatMoney(p.amount)}</strong> tahsil edildi. 
+                        <div style="color:var(--text-muted); font-size:0.8rem; margin: 4px 0;">Not / Tür: <span style="color:#ccc;">${p.note || '-'}</span></div>
+                        <div style="font-size:0.85rem; color:var(--accent-orange); border-top:1px solid rgba(255,255,255,0.05); padding-top:4px; margin-top:4px;">İşlem Sonrası Kalan: ${formatMoney(p.remaining)}</div>
                     </div>
                 </div>
             `).join('');
         }
 
+        const tagMap = { 'arkadas': 'Arkadaş', 'aile': 'Aile', 'is': 'İş / Ticaret', 'diger': 'Diğer' };
+
         const html = `
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:25px; border-bottom:1px solid var(--border-light); padding-bottom:20px;">
                 <div>
-                    <div style="font-size:0.8rem; color:var(--accent-blue); font-family:var(--font-display);">${d.refCode}</div>
-                    <h2 style="margin-bottom:5px; color:white;">${d.name}</h2>
-                    <div style="color:var(--text-muted);"><i style="font-style:normal">📞</i> ${d.phone || 'Telefon yok'}</div>
+                    <div style="font-size:0.9rem; color:var(--accent-blue); font-family:var(--font-display); letter-spacing:1px; margin-bottom:5px;">REF: ${d.refCode || "-"}</div>
+                    <h2 style="margin-bottom:8px; color:white; font-size: 2rem;">${d.name || "Bilinmiyor"}</h2>
+                    <div style="color:var(--text-muted); display:flex; gap:15px; font-size:0.9rem;">
+                        <span><i style="font-style:normal">📞</i> ${d.phone || 'Telefon kaydı yok'}</span>
+                        <span style="color:var(--accent-purple);"><i style="font-style:normal">🏷️</i> ${tagMap[d.tag||'diger']}</span>
+                    </div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:1.5rem; font-weight:bold; color:${sColor}">${statusText}</div>
-                    <div style="font-size:0.8rem; text-transform:capitalize; color:var(--text-muted);">Öncelik: <span style="color:white;">${d.priority}</span></div>
+                    <div style="font-size:1.8rem; font-weight:bold; color:${sColor}; font-family:var(--font-display); letter-spacing:1px;">${statusText}</div>
+                    <div style="font-size:0.85rem; text-transform:capitalize; color:var(--text-muted); margin-top:5px;">Öncelik: <span class="badge" style="background:rgba(255,255,255,0.1); color:white;">${d.priority || "normal"}</span></div>
                 </div>
             </div>
             
             <div class="detail-grid">
-                <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; border:1px solid var(--border-light);">
-                    <h4 style="margin-bottom:10px; color:var(--text-muted); font-size:0.9rem;">💳 Finansal Özet</h4>
-                    <div class="detail-row" style="border:none; margin:0; padding:0;"><span class="detail-label">Toplam Borç:</span> <span class="detail-val" style="font-size:1.1rem; color:white;">${formatMoney(d.amount)}</span></div>
-                    <div class="detail-row" style="border:none; margin:0; padding:0; margin-top:5px;"><span class="detail-label">Ödenen:</span> <span class="detail-val" style="color:var(--accent-green);">${formatMoney(d.paid)}</span></div>
-                    <div class="detail-row" style="border:none; margin:0; padding:0; margin-top:5px;"><span class="detail-label">Kalan:</span> <span class="detail-val" style="color:var(--accent-orange);">${formatMoney(rem)}</span></div>
+                <div style="background:rgba(0,229,255,0.02); padding:20px; border-radius:12px; border:1px solid rgba(0,229,255,0.1);">
+                    <h4 style="margin-bottom:15px; color:var(--accent-blue); font-size:1rem; border-bottom:1px solid rgba(0,229,255,0.2); padding-bottom:5px;">💳 Finansal Özet</h4>
+                    <div class="detail-row"><span class="detail-label">Toplam Borç:</span> <span class="detail-val" style="font-size:1.3rem; color:white; font-family:var(--font-display);">${formatMoney(amt)}</span></div>
+                    <div class="detail-row"><span class="detail-label">Tahsil Edilen:</span> <span class="detail-val" style="color:var(--accent-green); font-size:1.1rem;">${formatMoney(pd)}</span></div>
+                    <div class="detail-row" style="border:none;"><span class="detail-label">Kalan Bakiye:</span> <span class="detail-val" style="color:var(--accent-orange); font-size:1.3rem; font-family:var(--font-display);">${formatMoney(rem)}</span></div>
                     
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" style="width: ${percent}%;"></div>
+                    <div class="progress-bar-container" style="height: 10px; background: rgba(0,0,0,0.5); margin-top: 20px;">
+                        <div class="progress-bar" style="width: ${percent}%; box-shadow: 0 0 10px var(--accent-green);"></div>
                     </div>
-                    <div style="text-align:right; font-size:0.8rem; margin-top:5px; color:var(--text-muted);">%${percent} Tahsil Edildi</div>
+                    <div style="text-align:right; font-size:0.85rem; margin-top:8px; color:var(--text-main); font-weight:bold;">%${percent} Tahsil Edildi</div>
                 </div>
                 
-                <div style="background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; border:1px solid var(--border-light);">
-                    <h4 style="margin-bottom:10px; color:var(--text-muted); font-size:0.9rem;">📅 Zaman ve Detaylar</h4>
-                    <div class="detail-row"><span class="detail-label">Veriliş:</span> <span class="detail-val">${formatDate(d.issueDate)}</span></div>
-                    <div class="detail-row"><span class="detail-label">Son Ödeme:</span> <span class="detail-val">${formatDate(d.dueDate)}</span></div>
-                    <div class="detail-row"><span class="detail-label">Etiket:</span> <span class="detail-val" style="text-transform:capitalize;">${d.tag}</span></div>
-                    <div class="detail-row"><span class="detail-label">Taksitli mi?:</span> <span class="detail-val">${d.isInst ? 'Evet ('+d.instCount+' Taksit)' : 'Hayır'}</span></div>
+                <div style="background:rgba(176,38,255,0.02); padding:20px; border-radius:12px; border:1px solid rgba(176,38,255,0.1);">
+                    <h4 style="margin-bottom:15px; color:var(--accent-purple); font-size:1rem; border-bottom:1px solid rgba(176,38,255,0.2); padding-bottom:5px;">📅 Vade ve Planlama</h4>
+                    <div class="detail-row"><span class="detail-label">Veriliş Tarihi:</span> <span class="detail-val">${formatDate(d.issueDate)}</span></div>
+                    <div class="detail-row"><span class="detail-label">Son Ödeme (Vade):</span> <span class="detail-val" style="color:white;">${formatDate(d.dueDate)}</span></div>
+                    <div class="detail-row"><span class="detail-label">Taksit Planı:</span> <span class="detail-val">${d.isInst ? '<span style="color:var(--accent-purple); font-weight:bold;">'+(d.instCount||'?')+' Taksit</span>' : 'Peşin / Tek Çekim'}</span></div>
+                    <div class="detail-row" style="border:none;"><span class="detail-label">Kalan Süre:</span> <span class="detail-val" style="color:${getDaysLeft(d.dueDate) < 0 ? 'var(--accent-red)' : 'var(--accent-green)'}">${getDaysLeft(d.dueDate)} Gün</span></div>
                 </div>
             </div>
 
-            <div style="margin-bottom:20px;">
-                <h4 style="color:var(--text-muted); font-size:0.9rem; margin-bottom:5px;">Açıklama / Not:</h4>
-                <div style="background:var(--bg-main); padding:10px; border-radius:6px; font-size:0.9rem; border:1px solid var(--border-light);">${d.note || '-'}</div>
+            <div style="margin-bottom:30px; background:rgba(0,0,0,0.4); padding:15px; border-radius:8px; border-left: 4px solid var(--accent-orange);">
+                <h4 style="color:var(--text-muted); font-size:0.85rem; margin-bottom:8px; text-transform:uppercase;">Açıklama / Sözleşme Notu:</h4>
+                <div style="font-size:1rem; color:white; line-height: 1.5;">${d.note || 'Özel bir not girilmemiş.'}</div>
             </div>
 
             <div>
-                <h4 style="color:var(--text-main); font-size:1rem; border-bottom:1px solid var(--border-light); padding-bottom:5px;">🕒 Ödeme ve İşlem Geçmişi</h4>
+                <h4 style="color:var(--text-main); font-size:1.1rem; border-bottom:1px solid var(--border-light); padding-bottom:10px; margin-bottom: 20px; display:flex; justify-content:space-between;">
+                    <span>🕒 Tahsilat ve İşlem Geçmişi</span>
+                    <span class="badge" style="background:rgba(255,255,255,0.1);">${Array.isArray(d.payments) ? d.payments.length : 0} İşlem</span>
+                </h4>
                 <div class="timeline">
                     ${paymentsHtml}
                     <div class="timeline-item create">
                         <div class="timeline-date">${formatDate(d.createdAt)}</div>
-                        <div class="timeline-content">Kayıt oluşturuldu.</div>
+                        <div class="timeline-content">
+                            <strong style="color:var(--accent-blue)">Kayıt Sisteme İşlendi</strong>
+                            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Başlangıç tutarı: ${formatMoney(amt)}</div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div style="text-align:right; font-size:0.75rem; color:var(--text-muted); margin-top:20px;">
+            <div style="text-align:right; font-size:0.75rem; color:var(--text-muted); margin-top:30px; border-top: 1px solid var(--border-light); padding-top: 10px;">
+                Sistem ID: ${d.id} <br>
                 Son Güncelleme: ${formatDate(d.updatedAt)}
             </div>
         `;
-        document.getElementById('detailContent').innerHTML = html;
+        const contentEl = document.getElementById('detailContent');
+        if(contentEl) contentEl.innerHTML = html;
         openModal('detailModal');
         
         setTimeout(() => {
             const pb = document.querySelector('.progress-bar');
             if(pb) pb.style.width = percent + '%';
-        }, 100);
+        }, 50);
     }
 
+    // --- ÖDEME İŞLEMLERİ V4.1 ---
     function openPaymentModalAuth(id) {
         if(!requireAdmin()) return;
         const d = debts.find(x => x.id === id);
         if(!d) return;
         
-        const rem = d.amount - d.paid;
-        document.getElementById('pay_id').value = d.id;
-        document.getElementById('pay_name_display').innerText = d.name;
-        document.getElementById('pay_rem_display').innerText = formatMoney(rem);
-        document.getElementById('pay_amount').value = '';
-        document.getElementById('pay_amount').max = rem; 
-        document.getElementById('pay_note').value = '';
+        const amt = parseFloat(d.amount)||0;
+        const pd = parseFloat(d.paid)||0;
+        const rem = amt - pd;
         
+        const payIdEl = document.getElementById('pay_id');
+        const payNameEl = document.getElementById('pay_name_display');
+        const payRemEl = document.getElementById('pay_rem_display');
+        const amountInput = document.getElementById('pay_amount');
+        const payNoteEl = document.getElementById('pay_note');
+        const payTypeEl = document.getElementById('pay_type');
+        const payPreviewEl = document.getElementById('pay_preview');
+
+        if(payIdEl) payIdEl.value = d.id;
+        if(payNameEl) payNameEl.innerText = d.name || "";
+        if(payRemEl) payRemEl.innerText = formatMoney(rem);
+        
+        if(amountInput) {
+            amountInput.value = '';
+            amountInput.max = rem; 
+        }
+        
+        if(payNoteEl) payNoteEl.value = '';
+        if(payTypeEl) payTypeEl.value = 'Nakit / Elden';
+        
+        if(payPreviewEl) {
+            payPreviewEl.innerText = formatMoney(rem);
+            payPreviewEl.style.color = "white";
+        }
         openModal('paymentModal');
+    }
+
+    function previewRemaining() {
+        const idEl = document.getElementById('pay_id');
+        if(!idEl) return;
+        const id = idEl.value;
+        const d = debts.find(x => x.id === id);
+        if(!d) return;
+        
+        const rem = (parseFloat(d.amount)||0) - (parseFloat(d.paid)||0);
+        const amountInput = document.getElementById('pay_amount');
+        const inputVal = amountInput ? (parseFloat(amountInput.value) || 0) : 0;
+        const newRem = rem - inputVal;
+        
+        const previewEl = document.getElementById('pay_preview');
+        if(!previewEl) return;
+
+        if(newRem < 0) {
+            previewEl.innerText = "HATA: Tutar kalan borcu aşıyor!";
+            previewEl.style.color = "var(--accent-red)";
+        } else if (newRem === 0) {
+            previewEl.innerText = "BORÇ TAMAMEN KAPANACAK";
+            previewEl.style.color = "var(--accent-green)";
+        } else {
+            previewEl.innerText = formatMoney(newRem);
+            previewEl.style.color = "var(--accent-blue)";
+        }
     }
 
     async function savePaymentAuth() {
         if(!requireAdmin()) return;
-        const id = document.getElementById('pay_id').value;
-        const amountStr = document.getElementById('pay_amount').value;
-        const note = document.getElementById('pay_note').value;
         
-        if(!amountStr) return showToast("Lütfen bir miktar girin.", "error");
+        const idEl = document.getElementById('pay_id');
+        const amountEl = document.getElementById('pay_amount');
+        const noteEl = document.getElementById('pay_note');
+        const typeEl = document.getElementById('pay_type');
+
+        if(!idEl || !amountEl) return;
+
+        const id = idEl.value;
+        const amountStr = amountEl.value;
+        const note = noteEl ? noteEl.value : "";
+        const type = typeEl ? typeEl.value : "Diğer";
+        
+        if(!amountStr) return showToast("Lütfen tahsil edilecek miktarı girin.", "error");
         
         const payAmount = parseFloat(amountStr);
+        if(payAmount <= 0) return showToast("Miktar sıfırdan büyük olmalıdır.", "error");
+
         const index = debts.findIndex(x => x.id === id);
-        
-        if(index === -1) return;
+        if(index === -1) return showToast("Kayıt bulunamadı.", "error");
         
         const debt = debts[index];
-        const rem = debt.amount - debt.paid;
+        const amt = parseFloat(debt.amount)||0;
+        const currentPaid = parseFloat(debt.paid)||0;
+        const rem = amt - currentPaid;
+        
         if(payAmount > rem) {
-            return showToast("Ödenen miktar kalan borçtan fazla olamaz.", "error");
+            return showToast("Hata: Ödenen miktar kalan borçtan fazla olamaz.", "error");
         }
 
-        const newPaid = debt.paid + payAmount;
-        const payments = debt.payments || [];
+        const newPaid = currentPaid + payAmount;
+        const payments = Array.isArray(debt.payments) ? debt.payments : [];
         payments.push({
             date: new Date().toISOString(),
             amount: payAmount,
-            note: note || "Kısmi Tahsilat",
+            note: `${type} - ${note}`, 
             admin: ADMIN_USER,
-            remaining: debt.amount - newPaid
+            remaining: amt - newPaid
         });
 
-        if(useFirebase) {
-            await updateDoc(doc(db, "debts", id), {
-                paid: newPaid,
-                payments: payments,
-                updatedAt: new Date().toISOString()
-            });
-        } else {
-            debt.paid = newPaid;
-            debt.payments = payments;
-            debt.updatedAt = new Date().toISOString();
-            saveDataLocalOnly();
+        try {
+            if(useFirebase && isOnline) {
+                await updateDoc(doc(db, "debts", id), {
+                    paid: newPaid,
+                    payments: payments,
+                    updatedAt: new Date().toISOString()
+                });
+            } else {
+                debt.paid = newPaid;
+                debt.payments = payments;
+                debt.updatedAt = new Date().toISOString();
+                saveDataLocalOnly();
+            }
+            addLog("PAYMENT_ADD", `[${debt.refCode}] referanslı kayıttan ${payAmount}₺ tahsil edildi. Kalan: ${amt - newPaid}₺`);
+            closeModal('paymentModal');
+            showToast("Tahsilat başarıyla sisteme işlendi.", "success");
+        } catch(e) {
+            console.error("Ödeme Hatası:", e);
+            let eMsg = e.code === 'permission-denied' ? "Yazma izni reddedildi." : e.message;
+            showToast("Ödeme kaydedilemedi: " + eMsg, "error");
         }
-
-        addLog("PAYMENT", `${debt.refCode} referanslı kayıttan ${payAmount}₺ tahsil edildi.`);
-        closeModal('paymentModal');
-        showToast("Tahsilat başarıyla kaydedildi.", "success");
     }
 
     async function fullPayAuth(id) {
         if(!requireAdmin()) return;
         const index = debts.findIndex(x => x.id === id);
-        if(index === -1) return;
+        if(index === -1) return showToast("Kayıt bulunamadı.", "error");
         
         const debt = debts[index];
-        const rem = debt.amount - debt.paid;
+        const amt = parseFloat(debt.amount)||0;
+        const pd = parseFloat(debt.paid)||0;
+        const rem = amt - pd;
         if(rem <= 0) return;
 
-        const payments = debt.payments || [];
+        const payments = Array.isArray(debt.payments) ? debt.payments : [];
         payments.push({
             date: new Date().toISOString(),
             amount: rem,
-            note: "Tamamı Kapatıldı (Hızlı İşlem)",
+            note: "Hızlı Kapatma (Tamamı Ödendi)",
             admin: ADMIN_USER,
             remaining: 0
         });
 
-        if (useFirebase) {
-            await updateDoc(doc(db, "debts", id), {
-                paid: debt.amount,
-                payments: payments,
-                updatedAt: new Date().toISOString()
-            });
-        } else {
-            debt.paid = debt.amount;
-            debt.payments = payments;
-            debt.updatedAt = new Date().toISOString();
-            saveDataLocalOnly();
+        try {
+            if (useFirebase && isOnline) {
+                await updateDoc(doc(db, "debts", id), {
+                    paid: amt,
+                    payments: payments,
+                    updatedAt: new Date().toISOString()
+                });
+            } else {
+                debt.paid = amt;
+                debt.payments = payments;
+                debt.updatedAt = new Date().toISOString();
+                saveDataLocalOnly();
+            }
+            addLog("FULL_PAYMENT", `[${debt.refCode}] kaydının tamamı kapatıldı (${rem}₺).`);
+            showToast("Borç tamamen kapatıldı ve arşivlendi.", "success");
+        } catch(e) {
+            console.error("Hızlı Ödeme Hatası:", e);
+            showToast("İşlem hatası.", "error");
         }
-
-        addLog("PAYMENT", `${debt.refCode} referanslı kaydın tamamı (${rem}₺) tahsil edildi.`);
-        showToast("Borç tamamen kapatıldı.", "success");
     }
 
     function confirmDeleteAuth(id) {
         if(!requireAdmin()) return;
         const d = debts.find(x => x.id === id);
-        document.getElementById('confirmText').innerText = `[${d.refCode}] referanslı kaydı kalıcı olarak silmek istediğinize emin misiniz?`;
+        if(!d) return;
+
+        const confirmTextEl = document.getElementById('confirmText');
+        if(confirmTextEl) {
+            confirmTextEl.innerHTML = `<strong>${d.name || "Bilinmeyen Kişi"}</strong> kişisine ait <strong>[${d.refCode || "-"}]</strong> referanslı kaydı kalıcı olarak silmek istediğinize emin misiniz?<br><br>Bu kişinin ödeme geçmişi de tamamen silinecektir.`;
+        }
         openModal('confirmModal');
+        
         confirmCallback = async () => {
-            if(useFirebase) {
-                await deleteDoc(doc(db, "debts", id));
-            } else {
-                debts = debts.filter(x => x.id !== id);
-                saveDataLocalOnly();
+            const btn = document.getElementById('confirmActionBtn');
+            if(btn) { btn.innerHTML = "Siliniyor... ⏳"; btn.disabled = true; }
+
+            try {
+                if(useFirebase && isOnline) {
+                    await deleteDoc(doc(db, "debts", id));
+                } else {
+                    debts = debts.filter(x => x.id !== id);
+                    saveDataLocalOnly();
+                }
+                closeModal('confirmModal');
+                addLog("DELETE", `[${d.refCode || ""}] - ${d.name || ""} sistemden silindi.`);
+                showToast("Kayıt başarıyla silindi.", "success");
+            } catch (e) {
+                console.error("Silme Hatası:", e);
+                showToast("Silme hatası: İzniniz olmayabilir.", "error");
+            } finally {
+                if(btn) { btn.innerHTML = `<i class="locked-icon">🔒</i> Evet, Kesinlikle Onaylıyorum`; btn.disabled = false; }
             }
-            closeModal('confirmModal');
-            addLog("DELETE", `${d.refCode} referanslı kayıt silindi.`);
-            showToast("Kayıt silindi.", "success");
         };
         
-        document.getElementById('confirmActionBtn').onclick = confirmCallback;
+        const actionBtn = document.getElementById('confirmActionBtn');
+        if(actionBtn) actionBtn.onclick = confirmCallback;
     }
 
-    // --- DIŞA/İÇE AKTARMA (Admin Only) ---
+    // --- DIŞA/İÇE AKTARMA (V4.1) ---
     function exportJSONAuth() {
         if(!requireAdmin()) return;
-        const dataStr = JSON.stringify(debts, null, 2);
-        const blob = new Blob([dataStr], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `metavis1on_v3_yedek_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        addLog("EXPORT", "Sistem yedeği JSON olarak dışa aktarıldı.");
-        showToast("Veriler JSON olarak dışa aktarıldı.", "success");
+        const dataToExport = {
+            metadata: {
+                exportedAt: new Date().toISOString(),
+                version: "4.1",
+                totalRecords: debts.length,
+                admin: ADMIN_USER
+            },
+            data: debts
+        };
+        
+        try {
+            const dataStr = JSON.stringify(dataToExport, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            
+            const dStr = new Date().toISOString().replace(/:/g, '-').split('.')[0]; 
+            a.download = `metavis1on_v4_backup_${dStr}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            addLog("EXPORT_JSON", `Sistem yedeği alındı. (${debts.length} kayıt)`);
+            showToast("Veritabanı yedeği bilgisayarınıza indirildi.", "success");
+        } catch(e) {
+            console.error("Export Error:", e);
+            showToast("Dışa aktarım sırasında hata.", "error");
+        }
     }
 
     function importJSONAuth(event) {
@@ -1521,77 +2059,131 @@
         const reader = new FileReader();
         reader.onload = async (e) => {
             try {
-                const imported = JSON.parse(e.target.result);
-                if(Array.isArray(imported)) {
-                    if (useFirebase) {
-                        const batch = writeBatch(db);
-                        imported.forEach(d => {
-                            const docRef = doc(collection(db, "debts"));
-                            const dataToSave = {...d};
-                            delete dataToSave.id; 
-                            if(!dataToSave.refCode) dataToSave.refCode = "SYS-" + Math.floor(Math.random()*1000);
-                            batch.set(docRef, dataToSave);
-                        });
-                        await batch.commit();
-                    } else {
-                        const cleaned = imported.map(d => {
-                            d.id = generateId();
-                            if(!d.refCode) d.refCode = "SYS-" + Math.floor(Math.random()*1000);
-                            return d;
-                        });
-                        debts = [...debts, ...cleaned];
-                        saveDataLocalOnly();
-                    }
-                    addLog("IMPORT", "Sisteme dışarıdan yedek yüklendi.");
-                    showToast("Yedek başarıyla içeri aktarıldı.", "success");
+                const parsed = JSON.parse(e.target.result);
+                let imported = [];
+                
+                if(parsed && parsed.metadata && Array.isArray(parsed.data)) {
+                    imported = parsed.data;
+                } else if (Array.isArray(parsed)) {
+                    imported = parsed;
                 } else {
-                    showToast("Hatalı dosya formatı.", "error");
+                    throw new Error("Geçersiz dosya yapısı");
                 }
+
+                if(imported.length === 0) {
+                    return showToast("Dosya içinde geçerli kayıt bulunamadı.", "warning");
+                }
+
+                showToast("Yedek işleniyor... Lütfen sayfayı kapatmayın.", "info");
+
+                // Normalize immediately to catch errors early
+                const safeImports = imported.map(d => normalizeDebt(d)).filter(d => d !== null);
+
+                if (useFirebase && isOnline) {
+                    const batch = writeBatch(db);
+                    safeImports.forEach(d => {
+                        const docRef = doc(collection(db, "debts"));
+                        const dataToSave = {...d};
+                        delete dataToSave.id; 
+                        batch.set(docRef, dataToSave);
+                    });
+                    await batch.commit();
+                } else {
+                    // Safe merging to prevent errors
+                    const cleaned = safeImports.map(d => {
+                        d.id = generateId();
+                        return d;
+                    });
+                    // DO NOT use debts = [.debts] etc, spread safely.
+                    debts = [...debts, ...cleaned];
+                    saveDataLocalOnly();
+                }
+                addLog("IMPORT_JSON", `Sisteme dışarıdan yedek yüklendi. (+${safeImports.length} kayıt)`);
+                showToast("Yedek başarıyla sisteme aktarıldı.", "success");
+                
             } catch (error) {
-                showToast("JSON parse hatası.", "error");
+                console.error("Import JSON Error:", error);
+                showToast("Dosya okunurken hata oluştu. Bozuk JSON.", "error");
+            } finally {
+                event.target.value = ''; // Reset input
             }
         };
+        reader.onerror = () => {
+            showToast("Dosya okunamadı.", "error");
+            event.target.value = '';
+        };
         reader.readAsText(file);
-        event.target.value = '';
     }
 
-    // --- İSTATİSTİKLER ---
+    // --- İSTATİSTİKLER V4.1 ---
     function updateStats() {
-        let totalActiveDebt = 0;
-        let totalPaidOverall = 0;
-        let overdueCount = 0;
-        let paidCount = 0;
-        let totalAmountAll = 0;
+        try {
+            let totalActiveDebt = 0, totalPaidOverall = 0, overdueCount = 0, paidCount = 0, totalAmountAll = 0;
+            let weekDueCount = 0, instCountTotal = 0, monthAddedCount = 0, maxDebtVal = 0;
 
-        debts.forEach(d => {
-            totalAmountAll += parseFloat(d.amount);
-            totalPaidOverall += parseFloat(d.paid);
-            if(d.status !== 'odendi') {
-                totalActiveDebt += (d.amount - d.paid);
-            }
-            if(d.status === 'gecikmis' || d.priority === 'kritik') overdueCount++;
-            if(d.status === 'odendi') paidCount++;
-        });
+            const today = new Date();
+            const todayZero = new Date(today); todayZero.setHours(0,0,0,0);
+            const nextWeek = new Date(today); nextWeek.setDate(nextWeek.getDate() + 7);
+            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-        let ratio = totalAmountAll > 0 ? Math.round((totalPaidOverall / totalAmountAll) * 100) : 0;
+            debts.forEach(d => {
+                if(!d) return;
+                let amt = parseFloat(d.amount) || 0;
+                let p = parseFloat(d.paid) || 0;
+                
+                totalAmountAll += amt;
+                totalPaidOverall += p;
+                
+                if(amt > maxDebtVal) maxDebtVal = amt;
 
-        animateValue('stat-total-people', 0, debts.length, 1000);
-        animateValueMoney('stat-active-debt', totalActiveDebt, 1000);
-        animateValueMoney('stat-total-paid', totalPaidOverall, 1000);
-        animateValue('stat-ratio', 0, ratio, 1000, '%');
-        animateValue('stat-overdue-count', 0, overdueCount, 1000);
-        animateValue('stat-paid-count', 0, paidCount, 1000);
+                if(d.status !== 'odendi') {
+                    totalActiveDebt += (amt - p);
+                }
+                if(d.status === 'gecikmis' || d.priority === 'kritik') overdueCount++;
+                if(d.status === 'odendi') paidCount++;
+
+                if(d.isInst) instCountTotal++;
+
+                if(d.createdAt) {
+                    let cDate = new Date(d.createdAt);
+                    if(!isNaN(cDate) && cDate >= startOfMonth) monthAddedCount++;
+                }
+
+                if(d.dueDate) {
+                    let dDate = new Date(d.dueDate);
+                    if(!isNaN(dDate) && d.status !== 'odendi' && dDate >= todayZero && dDate <= nextWeek) {
+                        weekDueCount++;
+                    }
+                }
+            });
+
+            let ratio = totalAmountAll > 0 ? Math.round((totalPaidOverall / totalAmountAll) * 100) : 0;
+
+            animateValue('stat-total-people', 0, debts.length, 1000);
+            animateValueMoney('stat-active-debt', totalActiveDebt, 1000);
+            animateValueMoney('stat-total-paid', totalPaidOverall, 1000);
+            animateValue('stat-ratio', 0, ratio, 1000, '%');
+            
+            animateValue('stat-week-due', 0, weekDueCount, 1000);
+            animateValue('stat-inst-count', 0, instCountTotal, 1000);
+            animateValue('stat-overdue-count', 0, overdueCount, 1000);
+            animateValue('stat-paid-count', 0, paidCount, 1000);
+            animateValue('stat-month-added', 0, monthAddedCount, 1000);
+            animateValueMoney('stat-max-debt', maxDebtVal, 1000);
+        } catch(e) {
+            console.error("Update Stats Error:", e);
+        }
     }
 
-    function animateValue(id, start, end, duration, prefix="") {
+    function animateValue(id, start, end, duration, suffix="") {
         const obj = document.getElementById(id);
         if(!obj) return;
-        if(end === 0) { obj.innerText = prefix+"0"; return; }
+        if(end === 0) { obj.innerText = "0"+suffix; return; }
         let startTimestamp = null;
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            obj.innerHTML = prefix + Math.floor(progress * (end - start) + start);
+            obj.innerHTML = Math.floor(progress * (end - start) + start) + suffix;
             if (progress < 1) { window.requestAnimationFrame(step); }
         };
         window.requestAnimationFrame(step);
@@ -1613,37 +2205,21 @@
         window.requestAnimationFrame(step);
     }
 
-    function showToast(message, type = "success") {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        
-        let icon = "✅";
-        if(type === 'error') icon = "❌";
-        if(type === 'warning') icon = "⚠️";
-        if(type === 'info') icon = "ℹ️";
-
-        toast.innerHTML = `<i>${icon}</i> <span>${message}</span>`;
-        container.appendChild(toast);
-        
-        setTimeout(() => toast.classList.add('show'), 10);
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 400);
-        }, 3500);
-    }
-
-    // --- CANVAS GRAFİKLERİ ---
+    // --- CANVAS GRAFİKLERİ V4.1 ---
     function drawCharts() {
-        drawStatusChart();
-        drawPriorityChart();
-        drawMonthlyChart();
+        try {
+            drawStatusChart();
+            drawPriorityChart();
+            drawTagChart();
+            drawMonthlyChart();
+        } catch(e) { console.error("Grafik çizim hatası:", e); }
     }
 
     function getCanvasContext(id) {
         const canvas = document.getElementById(id);
         if(!canvas) return null;
         const rect = canvas.parentElement.getBoundingClientRect();
+        if(rect.width === 0 || rect.height === 0) return null; // Modal veya tab gizliyse
         canvas.width = rect.width;
         canvas.height = rect.height;
         return { ctx: canvas.getContext('2d'), w: canvas.width, h: canvas.height, canvas: canvas };
@@ -1655,12 +2231,12 @@
         const {ctx, w, h} = c;
         const cx = w / 2;
         const cy = h / 2;
-        const radius = Math.min(w, h) / 2.5;
+        const radius = Math.min(w, h) / 2.8;
 
         ctx.clearRect(0, 0, w, h);
 
         if(total === 0) {
-            ctx.fillStyle = COLORS.gray; ctx.font = "14px Inter"; ctx.textAlign = "center"; ctx.fillText("Veri Yok", cx, cy);
+            ctx.fillStyle = COLORS.gray; ctx.font = "14px Inter"; ctx.textAlign = "center"; ctx.fillText("Grafik için veri bekleniyor", cx, cy);
             return;
         }
 
@@ -1674,29 +2250,42 @@
             ctx.closePath();
             ctx.fillStyle = colorMap[key];
             ctx.fill();
-            ctx.lineWidth = 2; ctx.strokeStyle = '#070709'; ctx.stroke();
+            
+            // Modern gap
+            ctx.lineWidth = 4; ctx.strokeStyle = '#070709'; ctx.stroke();
             startAngle += sliceAngle;
         }
         
-        ctx.beginPath(); ctx.arc(cx, cy, radius * 0.6, 0, 2 * Math.PI); ctx.fillStyle = '#121216'; ctx.fill();
+        ctx.beginPath(); ctx.arc(cx, cy, radius * 0.7, 0, 2 * Math.PI); ctx.fillStyle = '#121216'; ctx.fill();
         
-        ctx.fillStyle = COLORS.blue; ctx.font = "bold 22px Rajdhani"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+        ctx.fillStyle = "white"; ctx.font = "bold 26px Rajdhani"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText(total, cx, cy - 10);
-        ctx.font = "12px Inter"; ctx.fillStyle = "#8E8E9F"; ctx.fillText(centerText, cx, cy + 12);
+        ctx.font = "13px Inter"; ctx.fillStyle = "#8E8E9F"; ctx.fillText(centerText, cx, cy + 15);
     }
 
     function drawStatusChart() {
         const counts = { 'aktif':0, 'gecikmis':0, 'kismi':0, 'odendi':0 };
-        debts.forEach(d => counts[d.status]++);
+        debts.forEach(d => { if(d && d.status) counts[d.status]++; });
         const colorMap = { 'aktif': COLORS.blue, 'gecikmis': COLORS.red, 'kismi': COLORS.orange, 'odendi': COLORS.green };
-        drawDoughnut('statusChart', counts, colorMap, debts.length, "Kayıt");
+        drawDoughnut('statusChart', counts, colorMap, debts.length, "Toplam Kayıt");
     }
 
     function drawPriorityChart() {
         const counts = { 'dusuk':0, 'normal':0, 'yuksek':0, 'kritik':0 };
-        debts.forEach(d => counts[d.priority]++);
+        debts.forEach(d => { if(d && d.priority) counts[d.priority]++; });
         const colorMap = { 'dusuk': COLORS.gray, 'normal': COLORS.blue, 'yuksek': COLORS.orange, 'kritik': COLORS.red };
-        drawDoughnut('priorityChart', counts, colorMap, debts.length, "Kayıt");
+        drawDoughnut('priorityChart', counts, colorMap, debts.length, "Öncelik");
+    }
+
+    function drawTagChart() {
+        const counts = { 'arkadas':0, 'aile':0, 'is':0, 'diger':0 };
+        debts.forEach(d => { 
+            if(d) {
+                if(counts[d.tag] !== undefined) counts[d.tag]++; else counts['diger']++; 
+            }
+        });
+        const colorMap = { 'arkadas': COLORS.green, 'aile': COLORS.orange, 'is': COLORS.purple, 'diger': COLORS.gray };
+        drawDoughnut('tagChart', counts, colorMap, debts.length, "Kategori");
     }
 
     function drawMonthlyChart() {
@@ -1717,15 +2306,19 @@
         }
 
         debts.forEach(d => {
+            if(!d || !d.issueDate) return;
             const date = new Date(d.issueDate);
-            const key = `${date.getFullYear()}-${date.getMonth()}`;
-            if(months[key] !== undefined) months[key].total += parseFloat(d.amount);
+            if(!isNaN(date)) {
+                const key = `${date.getFullYear()}-${date.getMonth()}`;
+                if(months[key] !== undefined) months[key].total += (parseFloat(d.amount) || 0);
+            }
         });
 
         const dataArray = Object.values(months);
         const maxVal = Math.max(...dataArray.map(m => m.total), 100);
 
         const barWidth = (w - padding * 2) / 8 - 15;
+        if(barWidth <= 0) return; // Prevent negative width errors on small screens
         
         ctx.beginPath(); ctx.moveTo(padding, padding); ctx.lineTo(padding, h - padding); ctx.lineTo(w - padding, h - padding);
         ctx.strokeStyle = "rgba(255,255,255,0.1)"; ctx.stroke();
@@ -1736,21 +2329,22 @@
             const y = h - padding - barHeight;
 
             const grad = ctx.createLinearGradient(0, y, 0, h - padding);
-            grad.addColorStop(0, "rgba(176, 38, 255, 0.8)");
-            grad.addColorStop(1, "rgba(0, 229, 255, 0.2)");
+            grad.addColorStop(0, "rgba(0, 229, 255, 0.8)");
+            grad.addColorStop(1, "rgba(176, 38, 255, 0.1)");
 
             ctx.fillStyle = grad;
             ctx.beginPath();
-            ctx.roundRect ? ctx.roundRect(x, y, barWidth, barHeight, [4, 4, 0, 0]) : ctx.rect(x, y, barWidth, barHeight);
+            if(ctx.roundRect) ctx.roundRect(x, y, barWidth, barHeight, [6, 6, 0, 0]); 
+            else ctx.rect(x, y, barWidth, barHeight);
             ctx.fill();
 
             ctx.fillStyle = "#8E8E9F"; ctx.font = "12px Inter"; ctx.textAlign = "center";
             ctx.fillText(data.label, x + barWidth / 2, h - padding + 15);
 
             if(data.total > 0) {
-                ctx.fillStyle = "#FFF"; ctx.font = "10px Inter";
-                let valStr = data.total > 1000 ? (data.total/1000).toFixed(1) + 'k' : data.total;
-                ctx.fillText(valStr, x + barWidth / 2, y - 5);
+                ctx.fillStyle = "white"; ctx.font = "bold 11px Inter";
+                let valStr = data.total >= 1000 ? (data.total/1000).toFixed(1) + 'k' : data.total;
+                ctx.fillText(valStr, x + barWidth / 2, y - 8);
             }
         });
     }
@@ -1758,8 +2352,9 @@
     window.addEventListener('resize', drawCharts);
 
     /* ========================================================================
-       GLOBAL SCOPE (MODULE BINDING) - HTML ONCLICK İÇİN GEREKLİ
+       2. GLOBAL SCOPE (MODULE BINDING) - HTML ONCLICK İÇİN GEREKLİ
        ======================================================================== */
+    // window.showToast is explicitly defined at the top to prevent undefined errors.
     window.openLoginModal = openLoginModal;
     window.handleLogin = handleLogin;
     window.closeModal = closeModal;
@@ -1769,16 +2364,20 @@
     window.confirmResetDataAuth = confirmResetDataAuth;
     window.loadDemoDataAuth = loadDemoDataAuth;
     window.applyFilters = applyFilters;
+    window.setSort = setSort;
+    window.changePerPage = changePerPage;
     window.showDetail = showDetail;
     window.openPaymentModalAuth = openPaymentModalAuth;
     window.savePaymentAuth = savePaymentAuth;
     window.fullPayAuth = fullPayAuth;
     window.confirmDeleteAuth = confirmDeleteAuth;
+    window.previewRemaining = previewRemaining;
     window.toggleInst = toggleInst;
     window.handleFormSubmit = handleFormSubmit;
     window.resetForm = resetForm;
     window.migrateLocalToFirebase = migrateLocalToFirebase;
     window.editDebtAuth = editDebtAuth;
+
 </script>
 </body>
 </html>
