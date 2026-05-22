@@ -1,0 +1,29 @@
+/* ============================================================================
+   metavis1on — Tema Presetleri
+   ----------------------------------------------------------------------------
+   data-mv-theme attribute'u <html> üzerine yazılır.
+   Mevcut style.css'teki data-theme attribute'una paralel; çakışmıyor çünkü
+   tüm değişkenler --mv- prefiksli.
+   ============================================================================ */
+
+[data-mv-theme="obsidian-cyan"],
+:root {
+  --mv-theme-primary:   #0ea5e9;
+  --mv-theme-secondary: #2563eb;
+  --mv-theme-glow:      rgba(14, 165, 233, 0.30);
+  --mv-theme-glow-strong: rgba(14, 165, 233, 0.55);
+}
+
+[data-mv-theme="obsidian-gold"] {
+  --mv-theme-primary:   #f59e0b;
+  --mv-theme-secondary: #ea580c;
+  --mv-theme-glow:      rgba(245, 158, 11, 0.30);
+  --mv-theme-glow-strong: rgba(245, 158, 11, 0.55);
+}
+
+[data-mv-theme="obsidian-purple"] {
+  --mv-theme-primary:   #a855f7;
+  --mv-theme-secondary: #6366f1;
+  --mv-theme-glow:      rgba(168, 85, 247, 0.30);
+  --mv-theme-glow-strong: rgba(168, 85, 247, 0.55);
+}

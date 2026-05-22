@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="tr" data-mv-theme="obsidian-cyan">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>metavis1on | Projeler & Uygulamalar</title>
+  <meta name="description" content="metavis1on topluluk projeleri, mini oyunlar ve dahili uygulamalar.">
+  <meta name="theme-color" content="#030407">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="../shared/css/reset.css">
+  <link rel="stylesheet" href="../shared/css/themes.css">
+  <link rel="stylesheet" href="../shared/css/components.css">
+  <link rel="stylesheet" href="../shared/css/layout.css">
+
+  <style>
+    /* Sayfaya özel ufak süs */
+    .projeler-hero {
+      text-align: center;
+      padding-bottom: var(--mv-space-xl);
+    }
+    .projeler-grid { margin-top: var(--mv-space-xl); }
+    .proje-card {
+      display: flex;
+      flex-direction: column;
+      gap: var(--mv-space-md);
+      min-height: 220px;
+    }
+    .proje-card__head {
+      display: flex; align-items: center; gap: var(--mv-space-md);
+    }
+    .proje-card__title-block { flex: 1; }
+    .proje-card__title { font-size: 1.15rem; font-weight: 700; }
+    .proje-card__sub { font-size: 0.78rem; color: var(--mv-text-muted); margin-top: 2px; letter-spacing: 0.5px; }
+    .proje-card__body { color: var(--mv-text-soft); font-size: 0.92rem; line-height: 1.5; flex: 1; }
+    .proje-card__meta {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--mv-space-sm);
+      padding-top: var(--mv-space-sm); border-top: 1px solid var(--mv-border);
+    }
+    .proje-card__cta {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.88rem; font-weight: 600; color: var(--mv-theme-primary);
+      transition: gap var(--mv-transition-fast);
+    }
+    .proje-card__cta:hover { gap: 10px; }
+
+    .proje-card--locked .proje-card__cta { color: var(--mv-accent-red); }
+
+    .icon-glyph {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    .top-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: var(--mv-space-md) 0;
+      margin-bottom: var(--mv-space-lg);
+    }
+    .top-bar__brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.05rem; }
+    .top-bar__brand img { width: 32px; height: 32px; object-fit: contain; }
+    .top-bar__nav { display: flex; gap: var(--mv-space-md); align-items: center; }
+    .top-bar__nav a { color: var(--mv-text-muted); font-size: 0.9rem; transition: color var(--mv-transition-fast); }
+    .top-bar__nav a:hover { color: var(--mv-text-main); }
+  </style>
+</head>
+<body>
+
+  <div class="mv-container">
+    <header class="top-bar">
+      <a class="top-bar__brand" href="../index.html">
+        <img src="../assets/logo.png" alt="metavis1on" onerror="this.style.display='none'">
+        <span>metavis1on</span>
+      </a>
+      <nav class="top-bar__nav" aria-label="Üst Menü">
+        <a href="../index.html">Ana Sayfa</a>
+        <a href="../admin/index.html">Yönetim</a>
+      </nav>
+    </header>
+
+    <main class="mv-page">
+      <section class="projeler-hero">
+        <span class="mv-page__eyebrow">Topluluk Vitrini</span>
+        <h1 class="mv-page__title">Projeler &amp; Uygulamalar</h1>
+        <p class="mv-page__lead">
+          metavis1on ekosistemine bağlı mini oyunlar, prototipler ve yönetim modülleri.
+          Public olanlar herkese açık; <strong>Admin Only</strong> etiketliler yönetici girişi gerektirir.
+        </p>
+      </section>
+
+      <div class="mv-grid mv-grid--auto projeler-grid" id="proje-listesi" aria-live="polite">
+        <!-- Kartlar JS ile render edilir; JS devre dışıysa aşağıdaki fallback gösterilir -->
+        <noscript>
+          <div class="mv-card mv-card--glass">
+            <h3 class="mv-card__title">JavaScript Gerekli</h3>
+            <p class="mv-card__desc">Bu sayfanın çalışması için tarayıcınızda JavaScript açık olmalıdır.</p>
+            <ul class="mv-mt-md" style="list-style:disc; padding-left:20px; color:var(--mv-text-soft); font-size:0.9rem;">
+              <li><a href="../visiocial.html" style="color:var(--mv-theme-primary);">Visiocial</a> — Sosyal ağ prototipi</li>
+              <li><a href="../tetris.html" style="color:var(--mv-theme-primary);">Tetris</a> — Neon temalı mini oyun</li>
+              <li><a href="../game.html" style="color:var(--mv-theme-primary);">GRID</a> — Puzzle</li>
+              <li><a href="../admin/index.html" style="color:var(--mv-theme-primary);">Borç Paneli</a> — Yönetici girişi gerektirir</li>
+            </ul>
+          </div>
+        </noscript>
+      </div>
+
+      <div class="mv-mt-lg mv-text-center mv-text-muted" style="font-size:0.85rem;">
+        Sürüm <span class="mv-text-primary" id="mv-site-version">10.0.0</span> &nbsp;·&nbsp;
+        <span class="mv-status-dot" style="vertical-align:middle;"></span>
+        Sistemler çevrimiçi
+      </div>
+    </main>
+  </div>
+
+  <!-- Shared scriptler -->
+  <script src="../shared/config/site.js"></script>
+  <script src="../shared/js/core.js"></script>
+  <script src="../shared/js/theme.js"></script>
+  <script src="../shared/js/auth.js"></script>
+  <script src="../shared/js/apps.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // Sürüm etiketi
+      const verEl = document.getElementById('mv-site-version');
+      if (verEl && window.MV_SITE) verEl.textContent = window.MV_SITE.siteVersion;
+
+      // Uygulama kartlarını çiz
+      const container = document.getElementById('proje-listesi');
+      const items = MV.apps.forProjectsPage();
+
+      function badgeFor(app) {
+        if (app.visibility === 'admin') return '<span class="mv-badge mv-badge--admin"><span class="mv-badge-dot"></span>Admin Only</span>';
+        if (app.status === 'prototype') return '<span class="mv-badge mv-badge--demo">Demo</span>';
+        return '<span class="mv-badge mv-badge--public">Public</span>';
+      }
+
+      function iconGlyph(app) {
+        // Phosphor icon'lar yüklü değil — emoji veya stilize harfle gösterelim
+        const map = {
+          'visiocial': 'V',
+          'tetris':    'T',
+          'grid':      'G',
+          'borc':      '₺'
+        };
+        return MV.core.escapeHtml(map[app.id] || '·');
+      }
+
+      function buildCard(app) {
+        const isLocked = (app.visibility === 'admin');
+        const iconCls  = 'mv-card__icon mv-card__icon--' + (app.accent || 'cyan');
+        const link     = isLocked ? '../admin/index.html' : app.legacyUrl;
+        const cta      = isLocked ? 'Yönetici Girişi →' : 'Uygulamayı Aç →';
+        const cardCls  = 'mv-card mv-card--glass mv-card--interactive proje-card' + (isLocked ? ' proje-card--locked' : '');
+
+        const card = document.createElement('a');
+        card.className = cardCls;
+        card.href = link;
+        if (isLocked) {
+          card.setAttribute('data-mv-locked', '1');
+        } else {
+          // Public uygulamalar yeni sekmede de açılabilsin (opsiyonel; şimdilik aynı sekme)
+        }
+
+        card.innerHTML =
+          '<div class="proje-card__head">' +
+            '<div class="' + iconCls + '"><span class="icon-glyph">' + iconGlyph(app) + '</span></div>' +
+            '<div class="proje-card__title-block">' +
+              '<div class="proje-card__title">' + MV.core.escapeHtml(app.name) + '</div>' +
+              '<div class="proje-card__sub">' + MV.core.escapeHtml(app.tag) + '</div>' +
+            '</div>' +
+            badgeFor(app) +
+          '</div>' +
+          '<div class="proje-card__body">' + MV.core.escapeHtml(app.description) + '</div>' +
+          '<div class="proje-card__meta">' +
+            '<span class="mv-text-muted" style="font-size:0.78rem;">' +
+              (isLocked ? '🔒 Yetkili erişim gerekli' : '🌐 Public') +
+            '</span>' +
+            '<span class="proje-card__cta">' + cta + '</span>' +
+          '</div>';
+
+        return card;
+      }
+
+      function render() {
+        if (!container) return;
+        container.innerHTML = '';
+        items.forEach(function (app) {
+          container.appendChild(buildCard(app));
+        });
+
+        // Locked kartlara tıklama: önce uyarı göster, sonra yönlendir
+        container.querySelectorAll('[data-mv-locked]').forEach(function (el) {
+          el.addEventListener('click', function (e) {
+            if (MV.auth && MV.auth.isAuthed()) {
+              // Zaten giriş yapmış, direkt geç
+              return;
+            }
+            e.preventDefault();
+            MV.core.toast('Bu modül yönetici erişimi gerektirir. Giriş sayfasına yönlendiriliyorsunuz...', 'warning', 2200);
+            setTimeout(function () {
+              window.location.href = el.getAttribute('href');
+            }, 1100);
+          });
+        });
+      }
+
+      render();
+    })();
+  </script>
+</body>
+</html>

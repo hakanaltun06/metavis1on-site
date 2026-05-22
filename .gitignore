@@ -1,0 +1,17 @@
+# Claude Code yerel ayarları (kişisel — repo'ya girmesin)
+.claude/
+
+# OS / Editor artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Node (gerekirse — ilerideki tool entegrasyonları için)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Yedek dosyaları
+*.bak
+*.tmp

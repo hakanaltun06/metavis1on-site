@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="tr" data-mv-theme="obsidian-cyan">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>metavis1on | Yönetici Girişi</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#030407">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="../shared/css/reset.css">
+  <link rel="stylesheet" href="../shared/css/themes.css">
+  <link rel="stylesheet" href="../shared/css/components.css">
+  <link rel="stylesheet" href="../shared/css/layout.css">
+</head>
+<body>
+
+  <main class="mv-auth-page">
+    <a class="mv-back-link" href="../index.html" style="position:absolute; top:24px; left:24px;">
+      ← Ana Sayfa
+    </a>
+
+    <div class="mv-auth-card">
+      <div class="mv-auth-card__logo">
+        <img src="../assets/logo.png" alt="metavis1on" onerror="this.style.display='none'">
+        <div style="font-size:0.72rem; letter-spacing:2.5px; text-transform:uppercase; color:var(--mv-theme-primary);">
+          Yönetim Merkezi
+        </div>
+      </div>
+
+      <h1 class="mv-auth-card__title">Yönetici Girişi</h1>
+      <p class="mv-auth-card__sub">
+        Yönetim paneline erişmek için yetkili hesap bilgilerinizi girin.
+      </p>
+
+      <form class="mv-auth-form" id="loginForm" novalidate>
+        <div id="authFeedback" class="mv-auth-feedback" role="alert"></div>
+
+        <div class="mv-field">
+          <label class="mv-field__label" for="login-user">Kullanıcı Adı / E-posta</label>
+          <input
+            class="mv-input"
+            type="text"
+            id="login-user"
+            name="user"
+            autocomplete="username"
+            placeholder="admin"
+            required
+            minlength="3">
+        </div>
+
+        <div class="mv-field">
+          <label class="mv-field__label" for="login-pass">Parola</label>
+          <input
+            class="mv-input"
+            type="password"
+            id="login-pass"
+            name="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            required
+            minlength="6">
+        </div>
+
+        <button class="mv-btn mv-btn--primary mv-btn--block mv-btn--lg" type="submit" id="loginBtn">
+          Yönetim Paneline Gir
+        </button>
+
+        <div class="mv-text-center mv-text-muted" style="font-size:0.78rem; margin-top:8px;">
+          🔒 Bu sayfa yetkili erişim içindir.
+        </div>
+      </form>
+
+      <!--
+        GELİŞTİRME NOTU:
+        Bu login ekranı şu an SessionStorage tabanlı geçici bir oturum üretir.
+        Gerçek kimlik doğrulama (Firebase Auth) ileride shared/js/auth.js
+        içine eklenecek. Bu dosyada gerçek admin parolası SAKLANMAZ.
+      -->
+    </div>
+  </main>
+
+  <script src="../shared/config/site.js"></script>
+  <script src="../shared/js/core.js"></script>
+  <script src="../shared/js/theme.js"></script>
+  <script src="../shared/js/auth.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // Zaten giriş yapmışsa direkt dashboard'a yönlendir
+      if (MV.auth.isAuthed()) {
+        window.location.replace('./dashboard.html');
+        return;
+      }
+
+      const form = document.getElementById('loginForm');
+      const feedback = document.getElementById('authFeedback');
+      const userInput = document.getElementById('login-user');
+      const passInput = document.getElementById('login-pass');
+      const btn = document.getElementById('loginBtn');
+
+      function showError(msg) {
+        feedback.textContent = msg;
+        feedback.classList.add('is-visible');
+        feedback.classList.remove('is-info');
+      }
+      function showInfo(msg) {
+        feedback.textContent = msg;
+        feedback.classList.add('is-visible');
+        feedback.classList.add('is-info');
+      }
+      function clearFeedback() {
+        feedback.classList.remove('is-visible');
+        feedback.classList.remove('is-info');
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearFeedback();
+
+        const u = userInput.value.trim();
+        const p = passInput.value;
+
+        btn.disabled = true;
+        btn.textContent = 'Doğrulanıyor...';
+
+        // Production auth Firebase ile bağlanacak.
+        // Şimdilik MV.auth.devLogin geçici oturum üretir.
+        setTimeout(function () {
+          const result = MV.auth.devLogin(u, p);
+          if (result.ok) {
+            showInfo('Giriş başarılı, panel yükleniyor...');
+            setTimeout(function () {
+              window.location.replace('./dashboard.html');
+            }, 500);
+          } else {
+            showError(result.error || 'Giriş başarısız.');
+            btn.disabled = false;
+            btn.textContent = 'Yönetim Paneline Gir';
+          }
+        }, 350);
+      });
+
+      // İlk input'a fokus
+      setTimeout(function () { userInput.focus(); }, 100);
+    })();
+  </script>
+</body>
+</html>

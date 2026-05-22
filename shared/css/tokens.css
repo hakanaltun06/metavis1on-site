@@ -1,0 +1,85 @@
+/* ============================================================================
+   metavis1on — Design Tokens
+   ----------------------------------------------------------------------------
+   Tüm yeni sayfalar (admin/, public/, apps/) bu değişkenleri kullanır.
+   Mevcut style.css ile çakışmayı önlemek için tüm değişkenler --mv- prefiksli.
+   ============================================================================ */
+
+:root {
+  /* Yüzeyler */
+  --mv-bg-deep:        #030407;
+  --mv-bg-main:        #050507;
+  --mv-bg-surface:     #0a0b10;
+  --mv-bg-surface-2:   #11131a;
+  --mv-bg-elevated:    #181a23;
+  --mv-bg-glass:       rgba(15, 15, 22, 0.7);
+  --mv-bg-overlay:     rgba(5, 5, 7, 0.82);
+
+  /* Metin */
+  --mv-text-main:      #ffffff;
+  --mv-text-soft:      #d8d8e0;
+  --mv-text-muted:     #9ca3af;
+  --mv-text-dim:       #5a5a6e;
+
+  /* Kenarlıklar */
+  --mv-border:         rgba(255, 255, 255, 0.08);
+  --mv-border-strong:  rgba(255, 255, 255, 0.16);
+  --mv-border-glow:    rgba(14, 165, 233, 0.35);
+
+  /* Vurgu renkleri (semantik) */
+  --mv-accent-cyan:    #00e5ff;
+  --mv-accent-blue:    #0ea5e9;
+  --mv-accent-purple:  #b026ff;
+  --mv-accent-violet:  #a855f7;
+  --mv-accent-gold:    #f59e0b;
+  --mv-accent-red:     #ff3366;
+  --mv-accent-green:   #00e676;
+  --mv-accent-orange:  #ff9100;
+
+  /* Tema (themes.css tarafından dolduruluyor) */
+  --mv-theme-primary:   var(--mv-accent-blue);
+  --mv-theme-secondary: #2563eb;
+  --mv-theme-glow:      rgba(14, 165, 233, 0.30);
+
+  /* Yarıçap */
+  --mv-radius-sm:   8px;
+  --mv-radius-md:   14px;
+  --mv-radius-lg:   20px;
+  --mv-radius-xl:   28px;
+  --mv-radius-full: 9999px;
+
+  /* Boşluklar */
+  --mv-space-2xs: 2px;
+  --mv-space-xs:  4px;
+  --mv-space-sm:  8px;
+  --mv-space-md:  16px;
+  --mv-space-lg:  24px;
+  --mv-space-xl:  40px;
+  --mv-space-2xl: 64px;
+  --mv-space-3xl: 96px;
+
+  /* Gölgeler */
+  --mv-shadow-sm:   0 4px 12px rgba(0, 0, 0, 0.25);
+  --mv-shadow-md:   0 8px 32px rgba(0, 0, 0, 0.40);
+  --mv-shadow-lg:   0 18px 50px rgba(0, 0, 0, 0.55);
+  --mv-shadow-glow: 0 0 24px var(--mv-theme-glow);
+
+  /* Geçişler */
+  --mv-transition-fast:  0.18s ease;
+  --mv-transition:       0.30s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --mv-transition-slow:  0.55s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Tipografi */
+  --mv-font-main: 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mv-font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  /* Glass efekti */
+  --mv-glass-blur: blur(16px);
+
+  /* Z-index hiyerarşisi */
+  --mv-z-bg:      -1;
+  --mv-z-content:  1;
+  --mv-z-nav:    100;
+  --mv-z-modal: 1000;
+  --mv-z-toast: 2000;
+}

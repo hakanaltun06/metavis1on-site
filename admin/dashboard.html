@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="tr" data-mv-theme="obsidian-cyan">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>metavis1on | Yönetim Paneli</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#030407">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="../shared/css/reset.css">
+  <link rel="stylesheet" href="../shared/css/themes.css">
+  <link rel="stylesheet" href="../shared/css/components.css">
+  <link rel="stylesheet" href="../shared/css/layout.css">
+
+  <style>
+    .dash-greeting {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: var(--mv-space-md); flex-wrap: wrap;
+      margin-bottom: var(--mv-space-lg);
+    }
+    .dash-greeting__title { font-size: 1.6rem; font-weight: 800; }
+    .dash-greeting__sub { color: var(--mv-text-muted); margin-top: 4px; }
+
+    .section-heading {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1.8px;
+      color: var(--mv-text-muted);
+      margin: var(--mv-space-xl) 0 var(--mv-space-md);
+    }
+    .section-heading::after {
+      content: ''; flex: 1; height: 1px; background: var(--mv-border);
+    }
+
+    .placeholder-card {
+      opacity: 0.7;
+    }
+    .placeholder-card .mv-badge {
+      background: rgba(255,255,255,0.05);
+      color: var(--mv-text-muted);
+      border-color: var(--mv-border);
+    }
+
+    .app-card {
+      display: flex; flex-direction: column; gap: var(--mv-space-md);
+    }
+    .app-card__head {
+      display: flex; align-items: center; gap: var(--mv-space-md);
+    }
+    .app-card__title { font-weight: 700; font-size: 1.05rem; }
+    .app-card__sub { font-size: 0.78rem; color: var(--mv-text-muted); }
+    .app-card__body { color: var(--mv-text-soft); font-size: 0.9rem; line-height: 1.5; }
+    .app-card__meta {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: var(--mv-space-sm); border-top: 1px solid var(--mv-border);
+    }
+
+    .future-note {
+      font-size: 0.78rem;
+      padding: 8px 12px;
+      background: rgba(255, 145, 0, 0.06);
+      border: 1px solid rgba(255, 145, 0, 0.25);
+      color: var(--mv-accent-orange);
+      border-radius: var(--mv-radius-sm);
+      margin-top: var(--mv-space-sm);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mv-admin-shell">
+    <aside class="mv-admin-shell__sidebar mv-sidebar" aria-label="Yönetim Menüsü">
+      <div class="mv-sidebar__brand">
+        <img src="../assets/logo.png" alt="metavis1on" onerror="this.style.display='none'">
+        <div>
+          <div class="mv-sidebar__brand-text">metavis1on</div>
+          <div class="mv-sidebar__brand-sub">Admin v10.0</div>
+        </div>
+      </div>
+
+      <nav class="mv-sidebar__nav">
+        <a class="mv-sidebar__link is-active" href="./dashboard.html">
+          <span>🏠</span><span>Dashboard</span>
+        </a>
+
+        <div class="mv-sidebar__section-label">İçerik</div>
+        <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
+          <span>📣</span><span>Duyurular</span>
+        </a>
+        <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
+          <span>📅</span><span>Etkinlikler</span>
+        </a>
+        <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
+          <span>📝</span><span>İçerik Yönetimi</span>
+        </a>
+
+        <div class="mv-sidebar__section-label">Modüller</div>
+        <a class="mv-sidebar__link" href="../borc.html" id="navBorc">
+          <span>₺</span><span>Borç Paneli</span>
+        </a>
+        <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
+          <span>🧩</span><span>Uygulama Yönetimi</span>
+        </a>
+
+        <div class="mv-sidebar__section-label">Sistem</div>
+        <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
+          <span>⚙️</span><span>Ayarlar</span>
+        </a>
+        <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
+          <span>📋</span><span>Loglar</span>
+        </a>
+      </nav>
+
+      <div class="mv-sidebar__footer">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px;">
+          <div>
+            <div style="font-size:0.78rem; color:var(--mv-text-muted);">Aktif Yönetici</div>
+            <div style="font-weight:700;" id="adminUserLabel">—</div>
+          </div>
+          <span class="mv-status-dot" title="Sistem aktif"></span>
+        </div>
+        <button class="mv-btn mv-btn--ghost mv-btn--block mv-btn--sm" id="logoutBtn">
+          Çıkış Yap
+        </button>
+      </div>
+    </aside>
+
+    <section class="mv-admin-shell__main">
+      <header class="mv-topbar">
+        <div class="mv-topbar__title">Yönetim Paneli</div>
+        <div class="mv-topbar__meta">
+          <span class="mv-text-muted" style="font-size:0.85rem;">
+            <span class="mv-status-dot"></span> Sistemler çevrimiçi
+          </span>
+          <a class="mv-btn mv-btn--ghost mv-btn--sm" href="../index.html">Siteye Dön</a>
+        </div>
+      </header>
+
+      <div class="mv-admin-shell__content">
+
+        <!-- Hoşgeldin -->
+        <div class="dash-greeting">
+          <div>
+            <div class="dash-greeting__title" id="greetingTitle">Hoş geldin, Yönetici</div>
+            <div class="dash-greeting__sub" id="greetingSub">metavis1on yönetim merkezine erişim sağlandı.</div>
+          </div>
+          <div class="mv-text-muted" id="greetingClock" style="font-family:var(--mv-font-mono); font-size:1.05rem;"></div>
+        </div>
+
+        <!-- Hızlı İstatistikler -->
+        <div class="mv-grid mv-grid--4">
+          <div class="mv-stat">
+            <div class="mv-stat__label">Bağlı Uygulama</div>
+            <div class="mv-stat__value" id="statApps">—</div>
+            <div class="mv-stat__hint">Toplam (admin + public)</div>
+          </div>
+          <div class="mv-stat">
+            <div class="mv-stat__label">Public Modüller</div>
+            <div class="mv-stat__value" id="statPublic">—</div>
+            <div class="mv-stat__hint">Vitrinde herkese açık</div>
+          </div>
+          <div class="mv-stat">
+            <div class="mv-stat__label">Admin Modülleri</div>
+            <div class="mv-stat__value" id="statAdmin">—</div>
+            <div class="mv-stat__hint">Yetkili erişim</div>
+          </div>
+          <div class="mv-stat">
+            <div class="mv-stat__label">Sistem Durumu</div>
+            <div class="mv-stat__value" style="color:var(--mv-accent-green);">Aktif</div>
+            <div class="mv-stat__hint">Tüm servisler çalışıyor</div>
+          </div>
+        </div>
+
+        <!-- Bağlı Uygulamalar -->
+        <div class="section-heading">Bağlı Uygulamalar</div>
+        <div class="mv-grid mv-grid--auto" id="adminAppGrid">
+          <!-- JS ile doldurulur -->
+        </div>
+
+        <!-- Sonraki Modüller (Placeholder) -->
+        <div class="section-heading">Sonraki Fazlar — Yer Tutucu</div>
+        <div class="mv-grid mv-grid--3">
+          <div class="mv-card mv-card--glass placeholder-card">
+            <div class="mv-card__header">
+              <div class="mv-card__title">📣 Duyurular</div>
+              <span class="mv-badge">Soon</span>
+            </div>
+            <div class="mv-card__desc">Ana sitedeki duyuru bandını yönetmek için modül. Firestore koleksiyon: <code>announcements</code>.</div>
+          </div>
+          <div class="mv-card mv-card--glass placeholder-card">
+            <div class="mv-card__header">
+              <div class="mv-card__title">📅 Etkinlik Takvimi</div>
+              <span class="mv-badge">Soon</span>
+            </div>
+            <div class="mv-card__desc">Discord etkinlik takvimi ile senkronize edilecek tek noktadan yönetim ekranı.</div>
+          </div>
+          <div class="mv-card mv-card--glass placeholder-card">
+            <div class="mv-card__header">
+              <div class="mv-card__title">📝 İçerik Yönetimi</div>
+              <span class="mv-badge">Soon</span>
+            </div>
+            <div class="mv-card__desc">Ekip kartları, FAQ soruları, manifesto, hero metinleri.</div>
+          </div>
+          <div class="mv-card mv-card--glass placeholder-card">
+            <div class="mv-card__header">
+              <div class="mv-card__title">🧩 Uygulama Yönetimi</div>
+              <span class="mv-badge">Soon</span>
+            </div>
+            <div class="mv-card__desc">Uygulamaları yayında / gizli toggle'ları, açıklamalar, ikonlar.</div>
+          </div>
+          <div class="mv-card mv-card--glass placeholder-card">
+            <div class="mv-card__header">
+              <div class="mv-card__title">⚙️ Site Ayarları</div>
+              <span class="mv-badge">Soon</span>
+            </div>
+            <div class="mv-card__desc">Discord davet bağlantısı, sosyal medya, varsayılan tema, sayaçlar.</div>
+          </div>
+          <div class="mv-card mv-card--glass placeholder-card">
+            <div class="mv-card__header">
+              <div class="mv-card__title">📋 Sistem Logları</div>
+              <span class="mv-badge">Soon</span>
+            </div>
+            <div class="mv-card__desc">Kim ne zaman neyi değiştirdi — Firestore <code>sysLogs</code> entegrasyonu.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <!-- Shared scriptler -->
+  <script src="../shared/config/site.js"></script>
+  <script src="../shared/js/core.js"></script>
+  <script src="../shared/js/theme.js"></script>
+  <script src="../shared/js/auth.js"></script>
+  <script src="../shared/js/apps.js"></script>
+  <script src="../shared/js/nav.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // 1) Yetki kontrolü — oturum yoksa login'e yönlendir
+      if (!MV.auth.requireAdmin('./index.html')) return;
+
+      const user = MV.auth.getUser();
+      const userLabel = document.getElementById('adminUserLabel');
+      const greet = document.getElementById('greetingTitle');
+      if (user && userLabel) userLabel.textContent = user.username;
+      if (user && greet) greet.textContent = 'Hoş geldin, ' + MV.core.escapeHtml(user.username);
+
+      // 2) Saat
+      function tick() {
+        const el = document.getElementById('greetingClock');
+        if (!el) return;
+        const now = new Date();
+        el.textContent = now.toLocaleString('tr-TR', { weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' });
+      }
+      tick();
+      setInterval(tick, 30 * 1000);
+
+      // 3) İstatistik kartları
+      const all = MV.apps.all();
+      const pub = MV.apps.byVisibility('public');
+      const adm = MV.apps.byVisibility('admin');
+      const $ = MV.core.$;
+      $('#statApps').textContent   = all.length;
+      $('#statPublic').textContent = pub.length;
+      $('#statAdmin').textContent  = adm.length;
+
+      // 4) Uygulama kartları
+      const grid = document.getElementById('adminAppGrid');
+      function buildAppCard(app) {
+        const card = document.createElement('div');
+        card.className = 'mv-card mv-card--glass app-card';
+
+        const accent = 'mv-card__icon--' + (app.accent || 'cyan');
+        const isAdmin = (app.visibility === 'admin');
+        const badge = isAdmin
+          ? '<span class="mv-badge mv-badge--admin">Admin</span>'
+          : (app.status === 'prototype'
+              ? '<span class="mv-badge mv-badge--demo">Demo</span>'
+              : '<span class="mv-badge mv-badge--public">Public</span>');
+
+        const iconMap = { visiocial: 'V', tetris: 'T', grid: 'G', borc: '₺' };
+        const glyph = MV.core.escapeHtml(iconMap[app.id] || '·');
+
+        card.innerHTML =
+          '<div class="app-card__head">' +
+            '<div class="mv-card__icon ' + accent + '"><span style="font-size:1.4rem;">' + glyph + '</span></div>' +
+            '<div style="flex:1;">' +
+              '<div class="app-card__title">' + MV.core.escapeHtml(app.name) + '</div>' +
+              '<div class="app-card__sub">' + MV.core.escapeHtml(app.tag) + '</div>' +
+            '</div>' +
+            badge +
+          '</div>' +
+          '<div class="app-card__body">' + MV.core.escapeHtml(app.description) + '</div>' +
+          '<div class="app-card__meta">' +
+            '<a class="mv-btn mv-btn--sm" href="' + MV.core.escapeHtml(app.legacyUrl) + '">Modülü Aç</a>' +
+            '<span class="mv-text-muted" style="font-size:0.75rem;">' +
+              (app.id === 'borc'
+                ? 'Sonraki fazda <code>admin/borc/</code> altına taşınacak'
+                : 'Eski URL üzerinden erişim') +
+            '</span>' +
+          '</div>';
+
+        if (app.id === 'borc') {
+          const note = document.createElement('div');
+          note.className = 'future-note';
+          note.innerHTML = '⚠️ Bu modül şu an kök dizindeki <code>/borc.html</code> üzerinden çalışıyor. Veriler, Firebase bağlantısı ve özellikler korunuyor. Sonraki fazda <code>admin/borc/</code> altına taşınacak; bu fazda parçalama yapılmayacak.';
+          card.appendChild(note);
+        }
+
+        return card;
+      }
+      all.forEach(function (a) { grid.appendChild(buildAppCard(a)); });
+
+      // 5) Logout
+      MV.core.on(document.getElementById('logoutBtn'), 'click', function () {
+        MV.auth.logout();
+        MV.core.toast('Oturum kapatıldı.', 'info', 1500);
+        setTimeout(function () { window.location.replace('./index.html'); }, 700);
+      });
+    })();
+  </script>
+</body>
+</html>

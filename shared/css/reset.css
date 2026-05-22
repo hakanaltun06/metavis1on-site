@@ -1,0 +1,74 @@
+/* ============================================================================
+   metavis1on — Reset & Temel Tipografi
+   ----------------------------------------------------------------------------
+   Sadece yeni shared-tabanlı sayfalarda yüklenir. Mevcut style.css'i
+   etkilemez (ayrı sayfalarda yüklenir).
+   ============================================================================ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--mv-font-main);
+  background-color: var(--mv-bg-deep);
+  color: var(--mv-text-main);
+  line-height: 1.55;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(14, 165, 233, 0.04), transparent 35%),
+    radial-gradient(circle at 85% 90%, rgba(176, 38, 255, 0.04), transparent 35%);
+  background-attachment: fixed;
+}
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+ul, ol { list-style: none; }
+
+img, svg, video { max-width: 100%; display: block; }
+
+h1, h2, h3, h4, h5, h6 { font-weight: 600; line-height: 1.2; }
+
+::selection {
+  background: var(--mv-theme-primary);
+  color: #000;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--mv-bg-main); }
+::-webkit-scrollbar-thumb { background: #2a2a35; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--mv-theme-primary); }
+
+:focus-visible {
+  outline: 2px solid var(--mv-theme-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
