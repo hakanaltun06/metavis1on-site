@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="tr" data-mv-theme="obsidian-cyan">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>metavis1on | Component Galerisi (v11.0.1)</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#030407">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="shared/css/tokens.css">
+  <link rel="stylesheet" href="shared/css/reset.css">
+  <link rel="stylesheet" href="shared/css/themes.css">
+  <link rel="stylesheet" href="shared/css/components.css">
+  <link rel="stylesheet" href="shared/css/layout.css">
+
+  <style>
+    body {
+      background:
+        radial-gradient(ellipse at top, rgba(14, 165, 233, 0.06), transparent 55%),
+        var(--mv-bg-deep);
+      color: var(--mv-text-soft);
+      font-family: var(--mv-font-main);
+      min-height: 100vh;
+    }
+
+    .preview-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--mv-space-md);
+      padding: 14px var(--mv-space-lg);
+      background: rgba(5, 5, 7, 0.78);
+      backdrop-filter: var(--mv-glass-blur);
+      border-bottom: 1px solid var(--mv-border);
+    }
+    .preview-topbar__brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .preview-topbar__brand-tag {
+      font-size: 0.68rem;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: var(--mv-radius-full);
+      background: rgba(14, 165, 233, 0.10);
+      color: var(--mv-theme-primary);
+      border: 1px solid rgba(14, 165, 233, 0.25);
+    }
+    .preview-topbar__themes {
+      display: flex;
+      gap: 6px;
+      padding: 4px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--mv-border);
+      border-radius: var(--mv-radius-full);
+    }
+    .preview-theme-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--mv-text-muted);
+      background: transparent;
+      border: none;
+      border-radius: var(--mv-radius-full);
+      cursor: pointer;
+      transition: var(--mv-transition-fast);
+    }
+    .preview-theme-btn:hover { color: var(--mv-text-main); }
+    .preview-theme-btn.is-active {
+      background: var(--mv-bg-surface);
+      color: var(--mv-text-main);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+    .preview-theme-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .preview-theme-dot--cyan   { background: #0ea5e9; box-shadow: 0 0 8px #0ea5e9; }
+    .preview-theme-dot--gold   { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+    .preview-theme-dot--purple { background: #a855f7; box-shadow: 0 0 8px #a855f7; }
+
+    .preview-shell { max-width: 1240px; margin: 0 auto; padding: var(--mv-space-xl) var(--mv-space-lg); }
+    .preview-toc {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      margin-bottom: var(--mv-space-xl);
+    }
+    .preview-toc a {
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      color: var(--mv-text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--mv-border);
+      border-radius: var(--mv-radius-full);
+      text-decoration: none;
+      transition: var(--mv-transition-fast);
+    }
+    .preview-toc a:hover { color: var(--mv-text-main); border-color: var(--mv-border-glow); }
+
+    .preview-group { margin-bottom: clamp(64px, 8vw, 112px); }
+    .preview-group__head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--mv-space-md);
+      padding-bottom: var(--mv-space-md);
+      margin-bottom: var(--mv-space-lg);
+      border-bottom: 1px solid var(--mv-border);
+    }
+    .preview-group__title {
+      font-family: var(--mv-font-display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--mv-text-main);
+    }
+    .preview-group__code {
+      font-family: var(--mv-font-mono);
+      font-size: 0.78rem;
+      color: var(--mv-text-dim);
+    }
+
+    /* Hero preview frame'i biraz daha küçük gösterelim, sayfayı boğmasın */
+    .preview-hero-frame {
+      border: 1px solid var(--mv-border);
+      border-radius: var(--mv-radius-lg);
+      overflow: hidden;
+      position: relative;
+      background: var(--mv-bg-main);
+    }
+
+    .preview-note {
+      font-size: 0.85rem;
+      color: var(--mv-text-muted);
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.025);
+      border-left: 3px solid var(--mv-theme-primary);
+      border-radius: var(--mv-radius-sm);
+      margin-bottom: var(--mv-space-lg);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="preview-topbar">
+    <div class="preview-topbar__brand">
+      <span>metavis1on</span>
+      <span class="preview-topbar__brand-tag">v11.0.1 · Component Galerisi</span>
+    </div>
+    <div class="preview-topbar__themes" role="tablist" aria-label="Tema seçici">
+      <button class="preview-theme-btn is-active" data-mv-set-theme="obsidian-cyan">
+        <span class="preview-theme-dot preview-theme-dot--cyan"></span> Elektrik Mavisi
+      </button>
+      <button class="preview-theme-btn" data-mv-set-theme="obsidian-gold">
+        <span class="preview-theme-dot preview-theme-dot--gold"></span> Obsidyen Altın
+      </button>
+      <button class="preview-theme-btn" data-mv-set-theme="obsidian-purple">
+        <span class="preview-theme-dot preview-theme-dot--purple"></span> Neon Mor
+      </button>
+    </div>
+  </header>
+
+  <div class="preview-shell">
+
+    <div class="preview-note">
+      Bu sayfa <strong>v11.0.1</strong> kapsamındaki paylaşılan tasarım dilini görsel olarak doğrulamak için
+      hazırlanmıştır. Hiçbir public navigasyondan link verilmez; sadece doğrudan URL ile erişilir.
+    </div>
+
+    <nav class="preview-toc" aria-label="Bölümler">
+      <a href="#hero">Hero</a>
+      <a href="#section-header">Section Header</a>
+      <a href="#feature-grid">Feature Grid</a>
+      <a href="#app-card">App Card v2</a>
+      <a href="#announcement">Announcements</a>
+      <a href="#event">Events</a>
+      <a href="#content-block">Content Block</a>
+      <a href="#stat-widget">Stat Widget</a>
+      <a href="#activity-feed">Activity Feed</a>
+      <a href="#status-pill">Status Pill</a>
+      <a href="#command-card">Command Card</a>
+      <a href="#preview-shell">Preview Shell</a>
+      <a href="#footer">Footer</a>
+    </nav>
+
+    <!-- 1. Hero ============================================================ -->
+    <section class="preview-group" id="hero">
+      <div class="preview-group__head">
+        <div class="preview-group__title">1. Hero</div>
+        <div class="preview-group__code">.mv-hero · .mv-hero__title-grad</div>
+      </div>
+      <div class="preview-hero-frame">
+        <div class="mv-hero">
+          <div class="mv-hero__bg">
+            <div class="mv-hero__bg-orb mv-hero__bg-orb--primary"></div>
+            <div class="mv-hero__bg-orb mv-hero__bg-orb--accent"></div>
+            <div class="mv-hero__bg-grid"></div>
+          </div>
+          <div class="mv-hero__inner">
+            <div class="mv-hero__eyebrow">Resmi Topluluk Platformu</div>
+            <h1 class="mv-hero__title">
+              Sıradanlığı reddet.<br>
+              <span class="mv-hero__title-grad">Dijital kimliğini bul.</span>
+            </h1>
+            <p class="mv-hero__lead">
+              metavis1on; kalite, saygı ve özenle inşa edilmiş, dijital dünyada
+              yeni bir standart belirleyen seçkin bir ekosistemdir.
+            </p>
+            <div class="mv-hero__actions">
+              <a href="#" class="mv-btn mv-btn--primary mv-btn--lg">Platforma Katıl</a>
+              <a href="#" class="mv-btn mv-btn--ghost mv-btn--lg">Detaylı İncele</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Section Header ================================================= -->
+    <section class="preview-group" id="section-header">
+      <div class="preview-group__head">
+        <div class="preview-group__title">2. Section Header</div>
+        <div class="preview-group__code">.mv-section-header</div>
+      </div>
+      <div class="mv-section-header">
+        <div class="mv-section-header__eyebrow">Ekosistem Analizi</div>
+        <h2 class="mv-section-header__title">Yeni nesil dijital yaşam alanı</h2>
+        <p class="mv-section-header__lead">
+          Karmaşadan uzak, kalite ve saygıya dayalı; her detayı özenle düşünülmüş bir topluluk yapısı.
+        </p>
+      </div>
+    </section>
+
+    <!-- 3. Feature Grid =================================================== -->
+    <section class="preview-group" id="feature-grid">
+      <div class="preview-group__head">
+        <div class="preview-group__title">3. Feature Grid</div>
+        <div class="preview-group__code">.mv-feature-grid · .mv-feature</div>
+      </div>
+      <div class="mv-feature-grid">
+        <article class="mv-feature">
+          <div class="mv-feature__icon">⚡</div>
+          <div class="mv-feature__title">Kesintisiz Akış</div>
+          <div class="mv-feature__desc">7/24 aktif, dinamik ve akıcı topluluk altyapısı.</div>
+        </article>
+        <article class="mv-feature">
+          <div class="mv-feature__icon mv-feature__icon--cool">🛡️</div>
+          <div class="mv-feature__title">Sıkı Denetim</div>
+          <div class="mv-feature__desc">Otomatize moderasyon ve insan kontrolünün hassas dengesi.</div>
+        </article>
+        <article class="mv-feature">
+          <div class="mv-feature__icon mv-feature__icon--warm">🎯</div>
+          <div class="mv-feature__title">Küratörlü İçerik</div>
+          <div class="mv-feature__desc">Her etkinlik, her duyuru özenle planlanır ve sunulur.</div>
+        </article>
+        <article class="mv-feature">
+          <div class="mv-feature__icon">🧠</div>
+          <div class="mv-feature__title">Özel Altyapı</div>
+          <div class="mv-feature__desc">Platforma özel kodlanmış botlar ve modüler servisler.</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 4. App Card v2 ==================================================== -->
+    <section class="preview-group" id="app-card">
+      <div class="preview-group__head">
+        <div class="preview-group__title">4. App Card v2</div>
+        <div class="preview-group__code">.mv-app-card-v2</div>
+      </div>
+      <div class="mv-grid mv-grid--auto">
+        <a class="mv-app-card-v2" href="#">
+          <div class="mv-app-card-v2__head">
+            <div class="mv-app-card-v2__icon mv-app-card-v2__icon--purple">◈</div>
+            <div>
+              <div class="mv-app-card-v2__title">Visiocial</div>
+              <div class="mv-app-card-v2__sub">Demo · Prototip</div>
+            </div>
+          </div>
+          <div class="mv-app-card-v2__body">
+            Topluluk sosyal ağ prototipi. UI/UX demosu, animasyonlu akışlar.
+          </div>
+          <div class="mv-app-card-v2__meta">
+            <span class="mv-status-pill mv-status-pill--info"><span class="mv-status-pill__dot"></span> Prototip</span>
+            <span class="mv-app-card-v2__cta">Modülü Aç →</span>
+          </div>
+        </a>
+
+        <a class="mv-app-card-v2 mv-app-card-v2--featured" href="#">
+          <div class="mv-app-card-v2__head">
+            <div class="mv-app-card-v2__icon mv-app-card-v2__icon--cyan">▦</div>
+            <div>
+              <div class="mv-app-card-v2__title">Tetris</div>
+              <div class="mv-app-card-v2__sub">Mini Oyun</div>
+            </div>
+          </div>
+          <div class="mv-app-card-v2__body">
+            Neon temalı klasik Tetris. 3 görsel tema, dokunmatik destek.
+          </div>
+          <div class="mv-app-card-v2__meta">
+            <span class="mv-status-pill mv-status-pill--online mv-status-pill--pulse"><span class="mv-status-pill__dot"></span> Stabil</span>
+            <span class="mv-app-card-v2__cta">Oyna →</span>
+          </div>
+        </a>
+
+        <a class="mv-app-card-v2 mv-app-card-v2--locked" href="#">
+          <div class="mv-app-card-v2__head">
+            <div class="mv-app-card-v2__icon mv-app-card-v2__icon--red">₺</div>
+            <div>
+              <div class="mv-app-card-v2__title">Borç Yönetim Paneli</div>
+              <div class="mv-app-card-v2__sub">Admin Only</div>
+            </div>
+          </div>
+          <div class="mv-app-card-v2__body">
+            Topluluk içi borç takibi. Firebase senkron, taksit, raporlama.
+          </div>
+          <div class="mv-app-card-v2__meta">
+            <span class="mv-status-pill mv-status-pill--offline"><span class="mv-status-pill__dot"></span> Kilitli</span>
+            <span class="mv-app-card-v2__cta">Giriş Gerekli →</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- 5. Announcements ================================================== -->
+    <section class="preview-group" id="announcement">
+      <div class="preview-group__head">
+        <div class="preview-group__title">5. Announcement Strip</div>
+        <div class="preview-group__code">.mv-announcement-strip</div>
+      </div>
+      <div class="mv-announcement-strip">
+        <article class="mv-announcement-strip__item">
+          <div class="mv-announcement-strip__head">
+            <span class="mv-announcement-strip__dot"></span>
+            <span class="mv-announcement-strip__date">23 MAY 2026</span>
+          </div>
+          <div class="mv-announcement-strip__title">v11.0 Portal Yenileme</div>
+          <div class="mv-announcement-strip__text">
+            Yeni paylaşılan tasarım dili ve admin genişletmesi devreye alındı.
+          </div>
+        </article>
+        <article class="mv-announcement-strip__item">
+          <div class="mv-announcement-strip__head">
+            <span class="mv-announcement-strip__dot"></span>
+            <span class="mv-announcement-strip__date">18 MAY 2026</span>
+          </div>
+          <div class="mv-announcement-strip__title">Topluluk Etkinliği: Tetris Turnuvası</div>
+          <div class="mv-announcement-strip__text">
+            Cumartesi 21:00'de canlı yayında final maçları.
+          </div>
+        </article>
+        <article class="mv-announcement-strip__item">
+          <div class="mv-announcement-strip__head">
+            <span class="mv-announcement-strip__dot"></span>
+            <span class="mv-announcement-strip__date">10 MAY 2026</span>
+          </div>
+          <div class="mv-announcement-strip__title">Yeni Tema: Obsidyen Altın</div>
+          <div class="mv-announcement-strip__text">
+            Sıcak ton sevenler için yeni renk kimliği eklendi.
+          </div>
+        </article>
+        <article class="mv-announcement-strip__item">
+          <div class="mv-announcement-strip__head">
+            <span class="mv-announcement-strip__dot"></span>
+            <span class="mv-announcement-strip__date">02 MAY 2026</span>
+          </div>
+          <div class="mv-announcement-strip__title">Güvenlik Güncellemesi</div>
+          <div class="mv-announcement-strip__text">
+            v10.2 borç paneli güvenlik sertleştirmesi devreye girdi.
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 6. Event Row ====================================================== -->
+    <section class="preview-group" id="event">
+      <div class="preview-group__head">
+        <div class="preview-group__title">6. Event Row</div>
+        <div class="preview-group__code">.mv-event-row</div>
+      </div>
+      <div>
+        <article class="mv-event-row">
+          <div class="mv-event-row__date">
+            <span class="mv-event-row__day">28</span>
+            <span class="mv-event-row__month">May</span>
+          </div>
+          <div class="mv-event-row__body">
+            <div class="mv-event-row__title">Tetris Turnuvası — Final Gecesi</div>
+            <div class="mv-event-row__meta">
+              <span class="mv-event-row__meta-item">⏰ 21:00</span>
+              <span class="mv-event-row__meta-item">📍 Sesli Salon A</span>
+              <span class="mv-event-row__meta-item">👥 32 katılımcı</span>
+            </div>
+          </div>
+          <a class="mv-btn mv-btn--sm mv-event-row__cta" href="#">Detay →</a>
+        </article>
+        <article class="mv-event-row">
+          <div class="mv-event-row__date">
+            <span class="mv-event-row__day">05</span>
+            <span class="mv-event-row__month">Haz</span>
+          </div>
+          <div class="mv-event-row__body">
+            <div class="mv-event-row__title">Aylık Topluluk Sohbeti</div>
+            <div class="mv-event-row__meta">
+              <span class="mv-event-row__meta-item">⏰ 20:30</span>
+              <span class="mv-event-row__meta-item">📍 Genel Salon</span>
+            </div>
+          </div>
+          <a class="mv-btn mv-btn--sm mv-event-row__cta" href="#">Detay →</a>
+        </article>
+        <article class="mv-event-row">
+          <div class="mv-event-row__date">
+            <span class="mv-event-row__day">12</span>
+            <span class="mv-event-row__month">Haz</span>
+          </div>
+          <div class="mv-event-row__body">
+            <div class="mv-event-row__title">Geliştirici Workshop: shared/ Sistemine Giriş</div>
+            <div class="mv-event-row__meta">
+              <span class="mv-event-row__meta-item">⏰ 19:00</span>
+              <span class="mv-event-row__meta-item">📍 Yazılım Köşesi</span>
+            </div>
+          </div>
+          <a class="mv-btn mv-btn--sm mv-event-row__cta" href="#">Detay →</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- 7. Content Block ================================================== -->
+    <section class="preview-group" id="content-block">
+      <div class="preview-group__head">
+        <div class="preview-group__title">7. Content Block</div>
+        <div class="preview-group__code">.mv-content-block</div>
+      </div>
+      <div class="mv-grid mv-grid--2">
+        <div>
+          <div class="mv-content-block">
+            <div class="mv-content-block__eyebrow">01 · Felsefe</div>
+            <h3 class="mv-content-block__title">Kalite tesadüf değil, standarttır.</h3>
+            <div class="mv-content-block__body">
+              <p>Sunucu içi rollerden açılan kanallara kadar her detayda niceliği değil niteliği ön planda tutarız.
+              Kalabalık olmak değil, kaliteli olmak ana hedefimizdir.</p>
+            </div>
+          </div>
+          <div class="mv-content-block">
+            <div class="mv-content-block__eyebrow">02 · İlke</div>
+            <h3 class="mv-content-block__title">Karşılıklı saygı tartışılamaz.</h3>
+            <div class="mv-content-block__body">
+              <p>Farklı görüşlere ve yaşam tarzlarına mutlak saygı duyulur. Toksik manipülasyona kesinlikle yer yoktur.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="mv-content-block">
+            <div class="mv-content-block__eyebrow">03 · Yöntem</div>
+            <h3 class="mv-content-block__title">Sürekli ve sistemli gelişim.</h3>
+            <div class="mv-content-block__body">
+              <p>Burası statik bir grup değil, yaşayan bir organizmadır. Teknik altyapımız, botlarımız ve marka değerimiz çağın gereksinimlerine göre üyelerimizle birlikte güncellenir.</p>
+            </div>
+          </div>
+          <div class="mv-content-block">
+            <div class="mv-content-block__eyebrow">04 · Vizyon</div>
+            <h3 class="mv-content-block__title">Dijital varlığa değer katmak.</h3>
+            <div class="mv-content-block__body">
+              <p>Teknolojiyi, oyun kültürünü, sanatı ve kaliteli sohbeti yaşam tarzı haline getirmiş bireylere özel bir ağ.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Stat Widget ==================================================== -->
+    <section class="preview-group" id="stat-widget">
+      <div class="preview-group__head">
+        <div class="preview-group__title">8. Stat Widget</div>
+        <div class="preview-group__code">.mv-stat-widget</div>
+      </div>
+      <div class="mv-grid mv-grid--4">
+        <div class="mv-stat-widget">
+          <div class="mv-stat-widget__head">
+            <div class="mv-stat-widget__label">Aktif Üye</div>
+            <span class="mv-stat-widget__trend mv-stat-widget__trend--up">▲ 12%</span>
+          </div>
+          <div class="mv-stat-widget__value">487</div>
+          <div class="mv-stat-widget__sub">Son 7 gün</div>
+          <div class="mv-stat-widget__chart-slot"></div>
+        </div>
+        <div class="mv-stat-widget">
+          <div class="mv-stat-widget__head">
+            <div class="mv-stat-widget__label">Etkinlik / Ay</div>
+            <span class="mv-stat-widget__trend mv-stat-widget__trend--up">▲ 4</span>
+          </div>
+          <div class="mv-stat-widget__value">28</div>
+          <div class="mv-stat-widget__sub">Bu ay planlanan</div>
+          <div class="mv-stat-widget__chart-slot"></div>
+        </div>
+        <div class="mv-stat-widget">
+          <div class="mv-stat-widget__head">
+            <div class="mv-stat-widget__label">Bağlı Modül</div>
+            <span class="mv-stat-widget__trend mv-stat-widget__trend--flat">— 0</span>
+          </div>
+          <div class="mv-stat-widget__value">4</div>
+          <div class="mv-stat-widget__sub">Public + admin</div>
+          <div class="mv-stat-widget__chart-slot"></div>
+        </div>
+        <div class="mv-stat-widget">
+          <div class="mv-stat-widget__head">
+            <div class="mv-stat-widget__label">Bekleyen İşlem</div>
+            <span class="mv-stat-widget__trend mv-stat-widget__trend--down">▼ 3</span>
+          </div>
+          <div class="mv-stat-widget__value">7</div>
+          <div class="mv-stat-widget__sub">Moderasyon kuyruğu</div>
+          <div class="mv-stat-widget__chart-slot"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Activity Feed ================================================== -->
+    <section class="preview-group" id="activity-feed">
+      <div class="preview-group__head">
+        <div class="preview-group__title">9. Activity Feed</div>
+        <div class="preview-group__code">.mv-activity-feed</div>
+      </div>
+      <div class="mv-card" style="max-width:640px;">
+        <div class="mv-activity-feed">
+          <div class="mv-activity-feed__item">
+            <div class="mv-activity-feed__icon mv-activity-feed__icon--green">✓</div>
+            <div class="mv-activity-feed__body">
+              <div class="mv-activity-feed__text"><strong>admin</strong> yeni borç kaydı oluşturdu — <em>REF-58291</em></div>
+              <div class="mv-activity-feed__time">2 dk önce</div>
+            </div>
+          </div>
+          <div class="mv-activity-feed__item">
+            <div class="mv-activity-feed__icon mv-activity-feed__icon--purple">↻</div>
+            <div class="mv-activity-feed__body">
+              <div class="mv-activity-feed__text">Tema değişikliği: <strong>Obsidyen Altın</strong></div>
+              <div class="mv-activity-feed__time">14 dk önce</div>
+            </div>
+          </div>
+          <div class="mv-activity-feed__item">
+            <div class="mv-activity-feed__icon mv-activity-feed__icon--orange">⚠</div>
+            <div class="mv-activity-feed__body">
+              <div class="mv-activity-feed__text">Bağlantı geçici olarak <strong>çevrimdışı</strong> moda geçti.</div>
+              <div class="mv-activity-feed__time">1 saat önce</div>
+            </div>
+          </div>
+          <div class="mv-activity-feed__item">
+            <div class="mv-activity-feed__icon mv-activity-feed__icon--green">✓</div>
+            <div class="mv-activity-feed__body">
+              <div class="mv-activity-feed__text">Yönetici girişi: <strong>admin@metavis1on.com</strong></div>
+              <div class="mv-activity-feed__time">3 saat önce</div>
+            </div>
+          </div>
+          <div class="mv-activity-feed__item">
+            <div class="mv-activity-feed__icon mv-activity-feed__icon--red">✕</div>
+            <div class="mv-activity-feed__body">
+              <div class="mv-activity-feed__text">Başarısız giriş denemesi engellendi.</div>
+              <div class="mv-activity-feed__time">Dün 22:14</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Status Pill =================================================== -->
+    <section class="preview-group" id="status-pill">
+      <div class="preview-group__head">
+        <div class="preview-group__title">10. Status Pill</div>
+        <div class="preview-group__code">.mv-status-pill</div>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+        <span class="mv-status-pill mv-status-pill--online mv-status-pill--pulse"><span class="mv-status-pill__dot"></span> Çevrimiçi</span>
+        <span class="mv-status-pill mv-status-pill--offline"><span class="mv-status-pill__dot"></span> Çevrimdışı</span>
+        <span class="mv-status-pill mv-status-pill--pending"><span class="mv-status-pill__dot"></span> Beklemede</span>
+        <span class="mv-status-pill mv-status-pill--maint"><span class="mv-status-pill__dot"></span> Bakım</span>
+        <span class="mv-status-pill mv-status-pill--info"><span class="mv-status-pill__dot"></span> Bilgi</span>
+        <span class="mv-status-pill"><span class="mv-status-pill__dot"></span> Nötr</span>
+      </div>
+    </section>
+
+    <!-- 11. Command Card ================================================== -->
+    <section class="preview-group" id="command-card">
+      <div class="preview-group__head">
+        <div class="preview-group__title">11. Command Card</div>
+        <div class="preview-group__code">.mv-command-card</div>
+      </div>
+      <div class="mv-grid mv-grid--2">
+        <div class="mv-command-card mv-command-card--accent">
+          <div class="mv-command-card__head">
+            <div class="mv-command-card__icon">⌘</div>
+            <div>
+              <div class="mv-command-card__title">Discord'a Katıl</div>
+              <div class="mv-command-card__sub">Ana iletişim ağı</div>
+            </div>
+          </div>
+          <div class="mv-command-card__desc">
+            Topluluğun tüm canlı etkinliklerine, sesli odalara ve resmi duyurulara doğrudan erişim.
+          </div>
+          <div class="mv-command-card__action">
+            <span class="mv-text-muted" style="font-size:0.85rem;">Davet aktif</span>
+            <a href="#" class="mv-btn mv-btn--primary">Hemen Katıl →</a>
+          </div>
+        </div>
+
+        <div class="mv-command-card">
+          <div class="mv-command-card__head">
+            <div class="mv-command-card__icon">⚙</div>
+            <div>
+              <div class="mv-command-card__title">Yönetim Paneli</div>
+              <div class="mv-command-card__sub">Yetkili erişim</div>
+            </div>
+          </div>
+          <div class="mv-command-card__desc">
+            Modülleri, içerikleri ve sistem ayarlarını yönetmek için merkezî yönetim noktası.
+          </div>
+          <div class="mv-command-card__action">
+            <span class="mv-status-pill mv-status-pill--online mv-status-pill--pulse"><span class="mv-status-pill__dot"></span> Sistemler aktif</span>
+            <a href="#" class="mv-btn">Panel'i Aç →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. Preview Shell ================================================= -->
+    <section class="preview-group" id="preview-shell">
+      <div class="preview-group__head">
+        <div class="preview-group__title">12. Preview Shell</div>
+        <div class="preview-group__code">.mv-preview-shell</div>
+      </div>
+      <div class="mv-preview-shell">
+        <span class="mv-preview-shell__tag">Yakında</span>
+        <div class="mv-preview-shell__body">
+          <div class="mv-card" style="margin-bottom:16px;">
+            <div class="mv-card__header">
+              <div class="mv-card__title">Yeni Duyuru Oluştur</div>
+              <span class="mv-badge mv-badge--admin"><span class="mv-badge-dot"></span> Admin</span>
+            </div>
+            <div class="mv-field">
+              <label class="mv-field__label">Başlık</label>
+              <div class="mv-input" style="opacity:0.7;">Örn: v11.1 sürümü yayınlandı</div>
+            </div>
+          </div>
+          <div class="mv-grid mv-grid--3">
+            <div class="mv-stat-widget"><div class="mv-stat-widget__label">Toplam</div><div class="mv-stat-widget__value">42</div></div>
+            <div class="mv-stat-widget"><div class="mv-stat-widget__label">Yayında</div><div class="mv-stat-widget__value">36</div></div>
+            <div class="mv-stat-widget"><div class="mv-stat-widget__label">Taslak</div><div class="mv-stat-widget__value">6</div></div>
+          </div>
+        </div>
+        <div class="mv-preview-shell__overlay">
+          <div class="mv-preview-shell__overlay-inner">
+            <div class="mv-preview-shell__overlay-title">Bu modül v11.1'de aktifleşecek</div>
+            <p class="mv-preview-shell__overlay-text">
+              Duyuru yönetimi yakında Firestore destekli olarak devreye alınacaktır.
+              UI taslağı buradan görüntülenebilir.
+            </p>
+            <a href="#" class="mv-btn mv-btn--ghost mv-btn--sm">Yol Haritasını Gör</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. Footer ======================================================== -->
+    <section class="preview-group" id="footer" style="margin-bottom:0;">
+      <div class="preview-group__head">
+        <div class="preview-group__title">13. Footer</div>
+        <div class="preview-group__code">.mv-footer</div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="mv-footer">
+    <div class="mv-footer__inner">
+      <div class="mv-footer__top">
+        <div class="mv-footer__brand-block">
+          <div class="mv-footer__brand">
+            <img src="assets/logo.png" alt="metavis1on" onerror="this.style.display='none'">
+            <div class="mv-footer__brand-text">metavis1on</div>
+          </div>
+          <p class="mv-footer__tagline">
+            Sıradanlığı reddeden, kalite ve saygıya dayalı dijital topluluk platformu.
+          </p>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <span class="mv-status-pill mv-status-pill--online mv-status-pill--pulse"><span class="mv-status-pill__dot"></span> Tüm sistemler aktif</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="mv-footer__col-title">Platform</div>
+          <div class="mv-footer__links">
+            <a class="mv-footer__link" href="#">Ekosistem</a>
+            <a class="mv-footer__link" href="#">Vizyon</a>
+            <a class="mv-footer__link" href="#">Etkinlikler</a>
+            <a class="mv-footer__link" href="#">Projeler</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="mv-footer__col-title">Kaynaklar</div>
+          <div class="mv-footer__links">
+            <a class="mv-footer__link" href="#">SSS</a>
+            <a class="mv-footer__link" href="#">Yönetim</a>
+            <a class="mv-footer__link" href="#">Manifesto</a>
+            <a class="mv-footer__link" href="#">Kurallar</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="mv-footer__col-title">Bağlantı</div>
+          <div class="mv-footer__links">
+            <a class="mv-footer__link" href="#">Discord</a>
+            <a class="mv-footer__link" href="#">İletişim</a>
+            <a class="mv-footer__link" href="#">Geri Bildirim</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="mv-footer__bottom">
+        <div>© <span>2026</span> metavis1on · Tüm hakları saklıdır.</div>
+        <div>v11.0.1 · Component Galerisi</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="shared/config/site.js"></script>
+  <script src="shared/js/core.js"></script>
+  <script src="shared/js/theme.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      // Tema seçici — paylaşılan MV.theme'i kullanır
+      var buttons = document.querySelectorAll('[data-mv-set-theme]');
+      function syncActive() {
+        var current = (window.MV && window.MV.theme && window.MV.theme.get && window.MV.theme.get()) || 'obsidian-cyan';
+        buttons.forEach(function (b) {
+          b.classList.toggle('is-active', b.getAttribute('data-mv-set-theme') === current);
+        });
+      }
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () {
+          var id = b.getAttribute('data-mv-set-theme');
+          if (window.MV && window.MV.theme && id) {
+            window.MV.theme.set(id);
+            syncActive();
+          }
+        });
+      });
+      syncActive();
+    })();
+  </script>
+</body>
+</html>

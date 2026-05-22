@@ -75,6 +75,40 @@
 
   /* Glass efekti */
   --mv-glass-blur: blur(16px);
+  --mv-glass-blur-strong: blur(28px);
+
+  /* ---------- v11.0.1 eklemeleri (geri uyumlu, ekleme-only) ---------- */
+
+  /* Genişletilmiş yarıçap */
+  --mv-radius-2xl: 36px;
+
+  /* Genişletilmiş gölge */
+  --mv-shadow-xl: 0 28px 70px rgba(0, 0, 0, 0.65);
+
+  /* Tema-duyarlı degradeler — temalar değiştikçe otomatik adapte olur */
+  --mv-gradient-hero:   linear-gradient(135deg, var(--mv-theme-primary) 0%, var(--mv-theme-secondary) 100%);
+  --mv-gradient-text:   linear-gradient(135deg, var(--mv-theme-primary), var(--mv-theme-secondary));
+  --mv-gradient-soft:   linear-gradient(180deg, var(--mv-bg-surface) 0%, var(--mv-bg-surface-2) 100%);
+  --mv-gradient-line:   linear-gradient(90deg, transparent, var(--mv-theme-primary), transparent);
+  --mv-gradient-border: linear-gradient(135deg, var(--mv-theme-primary), var(--mv-accent-purple));
+
+  /* Sabit aksent degradeler — tema bağımsız vurgular */
+  --mv-gradient-accent-cool: linear-gradient(135deg, var(--mv-accent-cyan),   var(--mv-accent-purple));
+  --mv-gradient-accent-warm: linear-gradient(135deg, var(--mv-accent-gold),   var(--mv-accent-red));
+  --mv-gradient-accent-tri:  linear-gradient(135deg, var(--mv-accent-cyan) 0%, var(--mv-accent-purple) 50%, var(--mv-accent-gold) 100%);
+
+  /* Yüzey degradeleri (kart arka planları için) */
+  --mv-surface-radial:  radial-gradient(ellipse at top, rgba(255,255,255,0.04), transparent 65%);
+  --mv-surface-noise:   linear-gradient(135deg, rgba(255,255,255,0.015), transparent 60%);
+
+  /* Konteyner genişlikleri */
+  --mv-container-narrow: 960px;
+  --mv-container-wide:   1440px;
+
+  /* Tipografi varyantları */
+  --mv-font-display: 'Space Grotesk', system-ui, sans-serif;
+  --mv-letter-tight: -0.02em;
+  --mv-letter-wide:   0.12em;
 
   /* Z-index hiyerarşisi */
   --mv-z-bg:      -1;
