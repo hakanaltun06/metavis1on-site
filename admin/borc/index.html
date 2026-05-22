@@ -811,7 +811,10 @@
     // Auth State
     let isAdmin = false;
     let ADMIN_USER = "admin";
-    const FALLBACK_PASS = "metavis1on_admin_2026"; 
+    const FALLBACK_PASS = "metavis1on_admin_2026";
+    // Lokal fallback giriş yalnızca geliştirme ortamında (localhost/127.0.0.1) aktiftir.
+    // Üretim ortamında Firebase Auth dışı admin yetkisi alınamaz.
+    const IS_LOCALHOST = (location.hostname === "localhost" || location.hostname === "127.0.0.1");
 
     let useFirebase = false;
     let app, auth, db;
@@ -922,12 +925,20 @@
                 if(user) {
                     isAdmin = true;
                     ADMIN_USER = user.email.split('@')[0];
+                    updateUIForAuth();
+                    loadDataFirebase();
+                    loadLogsFirebase();
                 } else {
+                    // Auth yok: listener'ları kapat, hafızayı temizle, UI'ı kitle.
+                    // Bu sayede permission-denied okuma çağrıları ve misafir veri render'ı engellenir.
                     isAdmin = false;
+                    if(unsubscribeDebts) { try { unsubscribeDebts(); } catch(e) {} unsubscribeDebts = null; }
+                    if(unsubscribeLogs)  { try { unsubscribeLogs();  } catch(e) {} unsubscribeLogs  = null; }
+                    debts = [];
+                    sysLogs = [];
+                    updateUIForAuth();
+                    renderLogs();
                 }
-                updateUIForAuth();
-                loadDataFirebase();
-                loadLogsFirebase();
             });
         } catch(e) {
             console.error("Auth state dinleme hatası:", e);
@@ -935,6 +946,12 @@
     }
 
     function checkLocalAuth() {
+        // Üretim ortamında sessionStorage tabanlı misafir-admin'e izin verilmez.
+        if(!IS_LOCALHOST) {
+            isAdmin = false;
+            updateUIForAuth();
+            return;
+        }
         const sessionAuth = sessionStorage.getItem('metavis1on_admin');
         if (sessionAuth === 'true') isAdmin = true;
         updateUIForAuth();
@@ -966,16 +983,20 @@
                 addLog("AUTH_LOGIN_SUCCESS", `[${email}] Yönetici bulut sistemine giriş yaptı.`);
                 showToast("Yönetici girişi başarılı.", "success");
             } else {
-                // Local Fallback
-                if((u === "admin" || u === "admin@metavis1on.com") && p === FALLBACK_PASS) {
+                // Local Fallback — yalnızca localhost geliştirme ortamı.
+                // Üretimde Firebase Auth dışı admin yetkisi alınmasına izin verilmez.
+                if(!IS_LOCALHOST) {
+                    showToast("Bulut bağlantısı kurulamadı. Üretim ortamında lokal giriş kapalıdır. Lütfen bağlantınızı kontrol edip tekrar deneyin.", "error");
+                    addLog("AUTH_ERROR", "Üretim ortamında lokal fallback giriş engellendi.");
+                } else if((u === "admin" || u === "admin@metavis1on.com") && p === FALLBACK_PASS) {
                     isAdmin = true;
                     sessionStorage.setItem('metavis1on_admin', 'true');
                     closeModal('loginModal');
-                    addLog("AUTH_LOGIN_SUCCESS", "Yönetici lokal sisteme giriş yaptı.");
-                    showToast("Yönetici girişi başarılı. (Lokal)", "success");
+                    addLog("AUTH_LOGIN_SUCCESS", "Yönetici lokal sisteme giriş yaptı. (DEV)");
+                    showToast("Yönetici girişi başarılı. (Lokal DEV)", "success");
                     updateUIForAuth();
                 } else {
-                    showToast("Hatalı kullanıcı bilgisi veya bulut çevrimdışı.", "error");
+                    showToast("Hatalı kullanıcı bilgisi.", "error");
                     addLog("AUTH_ERROR", "Başarısız lokal giriş denemesi.");
                 }
             }
@@ -1068,6 +1089,16 @@
             openLoginModal();
             return false;
         }
+        // Firebase modunda gerçek auth.currentUser doğrulanır.
+        // sessionStorage flag'i tek başına Firestore yazımı için yeterli kabul edilmez.
+        if(useFirebase && (!auth || !auth.currentUser)) {
+            showToast("Yönetici oturumu doğrulanamadı. Lütfen yeniden giriş yapın.", "error");
+            isAdmin = false;
+            sessionStorage.removeItem('metavis1on_admin');
+            updateUIForAuth();
+            openLoginModal();
+            return false;
+        }
         if(!isOnline && useFirebase) {
             showToast("Şu an çevrimdışısınız. Bulut işlemi yapılamaz.", "warning");
             return false;
@@ -1078,6 +1109,8 @@
     // --- LOG SİSTEMİ V5 ---
     function loadLogsFirebase() {
         if(!useFirebase) return;
+        // Auth yoksa listener kurulmaz — sysLogs okumalarında permission-denied önlenir.
+        if(!auth || !auth.currentUser) return;
         try {
             if(unsubscribeLogs) unsubscribeLogs();
             const qLogs = query(collection(db, "sysLogs"), orderBy("timestamp", "desc"));
@@ -1107,7 +1140,9 @@
             msg: msg
         };
 
-        if (useFirebase && isOnline) {
+        // sysLogs'a Firestore yazımı SADECE auth.currentUser varken denenir.
+        // Anonim/misafir client'ların log spam'i ve permission-denied'ler engellenir.
+        if (useFirebase && isOnline && auth && auth.currentUser) {
             try {
                 await addDoc(collection(db, "sysLogs"), logData);
             } catch(e) {
@@ -1115,8 +1150,12 @@
             }
         } else {
             sysLogs.unshift(logData);
-            if(sysLogs.length > 100) sysLogs.pop(); 
-            localStorage.setItem('metavis1on_logs', JSON.stringify(sysLogs));
+            if(sysLogs.length > 100) sysLogs.pop();
+            // localStorage log yedeği yalnızca tam-lokal modda (Firebase init başarısız) yazılır.
+            // useFirebase=true iken auth yoksa misafir client localStorage'a log yazmaz.
+            if(!useFirebase) {
+                try { localStorage.setItem('metavis1on_logs', JSON.stringify(sysLogs)); } catch(e) {}
+            }
             renderLogs();
         }
     }
@@ -1173,6 +1212,8 @@
 
     function loadDataFirebase() {
         if(!useFirebase) return;
+        // Auth yoksa listener kurulmaz — debts okumalarında permission-denied ve gereksiz read önlenir.
+        if(!auth || !auth.currentUser) return;
         try {
             if(unsubscribeDebts) unsubscribeDebts();
             unsubscribeDebts = onSnapshot(collection(db, "debts"), (snapshot) => {
@@ -1181,12 +1222,15 @@
                     let data = normalizeDebt(doc.data(), doc.id);
                     if(data) debts.push(data);
                 });
-                
-                // Güvenli Local Backup
-                try {
-                    localStorage.setItem('metavis1on_debts_backup', JSON.stringify(debts));
-                    localStorage.setItem('metavis1on_last_backup', new Date().toLocaleString());
-                } catch(e) { console.warn("Local backup failed:", e); }
+
+                // Güvenli Local Backup — SADECE auth.currentUser varken localStorage'a yedek yazılır.
+                // Misafir oturumlarda borç verisi cihazda bırakılmaz.
+                if(auth && auth.currentUser) {
+                    try {
+                        localStorage.setItem('metavis1on_debts_backup', JSON.stringify(debts));
+                        localStorage.setItem('metavis1on_last_backup', new Date().toLocaleString());
+                    } catch(e) { console.warn("Local backup failed:", e); }
+                }
                 
                 updateAllStatuses();
                 applyFilters();
