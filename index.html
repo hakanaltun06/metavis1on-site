@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" data-theme="obsidian-cyan">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>metavis1on | Sohbet • Eğlence • Ortam</title>
-    <meta name="description" content="Gece modu enerjisi olan, samimi ve aktif bir Discord topluluğu. Gir, konuş, takıl.">
+    <title>metavis1on | Dijital Kimlik & Seçkin Ekosistem</title>
+    <meta name="description" content="Sıradan sunucuların gürültüsünden uzak, saygıya dayalı, kesintisiz iletişimin ve özel dijital etkinliklerin yeni adresi. metavis1on resmi topluluk platformu.">
+    <meta name="theme-color" content="#030407">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,174 +16,663 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="bg-glow glow-cyan"></div>
-    <div class="bg-glow glow-purple"></div>
-    <div class="bg-noise"></div>
+    <div class="scroll-progress-bar" id="scroll-progress" aria-hidden="true"></div>
 
-    <header class="navbar">
+    <div class="bg-glow glow-primary"></div>
+    <div class="bg-glow glow-secondary"></div>
+    <div class="bg-noise"></div>
+    <div class="bg-grid-overlay"></div>
+    <div class="bg-particles" id="particles-container"></div>
+
+    <header class="navbar" id="navbar">
         <div class="nav-container">
-            <a href="#" class="brand">
-                <img src="assets/logo.png" alt="Metavis1on Logo" class="brand-logo" onerror="this.style.display='none'">
+            <a href="#hero" class="brand" aria-label="metavis1on Ana Sayfa">
+                <img src="assets/logo.png" alt="Metavis1on Resmi Logo" class="brand-logo" onerror="this.style.display='none'">
                 <span class="brand-text">metavis1on</span>
             </a>
             
-            <nav class="nav-links">
-                <a href="#about" class="nav-link">Sunucu</a>
-                <a href="#features" class="nav-link">Özellikler</a>
-                <a href="#team" class="nav-link">Ekip</a>
-                <a href="#join" class="nav-link">Katıl</a>
+            <nav class="nav-links" aria-label="Ana Menü">
+                <a href="#about" class="nav-link">Ekosistem</a>
+                <a href="#manifesto" class="nav-link">Vizyon</a>
+                <a href="#comparison" class="nav-link">Farkımız</a>
+                <a href="#channels" class="nav-link">Altyapı</a>
+                <a href="#events" class="nav-link">Etkinlikler</a>
+                <a href="#team" class="nav-link">Yönetim</a>
             </nav>
             
-            <button class="hamburger" aria-label="Menüyü Aç" aria-expanded="false">
-                <i class="ph ph-list"></i>
-            </button>
+            <div class="nav-actions">
+                <div class="theme-switcher-wrapper">
+                    <button class="theme-btn" aria-label="Temayı Değiştir" id="theme-toggle">
+                        <i class="ph ph-palette"></i>
+                    </button>
+                    <div class="theme-dropdown" id="theme-dropdown">
+                        <div class="theme-dropdown-header">Renk Kimliği Seçin</div>
+                        <button class="theme-option" data-set-theme="obsidian-cyan"><span class="color-dot cyan"></span> Elektrik Mavisi</button>
+                        <button class="theme-option" data-set-theme="obsidian-gold"><span class="color-dot gold"></span> Obsidyen Altın</button>
+                        <button class="theme-option" data-set-theme="obsidian-purple"><span class="color-dot purple"></span> Neon Mor</button>
+                    </div>
+                </div>
+                <a href="#join" class="btn btn-primary btn-sm nav-cta discord-link btn-shine">
+                    <i class="ph-fill ph-discord-logo"></i> Ağa Katıl
+                </a>
+                <button class="hamburger" aria-label="Menüyü Aç" aria-expanded="false" aria-controls="mobile-menu">
+                    <i class="ph ph-list"></i>
+                </button>
+            </div>
         </div>
     </header>
 
-    <div class="mobile-menu">
-        <a href="#about" class="mobile-link">Sunucu</a>
-        <a href="#features" class="mobile-link">Özellikler</a>
-        <a href="#team" class="mobile-link">Ekip</a>
-        <a href="#join" class="mobile-link">Katıl</a>
+    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+        <div class="mobile-menu-content">
+            <a href="#about" class="mobile-link">Ekosistem</a>
+            <a href="#manifesto" class="mobile-link">Vizyon</a>
+            <a href="#comparison" class="mobile-link">Farkımız</a>
+            <a href="#channels" class="mobile-link">Altyapı</a>
+            <a href="#events" class="mobile-link">Etkinlikler</a>
+            <a href="#gallery" class="mobile-link">Vitrin</a>
+            <a href="#roadmap" class="mobile-link">Planlar</a>
+            <a href="#team" class="mobile-link">Yönetim</a>
+            <a href="#faq" class="mobile-link">SSS</a>
+            <div class="mobile-divider"></div>
+            <a href="#join" class="btn btn-primary btn-large discord-link w-full btn-shine">
+                <i class="ph-fill ph-discord-logo"></i> Platforma Katıl
+            </a>
+        </div>
     </div>
 
     <main>
         <section id="hero" class="hero section-padding">
-            <div class="hero-content animate-on-load">
-                <div class="badge">Allahın Belası Discord Topluluğu</div>
-                <h1 class="hero-title">metavis1on</h1>
-                <h2 class="hero-subtitle">Sohbet &bull; Eğlence &bull; Ortam</h2>
-                <p class="hero-desc">
-                    Gece modu enerjisi olan, samimi ve aktif bir topluluk. Gir, konuş, takıl.
-                </p>
-                <div class="hero-actions">
-                    <a href="#" class="btn btn-primary discord-link">
-                        <i class="ph-fill ph-discord-logo"></i> Discord'a Katıl
-                    </a>
-                    <a href="#about" class="btn btn-secondary">
-                        Sunucuyu Keşfet <i class="ph ph-arrow-down"></i>
-                    </a>
+            <div class="container">
+                <div class="hero-content animate-on-load">
+                    <div class="badge premium-badge border-trace">
+                        <div class="border-trace-inner">
+                            <span class="badge-dot"></span> Resmi Topluluk Platformu
+                        </div>
+                    </div>
+                    <h1 class="hero-title">Sıradanlığı Reddet.<br><span class="text-gradient">Dijital Kimliğini Bul.</span></h1>
+                    <h2 class="hero-subtitle">Sadece bir iletişim aracı değil; teknoloji, kültür ve saygının harmanlandığı özel bir ekosistem.</h2>
+                    <p class="hero-desc">
+                        metavis1on; kendi kuralları, elit üye yapısı, gelişmiş altyapısı ve benzersiz marka vizyonuyla dijital dünyada yeni bir standart belirliyor. Boş gürültüden uzaklaş, gerçek topluluğa dahil ol.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="https://discord.gg/TRNyQBfs" class="btn btn-primary btn-large discord-link btn-shine">
+                            <i class="ph-fill ph-discord-logo"></i> Güvenli Giriş Yap
+                        </a>
+                        <a href="#about" class="btn btn-secondary btn-large">
+                            Platformu İncele <i class="ph ph-arrow-down"></i>
+                        </a>
+                    </div>
+                    
+                    <div class="hero-metrics mt-12">
+                        <div class="metric-item">
+                            <i class="ph ph-shield-check"></i>
+                            <span>Sıkı Denetim</span>
+                        </div>
+                        <div class="metric-item">
+                            <i class="ph ph-broadcast"></i>
+                            <span>24/7 Akış</span>
+                        </div>
+                        <div class="metric-item">
+                            <i class="ph ph-cpu"></i>
+                            <span>Özel Altyapı</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="about" class="about section-padding scroll-animate">
+        <div class="stats-band scroll-animate">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-box glass-card interactive-parallax">
+                        <div class="stat-icon-wrap"><i class="ph ph-activity"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-value"><span class="counter" data-target="24">0</span>/<span class="counter" data-target="7">0</span></span>
+                            <span class="stat-label">Kesintisiz Akış</span>
+                        </div>
+                    </div>
+                    <div class="stat-box glass-card interactive-parallax">
+                        <div class="stat-icon-wrap"><i class="ph ph-shield-star"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-value">%<span class="counter" data-target="100">0</span></span>
+                            <span class="stat-label">Moderatör Kontrolü</span>
+                        </div>
+                    </div>
+                    <div class="stat-box glass-card interactive-parallax">
+                        <div class="stat-icon-wrap"><i class="ph ph-calendar-check"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-value"><span class="counter" data-target="50">0</span>+</span>
+                            <span class="stat-label">Aylık Etkinlik Saati</span>
+                        </div>
+                    </div>
+                    <div class="stat-box glass-card interactive-parallax">
+                        <div class="stat-icon-wrap"><i class="ph ph-code"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-value"><span class="counter" data-target="3">0</span></span>
+                            <span class="stat-label">Özel Geliştirilmiş Bot</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section id="about" class="about section-padding scroll-animate stagger-children">
             <div class="container">
                 <div class="about-grid">
                     <div class="about-text">
-                        <h3 class="section-title">Yeni Nesil Ortam</h3>
+                        <div class="section-label">Ekosistem Analizi</div>
+                        <h3 class="section-title">Yeni Nesil Dijital Yaşam Alanı</h3>
                         <div class="text-block">
-                            <h4>metavis1on ne?</h4>
-                            <p>Sıradan sunucuların gürültüsünden uzak, elit ve kafa dengi insanların buluşma noktası.</p>
+                            <h4>metavis1on Felsefesi</h4>
+                            <p>Bizler, dijital platformların sadece rastgele insanların toplandığı yerler olmaması gerektiğine inanıyoruz. metavis1on; ortak vizyona sahip, kaliteli vakit geçirmeyi amaçlayan, saygılı ve vizyoner bireylerin oluşturduğu yapılandırılmış bir ağdır.</p>
                         </div>
                         <div class="text-block">
-                            <h4>Ortam nasıl?</h4>
-                            <p>Rahat, saygılı ve akıcı bir sohbet kültürü hakim.</p>
+                            <h4>Kültür ve Düzen</h4>
+                            <p>Karmaşadan, anlamsız gürültüden ve toksik davranışlardan tamamen arındırılmış bir ortam sunuyoruz. Gelişmiş sistemlerimiz ve deneyimli yönetim kadromuz, herkesin eşit ve güvende hissettiği bu elit deneyimi 7/24 korur.</p>
                         </div>
                         <div class="text-block">
-                            <h4>Kimler var?</h4>
-                            <p>Muhabbet etmeyi seven, oyun oynayan, müzik dinleyen, enerjisi yüksek bir ekip.</p>
+                            <h4>Topluluk Beklentisi</h4>
+                            <p>Teknolojiyi, oyun kültürünü, sanatı ve kaliteli sohbeti yaşam tarzı haline getirmiş; dijital varlığına değer katan her bireyi bu özel yapının bir parçası olmaya davet ediyoruz.</p>
                         </div>
                     </div>
                     
-                    <div class="about-stats">
-                        <div class="stat-card">
-                            <i class="ph ph-pulse stat-icon"></i>
-                            <span class="stat-title">Aktif Sohbet</span>
-                            <span class="stat-desc">7/24 Kesintisiz Akış</span>
+                    <div class="about-visuals interactive-parallax">
+                        <div class="glass-card premium-card info-card border-trace">
+                            <div class="border-trace-inner">
+                                <i class="ph ph-pulse card-icon-large"></i>
+                                <div class="card-content">
+                                    <span class="card-title">Dinamik İletişim Ağı</span>
+                                    <span class="card-desc">Günün her saati aktif, akıcı ve derinlikli sohbet imkanı sunan özel alanlar.</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-card">
-                            <i class="ph ph-game-controller stat-icon"></i>
-                            <span class="stat-title">Etkinlik & Eğlence</span>
-                            <span class="stat-desc">Oyun ve Film Geceleri</span>
+                        <div class="glass-card premium-card info-card offset-card border-trace delay-1">
+                            <div class="border-trace-inner">
+                                <i class="ph ph-game-controller card-icon-large"></i>
+                                <div class="card-content">
+                                    <span class="card-title">Küratörlü Etkinlikler</span>
+                                    <span class="card-desc">Özenle planlanmış rekabetçi turnuvalar, medya geceleri ve topluluk oyunları.</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-card">
-                            <i class="ph ph-coffee stat-icon"></i>
-                            <span class="stat-title">Rahat Ortam</span>
-                            <span class="stat-desc">Sıfır Toksisite, Bol Vibe</span>
-                        </div>
-                        <div class="stat-card">
-                            <i class="ph ph-moon-stars stat-icon"></i>
-                            <span class="stat-title">Gece Modu</span>
-                            <span class="stat-desc">Hafta sonları özellikle gececi tayfa olur.</span>
+                        <div class="glass-card premium-card info-card border-trace delay-2">
+                            <div class="border-trace-inner">
+                                <i class="ph ph-shield card-icon-large"></i>
+                                <div class="card-content">
+                                    <span class="card-title">Maksimum Güvenlik</span>
+                                    <span class="card-desc">Otomatize edilmiş savunma sistemleri ile huzurlu ve tavizsiz bir alan.</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="features" class="features section-padding scroll-animate">
+        <section id="manifesto" class="manifesto section-padding scroll-animate">
+            <div class="container">
+                <div class="manifesto-wrapper glass-card">
+                    <div class="manifesto-header text-center">
+                        <div class="section-label">Temel Değerlerimiz</div>
+                        <h3 class="section-title">Topluluk Manifestosu</h3>
+                        <p class="section-subtitle">metavis1on kimliğini oluşturan sarsılmaz ilkelerimiz.</p>
+                    </div>
+                    <div class="manifesto-list">
+                        <div class="manifesto-item">
+                            <div class="manifesto-number">01</div>
+                            <div class="manifesto-content">
+                                <h4>Kalite, Tesadüf Değil Standarttır</h4>
+                                <p>Sunucu içi rollerden, açılan kanallara ve sohbetin gidişatına kadar her detayda niceliği değil, niteliği ön planda tutarız. Kalabalık olmak değil, kaliteli olmak ana hedefimizdir.</p>
+                            </div>
+                        </div>
+                        <div class="manifesto-item">
+                            <div class="manifesto-number">02</div>
+                            <div class="manifesto-content">
+                                <h4>Karşılıklı Saygı Tartışılamaz</h4>
+                                <p>Farklı görüşlere, yaşam tarzlarına ve kişisel sınırlara mutlak saygı duyulur. Platformumuzda yıkıcı eleştiriye, zorbalığa veya toksik manipülasyona kesinlikle yer yoktur.</p>
+                            </div>
+                        </div>
+                        <div class="manifesto-item">
+                            <div class="manifesto-number">03</div>
+                            <div class="manifesto-content">
+                                <h4>Sürekli ve Sistemli Gelişim</h4>
+                                <p>Burası statik bir grup değil, yaşayan bir organizmadır. Teknik altyapımız, botlarımız ve marka değerimiz, çağın gereksinimlerine göre üyelerimizle birlikte sürekli güncellenir.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="comparison" class="comparison section-padding scroll-animate stagger-children">
             <div class="container">
                 <div class="section-header text-center">
-                    <h3 class="section-title">Öne Çıkanlar</h3>
-                    <p class="section-subtitle">Sadece bir sunucu değil, dijital bir hangout noktası.</p>
+                    <div class="section-label">Farkımız</div>
+                    <h3 class="section-title">Neden metavis1on?</h3>
+                    <p class="section-subtitle">Sıradan dijital ortamlardan ayrıldığımız kritik noktalar.</p>
+                </div>
+
+                <div class="comparison-grid">
+                    <div class="comp-card standard-server glass-card">
+                        <div class="comp-header">
+                            <i class="ph ph-users"></i>
+                            <h4>Sıradan Sunucular</h4>
+                        </div>
+                        <ul class="comp-list">
+                            <li class="negative"><i class="ph ph-x"></i> Kontrolsüz kalabalık ve spam akışı</li>
+                            <li class="negative"><i class="ph ph-x"></i> Herkese açık, toksik davranışlara toleranslı yapı</li>
+                            <li class="negative"><i class="ph ph-x"></i> Düzensiz, kafa karıştırıcı kanal mimarisi</li>
+                            <li class="negative"><i class="ph ph-x"></i> Sadece hazır botlarla kurulan amatör sistem</li>
+                            <li class="negative"><i class="ph ph-x"></i> Gelişime kapalı, vizyonsuz yönetim anlayışı</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comp-divider">
+                        <div class="vs-badge">VS</div>
+                    </div>
+
+                    <div class="comp-card premium-server glass-card active-pulse border-trace">
+                        <div class="border-trace-inner">
+                            <div class="comp-header">
+                                <img src="assets/logo.png" alt="Icon" class="comp-logo-icon" onerror="this.style.display='none';">
+                                <h4>metavis1on Ağı</h4>
+                            </div>
+                            <ul class="comp-list">
+                                <li class="positive"><i class="ph ph-check"></i> Seçilmiş üyelerle kaliteli ve net iletişim</li>
+                                <li class="positive"><i class="ph ph-check"></i> Katı kurallarla korunan nezih ve güvenli ortam</li>
+                                <li class="positive"><i class="ph ph-check"></i> İhtiyaca yönelik tasarlanmış temiz kategori yapısı</li>
+                                <li class="positive"><i class="ph ph-check"></i> Platforma özel kodlanmış, akıllı bot entegrasyonları</li>
+                                <li class="positive"><i class="ph ph-check"></i> Sürekli yenilenen ve kurumsal bir kimlik sunan vizyon</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="channels" class="channels section-padding scroll-animate stagger-children">
+            <div class="container">
+                <div class="section-header text-center">
+                    <div class="section-label">Altyapı Tasarımı</div>
+                    <h3 class="section-title">Kanal ve Kategori Mimarisi</h3>
+                    <p class="section-subtitle">Üyelerin ilgi alanlarına göre tasarlanmış, akılcı ve düzenli dijital odalar.</p>
+                </div>
+                
+                <div class="channels-grid">
+                    <div class="channel-card glass-card hover-lift">
+                        <div class="channel-header">
+                            <div class="icon-box"><i class="ph ph-hash"></i></div>
+                            <h4>Yazılı İletişim Üssü</h4>
+                        </div>
+                        <ul class="channel-features">
+                            <li><i class="ph ph-caret-right"></i> <span>Genel Sohbet & Gündem Analizi</span></li>
+                            <li><i class="ph ph-caret-right"></i> <span>Medya, Görsel & Sanat Paylaşımı</span></li>
+                            <li><i class="ph ph-caret-right"></i> <span>Teknoloji, Yazılım & Geliştirme Köşesi</span></li>
+                            <li><i class="ph ph-caret-right"></i> <span>Resmi Duyurular & Güncellemeler</span></li>
+                        </ul>
+                    </div>
+                    <div class="channel-card glass-card hover-lift active-pulse">
+                        <div class="channel-header">
+                            <div class="icon-box primary-icon"><i class="ph ph-speaker-high"></i></div>
+                            <h4>Sesli Odak Alanları</h4>
+                        </div>
+                        <ul class="channel-features">
+                            <li><i class="ph ph-caret-right"></i> <span>7/24 Kesintisiz Aktif Lobiler</span></li>
+                            <li><i class="ph ph-caret-right"></i> <span>Oyun Türlerine Özel Taktik Odaları</span></li>
+                            <li><i class="ph ph-caret-right"></i> <span>Yüksek Kaliteli Müzik & Dinleti Kanalları</span></li>
+                            <li><i class="ph ph-caret-right"></i> <span>Sınırlı Kapasiteli Özel Sohbet Alanları</span></li>
+                        </ul>
+                    </div>
+                    <div class="channel-card glass-card hover-lift">
+                        <div class="channel-header">
+                            <div class="icon-box"><i class="ph ph-ticket"></i></div>
+                            <h4>Organizasyon Paneli</h4>
+                        </div>
+                        <ul class="channel-features">
+                            <li><i class="ph ph-caret-right"></i> <span>Rekabetçi Turnuva Sahnesi</span></li>
+                            <li><i class="ph ph-caret-right"></i> <span>Toplu Film, Dizi & Medya Geceleri</span></li>
+                            <li><i class="ph ph-caret-right"></i> <span>Yönetim ve Üye Toplantı Salonları</span></li>
+                            <li><i class="ph ph-caret-right"></i> <span>Podcast, Söyleşi & Canlı Yayın Alanı</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="events" class="events section-padding scroll-animate">
+            <div class="container">
+                <div class="section-header text-center">
+                    <div class="section-label">Aktivite Takvimi</div>
+                    <h3 class="section-title">Ayrıcalıklı Etkinlikler</h3>
+                    <p class="section-subtitle">Sadece metavis1on üyelerine özel olarak kurgulanan düzenli etkileşim alanları.</p>
+                </div>
+
+                <div class="events-showcase">
+                    <div class="event-row glass-card">
+                        <div class="event-date">
+                            <span class="day">Haftalık</span>
+                            <span class="type">Rutin</span>
+                        </div>
+                        <div class="event-details">
+                            <h4>Oyun Geceleri & Lobiler</h4>
+                            <p>FPS, MOBA veya co-op fark etmeksizin, önceden planlanmış sunucu içi oyun buluşmaları. Doğru takım arkadaşlarıyla toksiklikten uzak rekabet deneyimi.</p>
+                        </div>
+                        <div class="event-action">
+                            <span class="status-badge active"><i class="ph-fill ph-circle"></i> Düzenli Aktif</span>
+                        </div>
+                    </div>
+                    
+                    <div class="event-row glass-card">
+                        <div class="event-date">
+                            <span class="day">Aylık</span>
+                            <span class="type">Özel</span>
+                        </div>
+                        <div class="event-details">
+                            <h4>Sinema & Medya Akşamları</h4>
+                            <p>Yüksek çözünürlüklü yayın odalarında, topluluğun oylarıyla seçilen film, belgesel veya canlı etkinlik izlemeleri. Birlikte tüketilen kaliteli içerik kültürü.</p>
+                        </div>
+                        <div class="event-action">
+                            <span class="status-badge upcoming"><i class="ph-fill ph-clock"></i> Planlanıyor</span>
+                        </div>
+                    </div>
+
+                    <div class="event-row glass-card">
+                        <div class="event-date">
+                            <span class="day">Sezonluk</span>
+                            <span class="type">Büyük</span>
+                        </div>
+                        <div class="event-details">
+                            <h4>Ödüllü Turnuvalar</h4>
+                            <p>Sadece kayıtlı ve güvenilir üyelerin katılabildiği, profesyonel fikstür mantığıyla yönetilen, site ve sunucu içi rozet/ödül sistemli büyük turnuvalar.</p>
+                        </div>
+                        <div class="event-action">
+                            <span class="status-badge premium"><i class="ph-fill ph-star"></i> Üyelere Özel</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features section-padding scroll-animate stagger-children">
+            <div class="container">
+                <div class="section-header text-center">
+                    <div class="section-label">Donanım & Sistem</div>
+                    <h3 class="section-title">Teknik Özellikler</h3>
+                    <p class="section-subtitle">Platformumuzun gücünü aldığı arka plan sistemleri ve üye ayrıcalıkları.</p>
                 </div>
                 
                 <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="card-icon-wrapper"><i class="ph ph-microphone-stage"></i></div>
-                        <h4>Aktif Kanallar</h4>
-                        <p>Sesli ve yazılı platformlarda anında sohbete dahil ol.</p>
+                    <div class="feature-card interactive-parallax glass-card border-trace">
+                        <div class="border-trace-inner">
+                            <div class="card-icon-wrapper"><i class="ph ph-microphone-stage"></i></div>
+                            <h4>Gelişmiş Ses Kalitesi</h4>
+                            <p>Maksimum bitrate seviyesine optimize edilmiş, pürüzsüz ve sıfır gecikmeli iletişim sunan ses sunucuları.</p>
+                        </div>
                     </div>
-                    <div class="feature-card">
-                        <div class="card-icon-wrapper"><i class="ph ph-popcorn"></i></div>
-                        <h4>Eğlence & Muhabbet</h4>
-                        <p>Beraber izle, beraber oyna. Sıkılmaya yer yok.</p>
+                    <div class="feature-card interactive-parallax glass-card border-trace">
+                        <div class="border-trace-inner">
+                            <div class="card-icon-wrapper"><i class="ph ph-shield-star"></i></div>
+                            <h4>Proaktif Moderasyon</h4>
+                            <p>Yapay zeka filtreleri ve aktif yönetim ekibiyle koordineli çalışan, olumsuzluğu doğmadan engelleyen güvenlik ağı.</p>
+                        </div>
                     </div>
-                    <div class="feature-card">
-                        <div class="card-icon-wrapper"><i class="ph ph-users-three"></i></div>
-                        <h4>Samimi Topluluk</h4>
-                        <p>Seçkin, saygılı ve kafa dengi insanlarla tanış.</p>
+                    <div class="feature-card interactive-parallax glass-card border-trace">
+                        <div class="border-trace-inner">
+                            <div class="card-icon-wrapper"><i class="ph ph-users-three"></i></div>
+                            <h4>Dinamik Rol Hiyerarşisi</h4>
+                            <p>Topluluğa katkı sağlayanların emeklerinin karşılık bulduğu, net kurallara bağlı saygınlık ve statü sistemi.</p>
+                        </div>
                     </div>
-                    <div class="feature-card">
-                        <div class="card-icon-wrapper"><i class="ph ph-headphones"></i></div>
-                        <h4>Gece Modu Vibe</h4>
-                        <p>Gececi tayfaya katıl.</p>
+                    <div class="feature-card interactive-parallax glass-card border-trace">
+                        <div class="border-trace-inner">
+                            <div class="card-icon-wrapper"><i class="ph ph-robot"></i></div>
+                            <h4>Özel Algoritmalar</h4>
+                            <p>Standart botlar yerine, doğrudan metavis1on altyapısına özel kodlanmış, sunucu içi ekonomiyi ve logları yöneten yazılımlar.</p>
+                        </div>
                     </div>
-                    <div class="feature-card">
-                        <div class="card-icon-wrapper"><i class="ph ph-chats-circle"></i></div>
-                        <h4>Temiz Akış</h4>
-                        <p>Spam ve karmaşadan uzak, düzenli içerik kanalları.</p>
+                    <div class="feature-card interactive-parallax glass-card border-trace">
+                        <div class="border-trace-inner">
+                            <div class="card-icon-wrapper"><i class="ph ph-palette"></i></div>
+                            <h4>Profil Özelleştirme</h4>
+                            <p>Üyelerin sunucu içi aktiflikleriyle kazandıkları rozetler ve renklerle kendilerini ifade edebilecekleri kişisel kimlikler.</p>
+                        </div>
                     </div>
-                    <div class="feature-card">
-                        <div class="card-icon-wrapper"><i class="ph ph-sparkle"></i></div>
-                        <h4>Özel Etkinlikler</h4>
-                        <p>Sadece üyelere özel turnuvalar ve çekilişler. [PLANLANABİLİR]</p>
+                    <div class="feature-card interactive-parallax glass-card border-trace">
+                        <div class="border-trace-inner">
+                            <div class="card-icon-wrapper"><i class="ph ph-moon-stars"></i></div>
+                            <h4>Gece Kuşağı Dinamiği</h4>
+                            <p>Gece saatlerinde ortamın ritmine uygun, özel kuralları olan ama aktifliği asla düşmeyen elit gececi kültürü.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="team" class="team section-padding scroll-animate">
+        <section id="gallery" class="gallery section-padding scroll-animate">
             <div class="container">
                 <div class="section-header text-center">
-                    <h3 class="section-title">Ekip</h3>
-                    <p class="section-subtitle">Ortamı ayakta tutanlar.</p>
+                    <div class="section-label">Görsel Vitrin</div>
+                    <h3 class="section-title">Dijital Atmosferimiz</h3>
+                    <p class="section-subtitle">Platformun görsel estetiğini ve teknolojik dokusunu yansıtan kesitler.</p>
+                </div>
+
+                <div class="gallery-grid">
+                    <div class="gallery-item large glass-card">
+                        <div class="gallery-abstract bg-gradient-1">
+                            <div class="abstract-content">
+                                <i class="ph-fill ph-code"></i>
+                                <span>Geliştirici Arayüzü</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gallery-item glass-card">
+                        <div class="gallery-abstract bg-gradient-2">
+                            <div class="abstract-content">
+                                <i class="ph-fill ph-headphones"></i>
+                                <span>Ses Odaklı Deneyim</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gallery-item glass-card">
+                        <div class="gallery-abstract bg-pattern">
+                            <div class="abstract-content">
+                                <i class="ph-fill ph-users"></i>
+                                <span>Elit Topluluk</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gallery-item wide glass-card">
+                        <div class="gallery-abstract bg-gradient-3">
+                            <div class="abstract-content">
+                                <i class="ph-fill ph-game-controller"></i>
+                                <span>Kesintisiz Eğlence ve Oyun Odaları</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap" class="roadmap section-padding scroll-animate">
+            <div class="container">
+                <div class="section-header text-center">
+                    <div class="section-label">Gelecek Planları</div>
+                    <h3 class="section-title">Gelişim Yol Haritası</h3>
+                    <p class="section-subtitle">Vizyonumuz statik değil; platformumuzu ve imkanlarımızı sürekli ölçekliyoruz.</p>
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item completed">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content glass-card">
+                            <div class="phase-badge">Faz 1 - Tamamlandı</div>
+                            <h4>Çekirdek Altyapı ve Güvenlik</h4>
+                            <p>Sunucu mimarisinin detaylı kurulumu, temel moderasyon botlarının entegrasyonu ve güvenlik protokollerinin maksimum seviyede aktivasyonu sağlandı.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item active">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content glass-card border-trace">
+                            <div class="border-trace-inner">
+                                <div class="phase-badge active-badge">Faz 2 - Mevcut Aşama</div>
+                                <h4>Marka Kimliği ve Genişleme</h4>
+                                <p>Özel hiyerarşik rol sistemlerinin devreye alınması, metavis1on marka kültürünün oturtulması ve resmi web platformunun tam kapasiteyle yayına alınması.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content glass-card">
+                            <div class="phase-badge upcoming-badge">Faz 3 - Yakında</div>
+                            <h4>İleri Düzey Entegrasyonlar</h4>
+                            <p>metavis1on'a özel web tabanlı işletim sistemi simülasyon araçları (WebOS), harici oyun API bağlantıları ve üye deneyimini zenginleştiren otomasyonlar.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content glass-card">
+                            <div class="phase-badge upcoming-badge">Faz 4 - Gelecek Vizyonu</div>
+                            <h4>Kapsamlı Bağımsız Ekosistem</h4>
+                            <p>Özel oyun sunucularının doğrudan entegrasyonu, resmi ödüllü ligler ve sanal/fiziksel ödül havuzu içeren tam teşekküllü bir dijital platforma dönüşüm.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="team" class="team section-padding scroll-animate stagger-children">
+            <div class="container">
+                <div class="section-header text-center">
+                    <div class="section-label">Yönetim Kadrosu</div>
+                    <h3 class="section-title">Çekirdek Ekip</h3>
+                    <p class="section-subtitle">Platformun kusursuz işleyişini, güvenliğini ve gelişimini yöneten profesyoneller.</p>
                 </div>
                 
                 <div class="team-grid">
-                    <div class="team-card">
-                        <div class="avatar gradient-1">H</div>
+                    <div class="team-card glass-card interactive-parallax">
+                        <div class="avatar-wrap">
+                            <div class="avatar gradient-founder">
+                                <span>H</span>
+                            </div>
+                            <div class="status-indicator online"></div>
+                        </div>
                         <div class="team-info">
-                            <h4>Cruse [Hakan]</h4>
-                            <span class="role primary-role">Kurucu</span>
-                            <p>Site kurucusu ve bot developeri.</p>
+                            <h4>Hakan <span class="nickname">(Cruse)</span></h4>
+                            <span class="role primary-role">Kurucu & Sistem Mimarı</span>
+                            <p>Platformun temel atıcısı. Altyapı geliştirme süreçleri, bot sistemleri, teknik optimizasyon ve metavis1on marka vizyonunun ana yöneticisi.</p>
+                            <div class="team-badges">
+                                <div class="t-badge" title="Geliştirici"><i class="ph-fill ph-code"></i></div>
+                                <div class="t-badge" title="Sunucu Sahibi"><i class="ph-fill ph-crown"></i></div>
+                                <div class="t-badge" title="Altyapı Sorumlusu"><i class="ph-fill ph-database"></i></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="team-card">
-                        <div class="avatar gradient-2">E</div>
+                    
+                    <div class="team-card glass-card interactive-parallax">
+                        <div class="avatar-wrap">
+                            <div class="avatar gradient-admin">
+                                <span>E</span>
+                            </div>
+                            <div class="status-indicator dnd"></div>
+                        </div>
                         <div class="team-info">
-                            <h4>Lykia [Dop[Eray]]</h4>
-                            <span class="role admin-role">DC Server Kurucusu</span>
-                            <p>Düzeni sağlar, enerjiyi yükseltir.</p>
+                            <h4>Eray <span class="nickname">(Lykia)</span></h4>
+                            <span class="role admin-role">Topluluk Lideri</span>
+                            <p>DC Server Kurucusu. Sunucu içi disiplin, üye ilişkileri, etkinlik takvimi organizasyonu ve platformun genel iç denetiminden sorumlu lider.</p>
+                            <div class="team-badges">
+                                <div class="t-badge" title="Topluluk Yönetimi"><i class="ph-fill ph-users"></i></div>
+                                <div class="t-badge" title="Yönetici"><i class="ph-fill ph-shield-check"></i></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="team-card">
-                        <div class="avatar gradient-3">Y</div>
+                    
+                    <div class="team-card glass-card interactive-parallax">
+                        <div class="avatar-wrap">
+                            <div class="avatar gradient-mod">
+                                <span>Y</span>
+                            </div>
+                            <div class="status-indicator idle"></div>
+                        </div>
                         <div class="team-info">
-                            <h4>Lynra [Yusuf]</h4>
-                            <span class="role mod-role">Moderatör</span>
-                            <p>Tasarımcı gibi duruyor xd.</p>
+                            <h4>Yusuf <span class="nickname">(Lynra)</span></h4>
+                            <span class="role mod-role">Moderatör & Görsel Tasarım</span>
+                            <p>Platformun günlük operasyonları, sohbet akışının kurallara uygun denetimi ve metavis1on görsel kimlik standartlarının korunması.</p>
+                            <div class="team-badges">
+                                <div class="t-badge" title="Görsel Tasarım"><i class="ph-fill ph-paint-brush"></i></div>
+                                <div class="t-badge" title="Moderatör"><i class="ph-fill ph-sword"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq" class="faq section-padding scroll-animate">
+            <div class="container">
+                <div class="section-header text-center">
+                    <div class="section-label">Bilgi Bankası</div>
+                    <h3 class="section-title">Sıkça Sorulan Sorular</h3>
+                    <p class="section-subtitle">Sisteme dahil olmadan önce platform hakkında bilmeniz gereken temel detaylar.</p>
+                </div>
+                
+                <div class="faq-accordion">
+                    <div class="faq-item glass-card">
+                        <button class="faq-question" aria-expanded="false">
+                            <div class="faq-q-text">
+                                <i class="ph ph-question"></i>
+                                <span>metavis1on sıradan bir Discord sunucusu mu?</span>
+                            </div>
+                            <div class="faq-icon"><i class="ph ph-caret-down"></i></div>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                <p>Kesinlikle hayır. metavis1on; kendi marka kimliğine, katı yönetim standartlarına, özel bot altyapısına ve kurumsal bir web desteğine sahip bağımsız bir dijital topluluk ekosistemidir. Amacımız nicelik (kalabalık) değil, tamamen niteliktir (kalite).</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item glass-card">
+                        <button class="faq-question" aria-expanded="false">
+                            <div class="faq-q-text">
+                                <i class="ph ph-shield-check"></i>
+                                <span>Platforma katılmak için gereken şartlar nelerdir?</span>
+                            </div>
+                            <div class="faq-icon"><i class="ph ph-caret-down"></i></div>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                <p>En önemli ve tek şart, belirlenmiş topluluk kurallarına mutlak saygı göstermektir. Sunucuya katıldığınız an, olgun bir iletişim kuracağınızı ve toksik davranışlardan uzak duracağınızı kabul etmiş sayılırsınız. Kuralları ihlal edenler sistemden hızla uzaklaştırılır.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item glass-card">
+                        <button class="faq-question" aria-expanded="false">
+                            <div class="faq-q-text">
+                                <i class="ph ph-handshake"></i>
+                                <span>Yeni katılan üyeler ortama kolayca adapte olabilir mi?</span>
+                            </div>
+                            <div class="faq-icon"><i class="ph ph-caret-down"></i></div>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                <p>Evet. metavis1on, dışlayıcı gruplaşmalara veya "eski üye / yeni üye" ayrımcılığına izin vermez. Karşılama prosedürümüz ve akıcı sohbet ortamımız sayesinde, saygı çerçevesinde iletişim kuran herkes anında topluluğun değerli bir parçası haline gelir.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item glass-card">
+                        <button class="faq-question" aria-expanded="false">
+                            <div class="faq-q-text">
+                                <i class="ph ph-briefcase"></i>
+                                <span>Yönetim veya yetkili kadrosuna alımlar nasıl yapılıyor?</span>
+                            </div>
+                            <div class="faq-icon"><i class="ph ph-caret-down"></i></div>
+                        </button>
+                        <div class="faq-answer">
+                            <div class="faq-answer-inner">
+                                <p>Yönetim kadrosu dışarıdan rastgele veya istek üzerine seçilmez. Yetkililer; sunucu içindeki uzun süreli aktifliklerine, kriz anlarındaki olgunluklarına, kalite standartlarına uyumlarına ve liyakatlerine göre bizzat kurucu ekip tarafından izlenerek davet edilir.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -191,12 +681,29 @@
 
         <section id="join" class="join section-padding scroll-animate">
             <div class="container">
-                <div class="join-banner glass-card">
-                    <h3 class="join-title">metavis1on'a katıl, ortamı yakala.</h3>
-                    <a href="#" class="btn btn-primary btn-large discord-link">
-                        <i class="ph-fill ph-discord-logo"></i> Discord'a Katıl
-                    </a>
-                    <p class="join-note">Tek tıkla katıl.</p>
+                <div class="join-banner glass-card border-trace">
+                    <div class="border-trace-inner">
+                        <div class="join-content">
+                            <div class="section-label">Davet Bağlantısı</div>
+                            <h3 class="join-title">Seçkin Dijital Ortamda<br>Yerinizi Alın.</h3>
+                            <p class="join-desc">Kusursuz teknik altyapımız, saygılı üye profilimiz ve bitmeyen aktivite takvimimizle metavis1on deneyimi sizi bekliyor. Karar sizin.</p>
+                            <div class="join-actions">
+                                <a href="https://discord.gg/TRNyQBfs" class="btn btn-primary btn-large discord-link btn-shine pulse-btn">
+                                    <i class="ph-fill ph-discord-logo"></i> Güvenli Ağa Bağlan
+                                </a>
+                            </div>
+                            <div class="join-guarantee">
+                                <span><i class="ph ph-shield-check"></i> SSL Korumalı</span>
+                                <span><i class="ph ph-check-circle"></i> Resmi Bağlantı</span>
+                                <span><i class="ph ph-lock-key"></i> Anti-Spam Koruması</span>
+                            </div>
+                        </div>
+                        <div class="join-visual">
+                            <div class="abstract-shape"></div>
+                            <div class="abstract-shape shape-2"></div>
+                            <div class="glass-orb"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -204,13 +711,54 @@
 
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <img src="assets/logo.png" alt="" class="footer-logo" onerror="this.style.display='none'">
-                    <span>metavis1on &copy; 2026</span>
+            <div class="footer-top">
+                <div class="footer-brand-info">
+                    <a href="#hero" class="footer-logo-link">
+                        <img src="assets/logo.png" alt="Logo" class="footer-logo" onerror="this.style.display='none'">
+                        <span class="footer-brand-text">metavis1on</span>
+                    </a>
+                    <p class="footer-tagline">Dijital Kimlik & Seçkin Topluluk. Gürültüden uzak, yeni nesil iletişim ekosistemi.</p>
+                    <div class="footer-socials">
+                        <a href="https://discord.gg/TRNyQBfs" class="discord-link" aria-label="Discord Sunucusu"><i class="ph-fill ph-discord-logo"></i></a>
+                        <a href="#" class="disabled" aria-label="X (Twitter)"><i class="ph-fill ph-x-logo"></i></a>
+                        <a href="#" class="disabled" aria-label="YouTube"><i class="ph-fill ph-youtube-logo"></i></a>
+                    </div>
                 </div>
-                <div class="footer-links">
-                    <a href="#" class="discord-link">Discord</a>
+                <div class="footer-links-grid">
+                    <div class="footer-column">
+                        <h4>Platform</h4>
+                        <a href="#about"><i class="ph ph-caret-right"></i> Ekosistem</a>
+                        <a href="#comparison"><i class="ph ph-caret-right"></i> Farkımız</a>
+                        <a href="#features"><i class="ph ph-caret-right"></i> Altyapı</a>
+                        <a href="#team"><i class="ph ph-caret-right"></i> Yönetim</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>İçerik</h4>
+                        <a href="#manifesto"><i class="ph ph-caret-right"></i> Vizyon & Kurallar</a>
+                        <a href="#channels"><i class="ph ph-caret-right"></i> Kanallar</a>
+                        <a href="#events"><i class="ph ph-caret-right"></i> Etkinlikler</a>
+                        <a href="#gallery"><i class="ph ph-caret-right"></i> Görsel Vitrin</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Destek & Ağ</h4>
+                        <a href="#faq"><i class="ph ph-caret-right"></i> SSS (Bilgi Bankası)</a>
+                        <a href="#roadmap"><i class="ph ph-caret-right"></i> Yol Haritası</a>
+                        <div class="footer-cta-wrap mt-12">
+                            <a href="https://discord.gg/TRNyQBfs" class="btn btn-secondary btn-sm discord-link w-full">
+                                <i class="ph-fill ph-discord-logo"></i> Ağa Katıl
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <span>&copy; <span id="current-year">2026</span> metavis1on Platform. Tüm hakları saklıdır.</span>
+                </div>
+                <div class="footer-system-status tooltip-wrap">
+                    <span class="status-pulse"></span>
+                    <span class="status-text">Sistemler Çevrimiçi</span>
+                    <span class="tooltip">Tüm sunucu altyapısı ve bot servisleri sorunsuz çalışıyor.</span>
                 </div>
             </div>
         </div>

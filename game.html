@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>metavis1on GRID 2.1.0</title>
+    <title>metavis1on GRID 2.4.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* =========================================
@@ -654,6 +654,816 @@
         }
         /* ===== 2.1 CSS SYSTEM END ===== */
 
+        /* ===== 2.2 PREMIUM POLISH START ===== */
+        /* Smart Hint - daha şık, daha az dikkat dağıtıcı */
+        .smart-hint::after {
+            top: 38%; left: 38%; right: 38%; bottom: 38%;
+            background: rgba(0, 225, 255, 0.35);
+            box-shadow: 0 0 8px rgba(0, 225, 255, 0.4);
+            animation: pulseHint 1.8s infinite ease-out;
+        }
+        @keyframes pulseHint {
+            0% { transform: scale(0.6); opacity: 0.9; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+
+        /* Preview daha cilalı */
+        .cell.preview-valid {
+            background: rgba(0, 255, 136, 0.22) !important;
+            transform: scale(0.94);
+            border: 2px solid rgba(0, 255, 136, 0.85) !important;
+            box-shadow: inset 0 0 12px rgba(0, 255, 136, 0.55), 0 0 8px rgba(0, 255, 136, 0.3);
+            border-radius: 8px;
+        }
+        .cell.preview-invalid {
+            background: rgba(255, 51, 51, 0.28) !important;
+            border: 2px solid rgba(255, 51, 51, 0.85) !important;
+            transform: scale(0.94);
+            box-shadow: inset 0 0 12px rgba(255, 51, 51, 0.5);
+        }
+
+        /* Mission HUD (alt rozet) - kalıcı görev göstergesi */
+        .mission-hud {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 8px 14px;
+            margin-top: 8px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            opacity: 0;
+            transform: translateY(-6px);
+            transition: all 0.4s ease 0.25s;
+            gap: 10px;
+            min-height: 36px;
+        }
+        .game-active .mission-hud { opacity: 1; transform: translateY(0); }
+        .mission-hud-label {
+            color: var(--accent-cyan);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .mission-hud-desc {
+            flex: 1;
+            color: #fff;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .mission-hud-progress {
+            color: var(--accent-green);
+            font-weight: 800;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            min-width: 42px;
+            text-align: right;
+        }
+
+        /* Combo display - daha sinematik */
+        .combo-display.show { animation: comboPop 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        /* Mega clear daha dramatik */
+        @keyframes megaClearCell {
+            0% { transform: scale(1); opacity: 1; filter: brightness(3.5); background: #fff; }
+            35% { transform: scale(1.25); opacity: 1; box-shadow: 0 0 40px var(--accent-cyan), 0 0 80px var(--accent-pink); border-radius: 10px;}
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        /* Level up flash */
+        .level-flash {
+            animation: levelFlash 0.6s ease-out;
+        }
+        @keyframes levelFlash {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7), inset 0 0 0 0 rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.9), inset 0 0 25px rgba(255, 215, 0, 0.6); transform: scale(1.05); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0), inset 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+
+        /* Game over geçişi daha sinematik */
+        #screen-gameover.active {
+            animation: gameOverFadeIn 0.8s ease-out;
+        }
+        @keyframes gameOverFadeIn {
+            0% { opacity: 0; backdrop-filter: blur(0px); }
+            100% { opacity: 1; backdrop-filter: blur(25px); }
+        }
+
+        /* Hint sürdürülebilir başlangıç ipucu */
+        .start-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 12, 20, 0.92);
+            border: 1px solid var(--accent-cyan);
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 24px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 999;
+            box-shadow: 0 8px 24px rgba(0, 225, 255, 0.25);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .start-hint.show { opacity: 1; }
+
+        /* Cell filled hover (sadece tıklanabilir hücreler için cursor düzeltmesi) */
+        .cell.filled { cursor: default; }
+
+        /* Last move - daha kontrollü */
+        @keyframes flashMove {
+            0% { filter: brightness(1.8) drop-shadow(0 0 12px rgba(255,255,255,0.8)); }
+            100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+        }
+        /* ===== 2.2 PREMIUM POLISH END ===== */
+
+        /* ===== 2.3 LAYOUT + MENU + PC FIT SYSTEM START ===== */
+
+        /* dvh fallback — mobil adres çubuğu / PC için doğru viewport */
+        :root {
+            --app-h: 100vh;
+            --app-h-d: 100dvh;
+            --space-xxs: 4px;
+            --space-xs: 8px;
+            --space-s: 12px;
+            --space-m: 16px;
+            --space-l: 24px;
+            --radius-s: 10px;
+            --radius-m: 16px;
+            --radius-l: 22px;
+        }
+        @supports (height: 100dvh) {
+            body { height: 100dvh; }
+        }
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* #app yeniden — PC'de biraz daha geniş, dikeyde clamp ile sığma garantisi */
+        #app {
+            max-width: clamp(420px, 56vh, 560px);
+            min-height: 0;
+            height: 100%;
+            padding: clamp(8px, 2vh, 18px);
+            gap: 0;
+            overflow: hidden; /* taşma sızıntısı yok */
+        }
+
+        /* Board: ekran yüksekliği kısıtsa dikey clamp uygula (kare kalır) */
+        .board-container {
+            max-height: min(58vh, 60vw);
+            max-width: min(100%, 60vh);
+            align-self: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 0;
+        }
+
+        /* Tray: yüksekliği viewport'a oranla */
+        .tray {
+            height: clamp(78px, 12vh, 130px);
+            margin-top: clamp(10px, 2vh, 20px);
+        }
+        .game-active .tray { flex-shrink: 0; }
+
+        /* HUD: gap ve margin kısalt */
+        .score-hud-container {
+            gap: clamp(6px, 1.2vh, 10px);
+            margin-bottom: clamp(8px, 1.5vh, 16px);
+            grid-template-columns: repeat(4, 1fr); /* default 4 kutu */
+        }
+        .score-box {
+            padding: clamp(8px, 1.4vh, 14px) 8px;
+        }
+        .score-label { font-size: clamp(0.62rem, 1.4vw, 0.78rem); }
+        .score-value { font-size: clamp(1.05rem, 2.4vw, 1.7rem); }
+
+        .game-top-bar { margin-bottom: clamp(8px, 1.5vh, 14px); }
+        .mission-hud {
+            margin-top: clamp(4px, 0.8vh, 8px);
+            margin-bottom: clamp(8px, 1.5vh, 14px);
+            min-height: 32px;
+            padding: 6px 12px;
+        }
+
+        /* ============ PREMIUM MENU (v2.3) ============ */
+        #screen-menu, #screen-howto, #screen-pause, #screen-gameover {
+            padding: clamp(12px, 3vh, 28px);
+            overflow-y: auto;
+        }
+
+        /* Hero kapsayıcı — logo + brand */
+        .hero-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: clamp(14px, 3vh, 28px);
+            max-width: 460px;
+            width: 100%;
+        }
+        .hero-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .hero-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-muted);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .hero-badge.accent {
+            color: var(--accent-cyan);
+            border-color: rgba(0, 225, 255, 0.35);
+            background: linear-gradient(180deg, rgba(0, 225, 255, 0.10), rgba(0,225,255,0.02));
+            box-shadow: 0 0 18px rgba(0, 225, 255, 0.15);
+        }
+        .hero-badge.gold {
+            color: var(--accent-gold);
+            border-color: rgba(255, 215, 0, 0.3);
+            background: linear-gradient(180deg, rgba(255, 215, 0, 0.10), rgba(255,215,0,0.02));
+        }
+
+        /* Yeni başlık hiyerarşisi (v2.3) */
+        #screen-menu .logo-text {
+            font-size: clamp(2.4rem, 7vw, 4.2rem);
+            margin-bottom: 2px;
+            letter-spacing: -2.5px;
+            line-height: 1;
+        }
+        #screen-menu .logo-sub {
+            margin-bottom: 8px;
+            font-size: clamp(0.85rem, 2.2vw, 1.15rem);
+            letter-spacing: 8px;
+        }
+        .hero-tag {
+            font-size: clamp(0.85rem, 1.8vw, 1rem);
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            max-width: 380px;
+            line-height: 1.5;
+        }
+        .hero-divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+            margin: 12px auto;
+            opacity: 0.6;
+        }
+
+        /* Menüdeki glass panel — daha kompakt ve premium */
+        #screen-menu .glass-panel {
+            padding: clamp(18px, 3vh, 28px);
+            max-width: 380px;
+        }
+        #screen-menu .menu-tagline {
+            color: var(--text-muted);
+            font-size: clamp(0.92rem, 2vw, 1.02rem);
+            margin-bottom: clamp(16px, 2.5vh, 22px);
+            line-height: 1.55;
+            text-align: center;
+        }
+        #screen-menu .btn { margin-bottom: 10px; padding: 15px 22px; font-size: 1.05rem; }
+        #screen-menu .btn:last-child { margin-bottom: 0; }
+
+        /* CTA özel parlaklık */
+        .btn.cta-primary {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 60%, var(--accent-pink) 100%);
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.4), 0 0 60px rgba(0, 225, 255, 0.15);
+            position: relative;
+        }
+        .btn.cta-primary::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: inherit;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(0,225,255,0.5), rgba(255,0,127,0.5));
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor;
+                    mask-composite: exclude;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Footer alt menü çubuğu (versiyon + ipucu) */
+        .menu-footer {
+            margin-top: clamp(14px, 2.5vh, 22px);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            text-align: center;
+        }
+        .menu-footer strong { color: var(--accent-cyan); font-weight: 700; }
+
+        /* How To Play: kompakt liste + scroll guard */
+        #screen-howto .glass-panel {
+            max-width: 440px;
+            max-height: 75vh;
+            overflow-y: auto;
+        }
+        #screen-howto ul { font-size: clamp(0.92rem, 2vw, 1rem); line-height: 1.7; }
+        #screen-howto .glass-panel::-webkit-scrollbar { width: 6px; }
+        #screen-howto .glass-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+        /* Pause ekranı premium */
+        #screen-pause .logo-text {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 4px;
+        }
+        #screen-pause .glass-panel { max-width: 360px; }
+
+        /* Game over ekranı sığdırma + scroll guard */
+        #screen-gameover .glass-panel {
+            max-width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        #screen-gameover .logo-text { font-size: clamp(2rem, 5vw, 3.4rem); margin-bottom: 4px; }
+        #screen-gameover .logo-sub { margin-bottom: 18px; }
+
+        /* Mission HUD görev metni mobilde okunaklı kalsın */
+        @media (max-width: 480px) {
+            .mission-hud { font-size: 0.78rem; padding: 6px 10px; }
+            .mission-hud-label { font-size: 0.65rem; letter-spacing: 0.8px; }
+            .mission-hud-desc { font-size: 0.78rem; }
+        }
+
+        /* ============ PC FIT MEDIA QUERIES ============ */
+
+        /* Geniş laptop / küçük ekran (1366x768 ve benzeri) */
+        @media (min-width: 900px) and (max-height: 800px) {
+            #app {
+                max-width: clamp(420px, 70vh, 540px);
+                padding: 8px 16px;
+            }
+            .board-container { max-height: 56vh; }
+            .tray { height: clamp(72px, 11vh, 108px); }
+            .score-box { padding: 8px 6px; }
+            .mission-hud { margin-bottom: 8px; }
+        }
+
+        /* Tablet/Desktop genel */
+        @media (min-width: 768px) {
+            #screen-menu .glass-panel { max-width: 400px; }
+        }
+
+        /* Çok kısa ekran (700px altı) */
+        @media (max-height: 700px) {
+            #app { padding: 6px 10px; }
+            .game-top-bar { margin-bottom: 6px; }
+            .score-hud-container { margin-bottom: 6px; }
+            .mission-hud { margin-bottom: 6px; min-height: 28px; padding: 4px 10px; }
+            .tray { height: clamp(70px, 10vh, 100px); margin-top: 8px; }
+            .board-container { max-height: 50vh; }
+            #screen-menu .logo-text { font-size: clamp(2rem, 6vw, 3rem); }
+            #screen-menu .logo-sub { margin-bottom: 4px; }
+            .hero-wrap { margin-bottom: 12px; }
+        }
+
+        /* 480 altı: mobile sığdırma */
+        @media (max-width: 480px) {
+            #app { max-width: 100%; padding-left: 10px; padding-right: 10px; }
+            .board-container { max-width: 100%; max-height: 50vh; }
+            .hero-badges { gap: 6px; }
+            .hero-badge { font-size: 0.65rem; padding: 5px 10px; letter-spacing: 1px; }
+        }
+
+        /* Reduced motion: animasyonları yumuşat */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                transition-duration: 0.05ms !important;
+            }
+            .bg-glow, .pulseBg, .floatSelected { animation: none !important; }
+        }
+
+        /* ===== 2.3 LAYOUT + MENU + PC FIT SYSTEM END ===== */
+
+        /* ===== 2.4 MENU + SETTINGS + STATS + ACHIEVEMENTS START ===== */
+
+        /* Menü inner yapısı (dikey hizalı, kompakt) */
+        .menu-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 460px;
+            gap: clamp(10px, 2vh, 18px);
+        }
+        #screen-menu .hero-wrap { margin-bottom: 0; }
+        #screen-menu .hero-tag { margin-bottom: 0; }
+
+        /* Bilgi kartları (En İyi Skor, Toplam Oyun, Görev, Sürüm) */
+        .menu-info-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            width: 100%;
+        }
+        .info-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 10px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-align: center;
+            min-width: 0;
+        }
+        .info-card-label {
+            font-size: 0.62rem;
+            color: var(--text-muted);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .info-card-value {
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.1rem;
+            line-height: 1.1;
+        }
+        .info-card-value.small {
+            font-size: 0.78rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+        @media (max-width: 480px) {
+            .menu-info-cards { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Menü aksiyonları */
+        .menu-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            max-width: 380px;
+        }
+        .menu-actions .btn { margin-bottom: 0; padding: 14px 20px; font-size: 1rem; }
+        .menu-secondary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .menu-secondary {
+            padding: 11px 12px !important;
+            font-size: 0.88rem !important;
+            margin-bottom: 0 !important;
+        }
+
+        /* Klavye etiketi (Nasıl Oynanır) */
+        .howto-list {
+            list-style: none;
+            padding-left: 0;
+            color: var(--text-main);
+            font-size: clamp(0.92rem, 2vw, 1rem);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        .howto-list li {
+            position: relative;
+            padding-left: 22px;
+            margin-bottom: 8px;
+        }
+        .howto-list li::before {
+            content: '';
+            position: absolute;
+            left: 6px; top: 0.6em;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 6px var(--accent-cyan);
+        }
+        .howto-keys {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+        .kbd {
+            display: inline-block;
+            min-width: 32px;
+            padding: 2px 8px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 6px;
+            font-weight: 700;
+            color: #fff;
+            font-size: 0.78rem;
+            text-align: center;
+            margin-right: 8px;
+        }
+
+        /* Güncelleme Notları */
+        .update-header {
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .update-version {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+        }
+        .update-date {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .update-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 18px;
+            max-height: 50vh;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .update-list::-webkit-scrollbar { width: 6px; }
+        .update-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        .update-item {
+            background: rgba(255,255,255,0.025);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+        .update-item-title {
+            font-weight: 700;
+            color: #fff;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+        .update-item-text {
+            color: var(--text-muted);
+            font-size: 0.86rem;
+            line-height: 1.5;
+        }
+
+        /* Ayarlar */
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .setting-row:last-of-type { border-bottom: none; }
+        .setting-label { flex: 1; min-width: 0; }
+        .setting-title {
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .setting-desc {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            margin-top: 2px;
+            line-height: 1.4;
+        }
+        .toggle-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            transition: var(--transition-fast);
+            min-width: 80px;
+        }
+        .toggle-btn:hover { background: var(--glass-hover); }
+        .toggle-btn.on {
+            background: linear-gradient(135deg, rgba(0,225,255,0.2), rgba(157,78,221,0.2));
+            border-color: rgba(0,225,255,0.4);
+            color: var(--accent-cyan);
+        }
+        .toggle-btn.off {
+            color: var(--text-muted);
+        }
+        .toggle-btn.danger {
+            color: var(--accent-red);
+            border-color: rgba(255,51,51,0.3);
+        }
+        .toggle-btn.danger:hover {
+            background: rgba(255,51,51,0.08);
+        }
+        .danger-row { margin-top: 6px; }
+        .reset-confirm {
+            margin: 12px 0 18px;
+            padding: 14px;
+            border-radius: 12px;
+            background: rgba(255,51,51,0.06);
+            border: 1px solid rgba(255,51,51,0.25);
+            text-align: center;
+        }
+        .reset-confirm p {
+            color: #fff;
+            margin-bottom: 12px;
+            font-size: 0.92rem;
+        }
+        .reset-confirm-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .reset-confirm-actions .btn { margin-bottom: 0; }
+
+        /* İstatistikler */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 12px 14px;
+        }
+        .stat-card-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .stat-card-value {
+            color: #fff;
+            font-weight: 800;
+            font-size: 1.35rem;
+            line-height: 1;
+        }
+        .stat-card.accent .stat-card-value { color: var(--accent-cyan); }
+        .stat-card.gold .stat-card-value { color: var(--accent-gold); }
+
+        /* Başarılar */
+        .achievements-section { margin-bottom: 18px; }
+        .achievements-title {
+            color: var(--accent-cyan);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .achievements-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 40vh;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .achievements-list::-webkit-scrollbar { width: 6px; }
+        .achievements-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        .achievement-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            transition: var(--transition-fast);
+        }
+        .achievement-item.unlocked {
+            background: linear-gradient(135deg, rgba(0,255,136,0.08), rgba(0,225,255,0.04));
+            border-color: rgba(0,255,136,0.3);
+        }
+        .achievement-icon {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+        }
+        .achievement-item.unlocked .achievement-icon {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+            color: #000;
+        }
+        .achievement-body { flex: 1; min-width: 0; }
+        .achievement-title {
+            font-weight: 700;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+        .achievement-item:not(.unlocked) .achievement-title { color: var(--text-muted); }
+        .achievement-desc {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            margin-top: 2px;
+            line-height: 1.4;
+        }
+
+        /* Toast (başarı/görev bildirimi) */
+        .toast {
+            position: fixed;
+            left: 50%;
+            top: -80px;
+            transform: translateX(-50%);
+            background: rgba(10,12,20,0.95);
+            border: 1px solid var(--accent-cyan);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 14px;
+            z-index: 2000;
+            box-shadow: 0 10px 30px rgba(0,225,255,0.25);
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: top 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(8px);
+            max-width: 92%;
+            text-align: center;
+            pointer-events: none;
+        }
+        .toast.show { top: 18px; }
+        .toast small {
+            display: block;
+            color: var(--accent-green);
+            font-weight: 600;
+            font-size: 0.78rem;
+            margin-top: 2px;
+        }
+        .toast.gold { border-color: var(--accent-gold); box-shadow: 0 10px 30px rgba(255,215,0,0.25); }
+        .toast.gold small { color: var(--accent-gold); }
+
+        /* Ekran sığdırma — yeni ekranlar için scroll guard */
+        #screen-updates .glass-panel,
+        #screen-settings .glass-panel,
+        #screen-stats .glass-panel {
+            max-width: 460px;
+            max-height: 85vh;
+            overflow-y: auto;
+            width: 100%;
+        }
+        #screen-updates .glass-panel::-webkit-scrollbar,
+        #screen-settings .glass-panel::-webkit-scrollbar,
+        #screen-stats .glass-panel::-webkit-scrollbar { width: 6px; }
+        #screen-updates .glass-panel::-webkit-scrollbar-thumb,
+        #screen-settings .glass-panel::-webkit-scrollbar-thumb,
+        #screen-stats .glass-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+        /* Efektleri azaltılmış mod: ağır animasyonları kıs */
+        body.reduced-effects .bg-glow { opacity: 0.04 !important; animation: none !important; }
+        body.reduced-effects .shape.selected { animation: none !important; }
+        body.reduced-effects .smart-hint::after { animation-duration: 3s; }
+        body.reduced-effects .combo-display.show { animation-duration: 0.6s !important; }
+        body.reduced-effects .floating-score { animation-duration: 0.6s !important; }
+
+        /* Sarsıntı efekti kapalı */
+        body.no-shake .shake-effect { animation: none !important; }
+
+        /* Orijinal mission-popup'ı gizle — yerine toast kullanıyoruz (v2.4) */
+        #mission-popup { display: none !important; }
+
+        /* ===== 2.4 MENU + SETTINGS + STATS + ACHIEVEMENTS END ===== */
+
     </style>
 </head>
 <body>
@@ -665,36 +1475,164 @@
     <div id="app">
         
         <div id="screen-menu" class="screen active">
-            <img src="assets/logo.png" alt="" class="brand-logo-img" onerror="this.style.display='none'">
-            <h1 class="logo-text">metavis1on</h1>
-            <h2 class="logo-sub">GRID 2.1.0</h2>
-            <div class="glass-panel">
-                <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 1.05rem; line-height: 1.6;">
-                    Sıradanlığı bırak. Satırları temizle, komboları yakala, sistemin sınırlarını zorla.
-                </p>
-                <button class="btn" onclick="startGame()">Sisteme Gir</button>
-                <button class="btn btn-outline" onclick="showHowToPlay()">Nasıl Oynanır?</button>
+            <div class="menu-inner">
+                <div class="hero-wrap">
+                    <img src="assets/logo.png" alt="" class="brand-logo-img" onerror="this.style.display='none'">
+                    <h1 class="logo-text">metavis1on</h1>
+                    <h2 class="logo-sub">GRID</h2>
+                    <p class="hero-tag">Blokları yerleştir, satırları temizle, en yüksek skoru geç.</p>
+                </div>
+
+                <div class="menu-info-cards" id="menu-info-cards">
+                    <div class="info-card">
+                        <span class="info-card-label">En İyi Skor</span>
+                        <span class="info-card-value" id="info-best">0</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-card-label">Toplam Oyun</span>
+                        <span class="info-card-value" id="info-games">0</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-card-label">Günlük Görev</span>
+                        <span class="info-card-value small" id="info-mission">—</span>
+                    </div>
+                    <div class="info-card">
+                        <span class="info-card-label">Sürüm</span>
+                        <span class="info-card-value small" id="info-version">2.4.0</span>
+                    </div>
+                </div>
+
+                <div class="menu-actions">
+                    <button class="btn cta-primary" onclick="startGame()">Oyuna Başla</button>
+                    <div class="menu-secondary-grid">
+                        <button class="btn btn-outline menu-secondary" onclick="showHowToPlay()">Nasıl Oynanır?</button>
+                        <button class="btn btn-outline menu-secondary" onclick="showUpdates()">Güncelleme Notları</button>
+                        <button class="btn btn-outline menu-secondary" onclick="showSettings()">Ayarlar</button>
+                        <button class="btn btn-outline menu-secondary" onclick="showStats()">İstatistikler</button>
+                    </div>
+                </div>
+
+                <div class="menu-footer">
+                    <span id="menu-footer-version">metavis1on GRID · Sürüm 2.4.0</span>
+                </div>
             </div>
         </div>
 
         <div id="screen-howto" class="screen">
-            <h2 class="logo-sub" style="margin-bottom: 15px;">Kurallar</h2>
+            <h2 class="logo-sub" style="margin-bottom: 14px;">Nasıl Oynanır</h2>
             <div class="glass-panel" style="text-align: left;">
-                <ul style="color: var(--text-muted); padding-left: 20px; line-height: 1.8; margin-bottom: 25px; font-size: 1.05rem;">
-                    <li>Alttaki blokları sürükle <strong>VEYA</strong> tıklayıp seçerek tahtaya yerleştir.</li>
-                    <li>Tamamlanan satır ve sütunlar patlar, alan açılır.</li>
-                    <li>Arka arkaya temizlik yapmak <strong style="color:var(--accent-pink)">SERİ (STREAK)</strong> puanını katlar.</li>
-                    <li>Aynı anda birden fazla çizgi temizlemek <strong style="color:var(--accent-cyan)">MEGA KOMBO</strong> yaratır.</li>
-                    <li>Eldeki hiçbir blok tahtaya sığmazsa sistem çöker!</li>
+                <ul class="howto-list">
+                    <li>Alttaki bloklardan birini seç.</li>
+                    <li>Bloğu tahtada boş bir alana yerleştir.</li>
+                    <li>Dolu satır veya sütun tamamlanınca temizlenir.</li>
+                    <li>Aynı hamlede birden fazla çizgi temizlersen daha fazla puan alırsın.</li>
+                    <li>Hiçbir blok sığmazsa oyun biter.</li>
                 </ul>
-                <button class="btn" onclick="hideHowToPlay()">Anladım</button>
+                <div class="howto-keys">
+                    <div><span class="kbd">R</span> Yeniden başlat</div>
+                    <div><span class="kbd">P</span> Duraklat</div>
+                    <div><span class="kbd">ESC</span> Seçimi iptal et / menüyü kapat</div>
+                </div>
+                <button class="btn cta-primary" onclick="hideHowToPlay()">Anladım</button>
+            </div>
+        </div>
+
+        <div id="screen-updates" class="screen">
+            <h2 class="logo-sub" style="margin-bottom: 14px;">Güncelleme Notları</h2>
+            <div class="glass-panel" style="text-align: left;">
+                <div class="update-header">
+                    <div>
+                        <div class="update-version" id="update-version">Sürüm 2.4.0</div>
+                        <div class="update-date" id="update-date">—</div>
+                    </div>
+                </div>
+                <div class="update-list" id="update-list">
+                    <!-- JS dolduracak -->
+                </div>
+                <button class="btn cta-primary" onclick="showMenu()">Geri Dön</button>
+            </div>
+        </div>
+
+        <div id="screen-settings" class="screen">
+            <h2 class="logo-sub" style="margin-bottom: 14px;">Ayarlar</h2>
+            <div class="glass-panel" style="text-align: left;">
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <div class="setting-title">Ses</div>
+                        <div class="setting-desc">Oyun seslerini aç veya kapat.</div>
+                    </div>
+                    <div class="setting-control">
+                        <button class="toggle-btn" id="set-sound" onclick="toggleSetting('sound')">Açık</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <div class="setting-title">Efektler</div>
+                        <div class="setting-desc">Ağır parıltı ve animasyonları azalt.</div>
+                    </div>
+                    <div class="setting-control">
+                        <button class="toggle-btn" id="set-effects" onclick="toggleSetting('effects')">Normal</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <div class="setting-title">İpucu Gösterimi</div>
+                        <div class="setting-desc">Seçili bloğun sığacağı alanları işaretle.</div>
+                    </div>
+                    <div class="setting-control">
+                        <button class="toggle-btn" id="set-hints" onclick="toggleSetting('hints')">Açık</button>
+                    </div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <div class="setting-title">Sarsıntı Efekti</div>
+                        <div class="setting-desc">Yanlış hamlede tahta sallansın.</div>
+                    </div>
+                    <div class="setting-control">
+                        <button class="toggle-btn" id="set-shake" onclick="toggleSetting('shake')">Açık</button>
+                    </div>
+                </div>
+                <div class="setting-row danger-row">
+                    <div class="setting-label">
+                        <div class="setting-title">Oyun Verilerini Sıfırla</div>
+                        <div class="setting-desc">Skor, istatistik ve başarılar silinir.</div>
+                    </div>
+                    <div class="setting-control">
+                        <button class="toggle-btn danger" id="set-reset" onclick="confirmResetData()">Sıfırla</button>
+                    </div>
+                </div>
+                <div class="reset-confirm" id="reset-confirm" style="display:none;">
+                    <p>Tüm oyun verisi silinecek. Emin misin?</p>
+                    <div class="reset-confirm-actions">
+                        <button class="btn btn-danger" onclick="resetGameData()">Evet, Sıfırla</button>
+                        <button class="btn btn-outline" onclick="cancelResetData()">Vazgeç</button>
+                    </div>
+                </div>
+                <button class="btn cta-primary" onclick="showMenu()">Geri Dön</button>
+            </div>
+        </div>
+
+        <div id="screen-stats" class="screen">
+            <h2 class="logo-sub" style="margin-bottom: 14px;">İstatistikler</h2>
+            <div class="glass-panel" style="text-align: left;">
+                <div class="stat-grid" id="stat-grid">
+                    <!-- JS dolduracak -->
+                </div>
+                <div class="achievements-section">
+                    <div class="achievements-title">Başarılar</div>
+                    <div class="achievements-list" id="achievements-list">
+                        <!-- JS dolduracak -->
+                    </div>
+                </div>
+                <button class="btn cta-primary" onclick="showMenu()">Geri Dön</button>
             </div>
         </div>
 
         <div id="screen-pause" class="screen">
-            <h1 class="logo-text" style="font-size: 3rem;">DURAKLATILDI</h1>
-            <div class="glass-panel" style="margin-top: 20px;">
-                <button class="btn" onclick="resumeGame()">Devam Et</button>
+            <h1 class="logo-text">Duraklatıldı</h1>
+            <p class="hero-tag" style="margin: 6px 0 18px;">Hazır olduğunda devam edebilirsin.</p>
+            <div class="glass-panel">
+                <button class="btn cta-primary" onclick="resumeGame()">Devam Et</button>
                 <button class="btn btn-danger" onclick="startGame()">Yeniden Başlat</button>
                 <button class="btn btn-outline" onclick="showMenu()">Ana Menüye Dön</button>
             </div>
@@ -726,6 +1664,12 @@
             </div>
             </div>
 
+        <div class="mission-hud" id="mission-hud">
+            <span class="mission-hud-label">Görev</span>
+            <span class="mission-hud-desc" id="mission-hud-desc">—</span>
+            <span class="mission-hud-progress" id="mission-hud-progress">0/0</span>
+        </div>
+
         <div class="board-container">
             <div id="board" class="grid">
                 </div>
@@ -742,11 +1686,11 @@
         </div>
 
         <div id="screen-gameover" class="screen">
-            <h1 class="logo-text" style="color: var(--accent-red); text-shadow: 0 0 30px rgba(255,0,0,0.5);">SİSTEM ÇÖKTÜ</h1>
+            <h1 class="logo-text" style="color: var(--accent-red); text-shadow: 0 0 30px rgba(255,0,0,0.5);">Oyun Bitti</h1>
             <h2 class="logo-sub">Hamle Kalmadı</h2>
             <div class="glass-panel">
                 <div id="new-record-badge" class="record-glow" style="display:none;">
-                    🏆 YENİ SİSTEM REKORU 🏆
+                    Yeni En İyi Skor!
                 </div>
                 <div style="margin-bottom: 30px; display: flex; justify-content: space-around;">
                     <div>
@@ -798,45 +1742,78 @@
         ];
 
         // --- OYUN DURUMU (STATE) (KORUNDU VE EKLENDİ) ---
-        let board = []; 
+        let board = [];
         let score = 0;
-        let highScore = localStorage.getItem('mv_grid_highscore') || 0;
-        let currentTrayBlocks = [null, null, null]; 
-        
+        let highScore = parseInt(localStorage.getItem('mv_grid_highscore') || '0', 10) || 0;
+        let currentTrayBlocks = [null, null, null];
+
         // V2.0 Yeni State'ler
         let turnCount = 0; // Zorluk ayarı için
         let currentStreak = 1;
         let maxStreak = 1;
         let isPaused = false;
-        
+
         // V2.0 Seç/Yerleştir (Click-to-Place) State'i
         let clickSelectedData = null; // { matrix, colorId, slotIndex, el }
 
         // Sürükleme State'i (KORUNDU)
         let isDragging = false;
-        let draggedBlockData = null; 
-        let draggedEl = null; 
+        let draggedBlockData = null;
+        let draggedEl = null;
         let dragOffset = { x: 0, y: 0 };
-        let currentDropTarget = null; 
+        let currentDropTarget = null;
 
-        // --- V2.0 SYNTH SES MOTORU (Dış dosyasız premium ses) ---
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // === 2.2 OPTIMIZATION STATE ===
+        // Hücre cache: getElementById çağrılarını kaldırır
+        let cellRefs = [];          // cellRefs[r][c] = DOM element
+        let prevBoard = [];         // updateBoardVisuals diff için önceki state
+        let activePreviewCells = []; // o anda preview class'ı olan hücreler (clearPreviews için cache)
+        let activeSmartHintCells = []; // smart-hint sınıfı olan hücreler
+        let activeLastMoveCells = []; // last-move sınıfı olan hücreler
+        let dragRafId = null;       // rAF id (drag throttle)
+        let lastDragXY = { x: 0, y: 0, has: false };
+        let lastPreviewKey = '';    // "row-col-valid" — diff için
+        let isClearing = false;     // line clear animasyonu sırasında interaksiyonu blokla
+        let comboMultiplier = 1;    // 2.1'den taşınan tanım (early init için)
+
+        // --- V2.0 SYNTH SES MOTORU (Dış dosyasız premium ses, 2.2: lazy init + cooldown) ---
+        let audioCtx = null;
         let soundEnabled = true;
+        const _lastSoundAt = {}; // per-type cooldown
+        const SOUND_COOLDOWN_MS = 50; // hızlı hamlede ses spam'i kasmasın
+
+        function ensureAudio() {
+            if (!audioCtx) {
+                try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+                catch (e) { audioCtx = null; }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(()=>{});
+            }
+            return audioCtx;
+        }
 
         function toggleSound() {
             soundEnabled = !soundEnabled;
             document.getElementById('btn-sound').innerText = soundEnabled ? '🔊' : '🔇';
+            if (soundEnabled) ensureAudio();
         }
 
         function playSynth(type) {
-            if (!soundEnabled || audioCtx.state === 'suspended') return;
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
+            if (!soundEnabled) return;
+            const ctx = audioCtx;
+            if (!ctx || ctx.state === 'suspended') return;
+            const wall = performance.now();
+            if (_lastSoundAt[type] && (wall - _lastSoundAt[type]) < SOUND_COOLDOWN_MS) return;
+            _lastSoundAt[type] = wall;
+            const osc = ctx.createOscillator();
+            const gainNode = ctx.createGain();
             osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
+            gainNode.connect(ctx.destination);
 
-            const now = audioCtx.currentTime;
-            
+            const now = ctx.currentTime;
+
+
             switch(type) {
                 case 'pickup':
                 case 'select':
@@ -883,9 +1860,8 @@
         }
 
         // Kullanıcı ilk tıkladığında AudioContext'i başlat (Tarayıcı politikası)
-        document.body.addEventListener('click', () => {
-            if(audioCtx.state === 'suspended') audioCtx.resume();
-        }, {once:true});
+        document.body.addEventListener('pointerdown', ensureAudio, {once:true});
+        document.body.addEventListener('touchstart', ensureAudio, {once:true, passive:true});
 
         // --- DOM ELEMENTLERİ (KORUNDU) ---
         const uiBoard = document.getElementById('board');
@@ -903,24 +1879,40 @@
         function createBoardDOM() {
             uiBoard.innerHTML = '';
             board = [];
+            prevBoard = [];
+            cellRefs = [];
+            activePreviewCells.length = 0;
+            activeSmartHintCells.length = 0;
+            activeLastMoveCells.length = 0;
+            const frag = document.createDocumentFragment();
             for (let r = 0; r < GRID_SIZE; r++) {
                 board[r] = [];
+                prevBoard[r] = [];
+                cellRefs[r] = [];
                 for (let c = 0; c < GRID_SIZE; c++) {
                     board[r][c] = 0;
+                    prevBoard[r][c] = 0;
                     const cell = document.createElement('div');
                     cell.className = 'cell';
                     cell.dataset.row = r;
                     cell.dataset.col = c;
                     cell.id = `cell-${r}-${c}`;
-                    
+
                     // V2.0: Click-to-place için Board Cell Event Listener
                     cell.addEventListener('click', () => handleBoardClick(r, c));
                     // Mouse gezinirken önizleme (Sadece tıklayarak seçtiysek)
                     cell.addEventListener('mouseenter', () => handleBoardHover(r, c));
-                    
-                    uiBoard.appendChild(cell);
+
+                    cellRefs[r][c] = cell;
+                    frag.appendChild(cell);
                 }
             }
+            uiBoard.appendChild(frag);
+        }
+
+        // Hücre cache yardımcısı: tüm "getElementById(`cell-${r}-${c}`)" yerine bunu kullan
+        function getCell(r, c) {
+            return cellRefs[r] ? cellRefs[r][c] : null;
         }
 
         function showScreen(id) {
@@ -1071,7 +2063,7 @@
         let startPos = {x:0, y:0};
 
         function handleBlockInteraction(e, slotIndex, shapeData, shapeEl) {
-            if(isPaused) return;
+            if(isPaused || isClearing) return;
             if (e.type === 'touchstart') e.preventDefault();
             
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -1107,13 +2099,17 @@
             document.addEventListener('touchend', handleDragEnd);
         }
 
-        // --- SÜRÜKLE BIRAK (KORUNDU VE CİLALANDI) ---
+        // --- SÜRÜKLE BIRAK (KORUNDU VE CİLALANDI + rAF throttle) ---
         function handleDragMove(e) {
             if (!isDragging || !draggedEl) return;
             if (e.type === 'touchmove') e.preventDefault();
 
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            lastDragXY.x = clientX;
+            lastDragXY.y = clientY;
+            lastDragXY.has = true;
 
             // Hareket toleransı (Eğer çok az hareket ettiyse tıklama sayılabilir)
             const dist = Math.hypot(clientX - startPos.x, clientY - startPos.y);
@@ -1123,10 +2119,17 @@
                 playSynth('pickup');
             }
 
-            if(draggedEl.classList.contains('dragging')) {
-                moveDraggedElement(clientX, clientY);
-                calculateDropTarget(clientX, clientY);
+            if (dragRafId === null && draggedEl && draggedEl.classList.contains('dragging')) {
+                dragRafId = requestAnimationFrame(processDragFrame);
             }
+        }
+
+        function processDragFrame() {
+            dragRafId = null;
+            if (!isDragging || !draggedEl || !lastDragXY.has) return;
+            if (!draggedEl.classList.contains('dragging')) return;
+            moveDraggedElement(lastDragXY.x, lastDragXY.y);
+            calculateDropTarget(lastDragXY.x, lastDragXY.y);
         }
 
         function startActualDrag() {
@@ -1149,12 +2152,10 @@
         }
 
         function calculateDropTarget(x, y) {
-            clearPreviews();
-            
             const rect = draggedEl.getBoundingClientRect();
             const cols = draggedBlockData.matrix[0].length;
             const cellWidth = rect.width / cols;
-            
+
             let firstFilledCol = 0, firstFilledRow = 0;
             outer: for(let r=0; r<draggedBlockData.matrix.length; r++){
                 for(let c=0; c<draggedBlockData.matrix[0].length; c++){
@@ -1170,6 +2171,7 @@
             const elemBelow = document.elementFromPoint(testX, testY);
 
             if (!elemBelow || !elemBelow.classList.contains('cell') || elemBelow.parentElement.id !== 'board') {
+                if (lastPreviewKey !== '') clearPreviews();
                 currentDropTarget = null;
                 return;
             }
@@ -1178,15 +2180,24 @@
             const targetCol = parseInt(elemBelow.dataset.col);
             const startRow = targetRow - firstFilledRow;
             const startCol = targetCol - firstFilledCol;
+            const isValid = checkFit(draggedBlockData.matrix, startRow, startCol);
+            const key = `${startRow}|${startCol}|${isValid ? 1 : 0}`;
 
             currentDropTarget = { row: startRow, col: startCol };
-            const isValid = checkFit(draggedBlockData.matrix, startRow, startCol);
+
+            if (key === lastPreviewKey) return; // Diff: aynı pozisyon, tekrar çizme
+
+            clearPreviews();
+            lastPreviewKey = key;
             drawPreview(draggedBlockData.matrix, startRow, startCol, isValid);
         }
 
         function handleDragEnd(e) {
             if (!isDragging) return;
             isDragging = false;
+
+            if (dragRafId !== null) { cancelAnimationFrame(dragRafId); dragRafId = null; }
+            lastDragXY.has = false;
 
             document.removeEventListener('mousemove', handleDragMove);
             document.removeEventListener('touchmove', handleDragMove);
@@ -1238,9 +2249,8 @@
         }
 
         function handleBoardHover(r, c) {
-            if(!clickSelectedData || isDragging) return;
-            clearPreviews();
-            
+            if(!clickSelectedData || isDragging || isClearing || isPaused) return;
+
             let firstFilledCol = 0, firstFilledRow = 0;
             outer: for(let ir=0; ir<clickSelectedData.matrix.length; ir++){
                 for(let ic=0; ic<clickSelectedData.matrix[0].length; ic++){
@@ -1249,15 +2259,19 @@
                     }
                 }
             }
-            
+
             const startRow = r - firstFilledRow;
             const startCol = c - firstFilledCol;
             const isValid = checkFit(clickSelectedData.matrix, startRow, startCol);
+            const key = `${startRow}|${startCol}|${isValid ? 1 : 0}`;
+            if (key === lastPreviewKey) return; // Aynı yerdeyse tekrar çizme
+            clearPreviews();
+            lastPreviewKey = key;
             drawPreview(clickSelectedData.matrix, startRow, startCol, isValid);
         }
 
         function handleBoardClick(r, c) {
-            if(!clickSelectedData || isDragging) return;
+            if(!clickSelectedData || isDragging || isClearing || isPaused) return;
 
             let firstFilledCol = 0, firstFilledRow = 0;
             outer: for(let ir=0; ir<clickSelectedData.matrix.length; ir++){
@@ -1321,15 +2335,18 @@
         }
 
         function drawPreview(matrix, startRow, startCol, isValid) {
+            const cls = isValid ? 'preview-valid' : 'preview-invalid';
             for (let r = 0; r < matrix.length; r++) {
                 for (let c = 0; c < matrix[0].length; c++) {
                     if (matrix[r][c] === 1) {
                         const boardRow = startRow + r;
                         const boardCol = startCol + c;
                         if (boardRow >= 0 && boardRow < GRID_SIZE && boardCol >= 0 && boardCol < GRID_SIZE) {
-                            const cellDOM = document.getElementById(`cell-${boardRow}-${boardCol}`);
-                            // Eski classlar yerine v2 classları
-                            cellDOM.classList.add(isValid ? 'preview-valid' : 'preview-invalid');
+                            const cellDOM = getCell(boardRow, boardCol);
+                            if (cellDOM) {
+                                cellDOM.classList.add(cls);
+                                activePreviewCells.push(cellDOM);
+                            }
                         }
                     }
                 }
@@ -1337,9 +2354,15 @@
         }
 
         function clearPreviews() {
-            document.querySelectorAll('.preview-valid, .preview-invalid').forEach(c => {
-                c.classList.remove('preview-valid', 'preview-invalid');
-            });
+            if (activePreviewCells.length === 0) {
+                lastPreviewKey = '';
+                return;
+            }
+            for (let i = 0; i < activePreviewCells.length; i++) {
+                activePreviewCells[i].classList.remove('preview-valid', 'preview-invalid');
+            }
+            activePreviewCells.length = 0;
+            lastPreviewKey = '';
         }
 
         function placeBlock(data, startRow, startCol) {
@@ -1376,20 +2399,28 @@
                 if(currentStreak > maxStreak) maxStreak = currentStreak;
                 updateStreakUI();
 
+                isClearing = true;
                 const animClass = totalLines > 1 ? 'mega-clearing' : 'clearing';
+                const clearingCells = [];
                 playSynth(totalLines > 1 ? 'mega' : 'clear');
 
                 linesToClear.rows.forEach(r => {
-                    for(let c=0; c<GRID_SIZE; c++) document.getElementById(`cell-${r}-${c}`).classList.add(animClass);
+                    for(let c=0; c<GRID_SIZE; c++) {
+                        const el = cellRefs[r][c];
+                        if (el) { el.classList.add(animClass); clearingCells.push(el); }
+                    }
                 });
                 linesToClear.cols.forEach(c => {
-                    for(let r=0; r<GRID_SIZE; r++) document.getElementById(`cell-${r}-${c}`).classList.add(animClass);
+                    for(let r=0; r<GRID_SIZE; r++) {
+                        const el = cellRefs[r][c];
+                        if (el && !el.classList.contains(animClass)) { el.classList.add(animClass); clearingCells.push(el); }
+                    }
                 });
 
                 // Puanı hesapla (V2.0: Çoklu çizgi ve seri çarpımı)
                 const basePoints = totalLines * 20;
                 const earnedPoints = basePoints * totalLines * currentStreak;
-                
+
                 addScore(earnedPoints);
                 showFloatingText(`+${earnedPoints}`, true);
 
@@ -1402,11 +2433,14 @@
                 setTimeout(() => {
                     linesToClear.rows.forEach(r => { for(let c=0; c<GRID_SIZE; c++) board[r][c] = 0; });
                     linesToClear.cols.forEach(c => { for(let r=0; r<GRID_SIZE; r++) board[r][c] = 0; });
-                    
-                    document.querySelectorAll('.clearing, .mega-clearing').forEach(el => el.classList.remove('clearing', 'mega-clearing'));
+
+                    for (let i = 0; i < clearingCells.length; i++) {
+                        clearingCells[i].classList.remove('clearing', 'mega-clearing');
+                    }
                     updateBoardVisuals();
+                    isClearing = false;
                     checkGameOverStatus();
-                }, totalLines > 1 ? 500 : 400); 
+                }, totalLines > 1 ? 500 : 400);
             } else {
                 // Çizgi temizlenmediyse seri sıfırlanır
                 currentStreak = 1;
@@ -1416,14 +2450,26 @@
         }
 
         function updateBoardVisuals() {
+            // Diff güncelleme: sadece değişen hücrelere dokun.
+            // Bu fonksiyon last-move/smart-hint class'larını temizler (diğer overlay'leri JS kendi yönetir).
             for (let r = 0; r < GRID_SIZE; r++) {
                 for (let c = 0; c < GRID_SIZE; c++) {
-                    const cell = document.getElementById(`cell-${r}-${c}`);
-                    cell.className = 'cell'; // Temizle
                     const val = board[r][c];
-                    if (val !== 0) cell.classList.add('filled', `color-${val}`);
+                    if (val === prevBoard[r][c]) continue;
+                    const cell = cellRefs[r][c];
+                    if (!cell) continue;
+                    // className'i toptan sıfırla (preview/last-move/smart-hint sıfırlanır)
+                    cell.className = 'cell';
+                    if (val !== 0) {
+                        cell.classList.add('filled', `color-${val}`);
+                    }
+                    prevBoard[r][c] = val;
                 }
             }
+            // Bu fonksiyon overlay tracking dizilerini bozar; sahiplenen kod tekrar set eder.
+            activeLastMoveCells.length = 0;
+            activeSmartHintCells.length = 0;
+            // active preview cell'leri korunmaz; çağıran clearPreviews ile uyumlu olmalı.
         }
 
         // --- SKOR VE EFEKTLER (KORUNDU VE GÜÇLENDİRİLDİ) ---
@@ -1506,7 +2552,7 @@
         
         // --- YENİ DEĞİŞKENLER (2.1) ---
         let level = 1;
-        let comboMultiplier = 1;
+        // comboMultiplier 2.2'de yukarıya taşındı (let)
         let lastClearTime = 0;
         let activeMission = null;
 
@@ -1543,42 +2589,65 @@
             // Advanced Combo Multiplier hesapla
             const now = Date.now();
             if (now - lastClearTime < 5000) { // 5 saniye kombo penceresi
-                comboMultiplier += 0.1;
+                comboMultiplier = Math.min(3, comboMultiplier + 0.1); // 2.2: 3x cap
             } else {
                 comboMultiplier = 1;
             }
-            
+
             const finalPoints = Math.floor(points * comboMultiplier);
             _oldAddScore_v21(finalPoints);
-            
+
             // Level Atla Mantığı (Skora Dayalı)
             const nextLevelThreshold = level * 1500;
             if (score >= nextLevelThreshold) {
                 level++;
-                document.getElementById('ui-level').innerText = level;
-                document.getElementById('ui-level').classList.add('pulse');
-                setTimeout(() => document.getElementById('ui-level').classList.remove('pulse'), 400);
+                const lvlEl = document.getElementById('ui-level');
+                if (lvlEl) {
+                    lvlEl.innerText = level;
+                    lvlEl.classList.add('pulse');
+                    setTimeout(() => lvlEl.classList.remove('pulse'), 400);
+                    const lvlBox = lvlEl.closest('.score-box');
+                    if (lvlBox) {
+                        lvlBox.classList.add('level-flash');
+                        setTimeout(() => lvlBox.classList.remove('level-flash'), 600);
+                    }
+                }
                 showFloatingText("LEVEL ATLANDI!", true);
-                playSynth('mega');
+                playSynth('mega'); // ses, line clear sayılmaz çünkü artık ses wrapper'ı bunu işlemiyor
             }
         };
 
-        const _oldPlaySynth_v21 = playSynth;
-        playSynth = function(type) {
-            _oldPlaySynth_v21(type);
-            // Satır/Sütun temizlendiğinde tetiklenir
-            if (type === 'clear' || type === 'mega') {
-                lastClearTime = Date.now();
-                checkMissions('clear', type === 'mega' ? 2 : 1);
-                
-                // UX Boost: Ekran Pulse Efekti
-                pulseOverlay.classList.add('active-pulse');
-                setTimeout(() => pulseOverlay.classList.remove('active-pulse'), 500);
-                
-                // UX Boost: Kombo arttıkça arka plan glow büyümesi
-                document.querySelector('.glow-1').style.transform = `scale(${1 + currentStreak*0.1})`;
-                document.querySelector('.glow-2').style.transform = `scale(${1 + currentStreak*0.1})`;
+        // 2.2: Line clear olayını sesten ayır — wrapper false-positive engellendi.
+        // checkLines artık playSynth çağırırken bu hook'u da tetikleyecek (aşağıda checkLines wrapper'ı).
+        function notifyLineClear(linesCount) {
+            lastClearTime = Date.now();
+            checkMissions('clear', linesCount > 1 ? 2 : 1);
+            // UX Boost: Ekran Pulse Efekti
+            pulseOverlay.classList.add('active-pulse');
+            setTimeout(() => pulseOverlay.classList.remove('active-pulse'), 500);
+            // Not: arka plan glow scale'i kaldırıldı (CSS pulseBg keyframes ile çakışıyordu).
+        }
+
+        // checkLines wrapper'ı: gerçek line clear'da notifyLineClear tetikle
+        const _oldCheckLines_v22 = checkLines;
+        checkLines = function() {
+            // Bayrak ile ölç: orijinal checkLines totalLines'i kendi içinde hesaplıyor.
+            // Burada hesaplamayı tekrar yapmadan, board'a göre satır/sütun tara.
+            const rows = [];
+            const cols = [];
+            for (let r = 0; r < GRID_SIZE; r++) {
+                let f = true;
+                for (let c = 0; c < GRID_SIZE; c++) if (board[r][c] === 0) { f = false; break; }
+                if (f) rows.push(r);
             }
+            for (let c = 0; c < GRID_SIZE; c++) {
+                let f = true;
+                for (let r = 0; r < GRID_SIZE; r++) if (board[r][c] === 0) { f = false; break; }
+                if (f) cols.push(c);
+            }
+            const total = rows.length + cols.length;
+            if (total > 0) notifyLineClear(total);
+            return _oldCheckLines_v22();
         };
 
         // --- C) SELECT CANCEL + SMART PREVIEW ---
@@ -1606,17 +2675,20 @@
         function showSmartPreview(data) {
             hideSmartPreview(); // Öncekileri sıfırla
             let fitsAnywhere = false;
-            
+
             for (let r = 0; r < GRID_SIZE; r++) {
                 for (let c = 0; c < GRID_SIZE; c++) {
                     if (checkFit(data.matrix, r, c)) {
                         fitsAnywhere = true;
-                        const cell = document.getElementById(`cell-${r}-${c}`);
-                        if(cell) cell.classList.add('smart-hint');
+                        const cell = getCell(r, c);
+                        if (cell) {
+                            cell.classList.add('smart-hint');
+                            activeSmartHintCells.push(cell);
+                        }
                     }
                 }
             }
-            
+
             // Eğer blok hiçbir yere sığmıyorsa tahta titrer (Smart alert)
             if (!fitsAnywhere) {
                 uiBoard.classList.add('shake-effect');
@@ -1625,21 +2697,31 @@
         }
 
         function hideSmartPreview() {
-            document.querySelectorAll('.smart-hint').forEach(c => c.classList.remove('smart-hint'));
+            for (let i = 0; i < activeSmartHintCells.length; i++) {
+                activeSmartHintCells[i].classList.remove('smart-hint');
+            }
+            activeSmartHintCells.length = 0;
         }
 
         // --- F) UX BOOST: Son Hamle Vurgusu (Last Move Highlight) ---
         const _oldPlaceBlock_v21 = placeBlock;
         placeBlock = function(data, startRow, startCol) {
-            document.querySelectorAll('.last-move').forEach(c => c.classList.remove('last-move'));
-            
+            // Önceki last-move'ları cache'den temizle (querySelectorAll yerine)
+            for (let i = 0; i < activeLastMoveCells.length; i++) {
+                activeLastMoveCells[i].classList.remove('last-move');
+            }
+            activeLastMoveCells.length = 0;
+
             _oldPlaceBlock_v21(data, startRow, startCol);
-            
+
             for (let r = 0; r < data.matrix.length; r++) {
                 for (let c = 0; c < data.matrix[0].length; c++) {
                     if (data.matrix[r][c] === 1) {
-                        const cell = document.getElementById(`cell-${startRow + r}-${startCol + c}`);
-                        if(cell) cell.classList.add('last-move');
+                        const cell = getCell(startRow + r, startCol + c);
+                        if(cell) {
+                            cell.classList.add('last-move');
+                            activeLastMoveCells.push(cell);
+                        }
                     }
                 }
             }
@@ -1736,11 +2818,793 @@
             _oldStartGame_v21();
             level = 1;
             comboMultiplier = 1;
+            lastClearTime = 0;
+            isClearing = false;
             if(document.getElementById('ui-level')) document.getElementById('ui-level').innerText = level;
             generateNewMission();
+            renderMissionHud();
+            showStartHint();
         };
 
         // ===== 2.1 JS SYSTEM END =====
+
+        // ===== 2.2 STABILITY + UX SYSTEM START =====
+
+        // --- Mission HUD canlı gösterimi ---
+        const missionHud = document.getElementById('mission-hud');
+        const missionHudDesc = document.getElementById('mission-hud-desc');
+        const missionHudProgress = document.getElementById('mission-hud-progress');
+
+        function renderMissionHud() {
+            if (!missionHud) return;
+            if (!activeMission) {
+                missionHudDesc.textContent = '—';
+                missionHudProgress.textContent = '';
+                return;
+            }
+            missionHudDesc.textContent = activeMission.desc;
+            if (activeMission.type === 'combo') {
+                missionHudProgress.textContent = `x${currentStreak}/x${activeMission.target}`;
+            } else {
+                const cur = Math.min(activeMission.progress, activeMission.target);
+                missionHudProgress.textContent = `${cur}/${activeMission.target}`;
+            }
+        }
+
+        // checkMissions wrapper: progress sonrası HUD güncelle
+        const _oldCheckMissions_v22 = checkMissions;
+        checkMissions = function(actionType, amount) {
+            _oldCheckMissions_v22(actionType, amount);
+            renderMissionHud();
+        };
+
+        // completeMission wrapper: popup desc'ini gerçek mission desc'i ile doldur
+        const _oldCompleteMission_v22 = completeMission;
+        completeMission = function() {
+            // _oldCompleteMission_v22 zaten desc + reward'ı set ediyor; doğru çalıştığını garanti edelim
+            _oldCompleteMission_v22();
+            renderMissionHud();
+        };
+
+        // generateNewMission wrapper: HUD güncelle
+        const _oldGenerateNewMission_v22 = generateNewMission;
+        generateNewMission = function() {
+            _oldGenerateNewMission_v22();
+            renderMissionHud();
+        };
+
+        // updateStreakUI wrapper: combo görevi varsa HUD'yi güncelle
+        const _oldUpdateStreakUI_v22 = updateStreakUI;
+        updateStreakUI = function() {
+            _oldUpdateStreakUI_v22();
+            if (activeMission && activeMission.type === 'combo') renderMissionHud();
+        };
+
+        // --- Klavye kısayolları: R restart, ESC iptal/pause, P pause, Enter game over'da yeniden ---
+        document.addEventListener('keydown', (e) => {
+            // Form input vs varsa atla
+            const tag = (e.target && e.target.tagName) || '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+            const key = e.key;
+            const lower = key.toLowerCase();
+            const goActive = document.getElementById('screen-gameover').classList.contains('active');
+            const menuActive = document.getElementById('screen-menu').classList.contains('active');
+            const pauseActive = document.getElementById('screen-pause').classList.contains('active');
+            const howtoActive = document.getElementById('screen-howto').classList.contains('active');
+
+            if (key === 'Escape') {
+                if (clickSelectedData) { clearClickSelection(); return; }
+                if (goActive || menuActive) return;
+                if (pauseActive) { resumeGame(); return; }
+                if (howtoActive) { hideHowToPlay(); return; }
+                pauseGame();
+                return;
+            }
+            if (lower === 'p') {
+                if (goActive || menuActive || howtoActive) return;
+                if (pauseActive) resumeGame(); else pauseGame();
+                return;
+            }
+            if (lower === 'r') {
+                if (menuActive || howtoActive) return;
+                startGame();
+                return;
+            }
+            if (key === 'Enter') {
+                if (goActive) { startGame(); return; }
+                if (menuActive) { startGame(); return; }
+                if (pauseActive) { resumeGame(); return; }
+            }
+        });
+
+        // --- Başlangıç ipucu (ilk oyun veya talep üzerine) ---
+        const startHintEl = document.createElement('div');
+        startHintEl.className = 'start-hint';
+        startHintEl.textContent = 'Bir bloğu sürükle veya tıkla → tahtaya yerleştir';
+        document.body.appendChild(startHintEl);
+
+        function showStartHint() {
+            startHintEl.classList.add('show');
+            clearTimeout(showStartHint._t);
+            showStartHint._t = setTimeout(() => startHintEl.classList.remove('show'), 3500);
+        }
+
+        // --- Pause durumunda mevcut drag'ı temiz şekilde sonlandır ---
+        const _oldPauseGame_v22 = pauseGame;
+        pauseGame = function() {
+            // Aktif sürükleme varsa güvenle geri al
+            if (isDragging && draggedEl) {
+                if (draggedEl.classList.contains('dragging')) {
+                    draggedEl.remove();
+                    if (draggedBlockData) renderTrayBlock(draggedBlockData.slotIndex, draggedBlockData);
+                }
+                isDragging = false;
+                if (dragRafId !== null) { cancelAnimationFrame(dragRafId); dragRafId = null; }
+                document.removeEventListener('mousemove', handleDragMove);
+                document.removeEventListener('touchmove', handleDragMove);
+                document.removeEventListener('mouseup', handleDragEnd);
+                document.removeEventListener('touchend', handleDragEnd);
+                draggedEl = null;
+                draggedBlockData = null;
+                currentDropTarget = null;
+            }
+            clearPreviews();
+            clearClickSelection();
+            _oldPauseGame_v22();
+        };
+
+        // --- Ek game over kontrolü: her hamleden sonra (tray refill anına bağlı kalmadan) ---
+        const _oldExecutePlacement_v22 = executePlacement;
+        executePlacement = function(data, startRow, startCol, domEl) {
+            _oldExecutePlacement_v22(data, startRow, startCol, domEl);
+            // Animasyon biteceği için ek bir check, isClearing kontrolüyle güvenli
+            if (!isClearing) {
+                // Eğer tray henüz dolmamışsa (1-2 boş slot durumda), kalan bloklarla devam edilebilir mi kontrol et
+                checkGameOverStatus();
+            }
+        };
+
+        // --- AudioContext sayfa visible olunca resume (mobil dönüş sorunları) ---
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(()=>{});
+            }
+        });
+
+        // ===== 2.2 STABILITY + UX SYSTEM END =====
+
+        // ===== 2.3 STABILITY + FAIR GEN + MOBILE PREVIEW START =====
+
+        // --- Debug Sistemi ---
+        const DEBUG = false;
+        function dbg(...args) { if (DEBUG && typeof console !== 'undefined') console.log('[GRID]', ...args); }
+
+        // --- Combo Penceresi Sabit (efektif) ---
+        // v2.1 addScore wrapper'ında "now - lastClearTime < 5000" hard-coded.
+        // 7000 ms'e genişletmek için lastClearTime'ı _görünen zamanı_ patch wrapper'da kaydırıyoruz:
+        //   - elapsed >= COMBO_WINDOW_MS → lastClearTime = 0 (combo reset)
+        //   - elapsed in (5000, COMBO_WINDOW_MS) → lastClearTime = now - 4000 (v2.1'e "hala içinde" gösterir)
+        //   - elapsed <= 5000 → dokunma (v2.1 zaten devam ettirir)
+        const COMBO_WINDOW_MS = 7000;
+        (function patchComboWindow() {
+            const _prevAddScore = addScore;
+            addScore = function(points) {
+                if (lastClearTime > 0) {
+                    const elapsed = Date.now() - lastClearTime;
+                    if (elapsed >= COMBO_WINDOW_MS) {
+                        lastClearTime = 0;
+                    } else if (elapsed >= 5000) {
+                        lastClearTime = Date.now() - 4000; // v2.1 wrapper'a "hala combo penceresinde" yalanı
+                    }
+                }
+                return _prevAddScore(points);
+            };
+        })();
+
+        // --- Game Over Flag (çift tetiklenme önle) ---
+        let isGameOver = false;
+        const _oldGameOver_v23 = gameOver;
+        gameOver = function() {
+            if (isGameOver) { dbg('gameOver ignored (already ended)'); return; }
+            if (isClearing) {
+                // Animasyon biterken çağrıldıysa erteleyelim
+                dbg('gameOver deferred (isClearing)');
+                setTimeout(() => { if (!isGameOver) gameOver(); }, 250);
+                return;
+            }
+            isGameOver = true;
+            dbg('gameOver triggered, score=', score);
+            _oldGameOver_v23();
+        };
+
+        const _oldCheckGameOverStatus_v23 = checkGameOverStatus;
+        checkGameOverStatus = function() {
+            if (isGameOver || isClearing) { dbg('checkGameOverStatus skipped (busy)'); return; }
+            // Boş aktif blok yoksa (henüz refill bekliyor) atla
+            const active = currentTrayBlocks.filter(b => b !== null);
+            if (active.length === 0) { dbg('checkGameOverStatus skipped (tray empty)'); return; }
+            dbg('checkGameOverStatus running with', active.length, 'blocks');
+            _oldCheckGameOverStatus_v23();
+        };
+
+        // startGame'de flag'i sıfırla
+        const _oldStartGame_v23 = startGame;
+        startGame = function() {
+            isGameOver = false;
+            _oldStartGame_v23();
+            dbg('Game started');
+        };
+
+        // --- Fair Tray Generation ---
+        // Üretilen 3 bloktan en az 1'i sığmıyorsa yeniden üret. 3 deneme sonrası garanti küçük blok.
+        const SAFE_FALLBACK_SHAPES = [0, 1, 2]; // 1x1, 1x2, 2x1
+
+        function anyFits(shapeArr) {
+            for (let i = 0; i < shapeArr.length; i++) {
+                const m = shapeArr[i].matrix;
+                for (let r = 0; r < GRID_SIZE; r++) {
+                    for (let c = 0; c < GRID_SIZE; c++) {
+                        if (checkFit(m, r, c)) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        const _oldFillTray_v23 = fillTray;
+        fillTray = function() {
+            let emptyCount = 0;
+            for (let i = 0; i < 3; i++) if (!currentTrayBlocks[i]) emptyCount++;
+            // Orijinal davranış: sadece 3 boşken refill yap
+            if (emptyCount !== 3) return _oldFillTray_v23();
+
+            // Fair generation: max 3 deneme
+            let attempt = 0;
+            let candidate = null;
+            while (attempt < 3) {
+                attempt++;
+                candidate = [getRandomShape(), getRandomShape(), getRandomShape()];
+                if (anyFits(candidate)) {
+                    dbg('fair tray accepted at attempt', attempt);
+                    break;
+                }
+                dbg('fair tray rejected attempt', attempt);
+                candidate = null;
+            }
+
+            // Garanti kurtarıcı
+            if (!candidate) {
+                dbg('fair tray fallback to safe shapes');
+                candidate = SAFE_FALLBACK_SHAPES.map(idx => JSON.parse(JSON.stringify(SHAPES[idx])));
+                // İlk slot kesin sığar (1x1) — game over haksız olmaz
+            }
+
+            // Render et
+            for (let i = 0; i < 3; i++) {
+                currentTrayBlocks[i] = candidate[i];
+                renderTrayBlock(i, candidate[i]);
+            }
+            dbg('tray generated', candidate.map(s => s.matrix));
+            checkGameOverStatus();
+        };
+
+        // --- Mobil/Pointer Preview (click-to-place için) ---
+        // pointermove ile board üzerindeki hücreyi tespit edip handleBoardHover'ı tetikle.
+        // Mevcut mouseenter (desktop) korunuyor; bu pointermove iki yolu birleştiriyor.
+        let lastPointerCellKey = '';
+        function onBoardPointerMove(e) {
+            if (!clickSelectedData || isDragging || isClearing || isPaused || isGameOver) return;
+            // Sadece touch/pen için aktif et — mouse zaten mouseenter ile çalışıyor.
+            // Yine de pointermove tüm tipler için çağrılır, mouse'ta da diff-key sayesinde no-op olur.
+            const x = e.clientX, y = e.clientY;
+            const elemBelow = document.elementFromPoint(x, y);
+            if (!elemBelow || !elemBelow.classList.contains('cell') || elemBelow.parentElement !== uiBoard) {
+                if (lastPreviewKey !== '') { clearPreviews(); }
+                lastPointerCellKey = '';
+                return;
+            }
+            const r = parseInt(elemBelow.dataset.row, 10);
+            const c = parseInt(elemBelow.dataset.col, 10);
+            const key = r + '|' + c;
+            if (key === lastPointerCellKey) return;
+            lastPointerCellKey = key;
+            handleBoardHover(r, c);
+        }
+
+        function onBoardPointerUp(e) {
+            if (!clickSelectedData || isDragging || isClearing || isPaused || isGameOver) return;
+            // Bu sadece touch için anlamlı; mouse'ta handleBoardClick zaten çalışıyor.
+            // Touch'ta cell.click tetiklenir ama bazı tarayıcılarda 300ms gecikme/eksik durum olur — burada erken işleyelim.
+            if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+            const x = e.clientX, y = e.clientY;
+            const elemBelow = document.elementFromPoint(x, y);
+            if (!elemBelow || !elemBelow.classList.contains('cell') || elemBelow.parentElement !== uiBoard) return;
+            const r = parseInt(elemBelow.dataset.row, 10);
+            const c = parseInt(elemBelow.dataset.col, 10);
+            handleBoardClick(r, c);
+        }
+
+        function onBoardPointerLeave() {
+            if (!clickSelectedData) return;
+            if (lastPreviewKey !== '') clearPreviews();
+            lastPointerCellKey = '';
+        }
+
+        uiBoard.addEventListener('pointermove', onBoardPointerMove, { passive: true });
+        uiBoard.addEventListener('pointerleave', onBoardPointerLeave, { passive: true });
+        // Touch için tap olarak ek bir tetikleyici
+        uiBoard.addEventListener('pointerup', onBoardPointerUp, { passive: true });
+
+        // --- placeBlock sonrası debug log ---
+        const _oldPlaceBlock_v23 = placeBlock;
+        placeBlock = function(data, startRow, startCol) {
+            dbg('block placed at', startRow, startCol, data.matrix);
+            return _oldPlaceBlock_v23(data, startRow, startCol);
+        };
+
+        // checkLines debug
+        const _oldCheckLines_v23 = checkLines;
+        checkLines = function() {
+            const before = score;
+            const result = _oldCheckLines_v23();
+            if (DEBUG && score !== before) dbg('lines cleared, +score', score - before);
+            return result;
+        };
+
+        // completeMission debug
+        const _oldCompleteMission_v23 = completeMission;
+        completeMission = function() {
+            dbg('mission completed');
+            return _oldCompleteMission_v23();
+        };
+
+        // ===== 2.3 STABILITY + FAIR GEN + MOBILE PREVIEW END =====
+
+        // ===== 2.4 VERSION + UPDATES + SETTINGS + STATS + ACHIEVEMENTS START =====
+
+        // --- Sürüm ve Güncelleme Notları (Türkçe, sade) ---
+        const GAME_VERSION = "2.4.0";
+        const UPDATE_DATE = "Mayıs 2026";
+        const UPDATE_NOTES = [
+            { title: "Ana menü yenilendi", text: "Menü daha sade ve kullanışlı oldu. Bilgi kartları eklendi." },
+            { title: "Güncelleme notları eklendi", text: "Oyundaki yenilikleri buradan görebilirsin." },
+            { title: "Ayarlar bölümü eklendi", text: "Ses, efekt yoğunluğu, ipucu ve sarsıntı efektleri buradan ayarlanır." },
+            { title: "İstatistikler eklendi", text: "Toplam oyun, en iyi skor, temizlenen çizgi ve kombo sayısı kaydediliyor." },
+            { title: "Başarılar eklendi", text: "Belirli hedeflere ulaşınca yeni başarılar açılır." },
+            { title: "Görev sistemi genişletildi", text: "Daha çeşitli görevler ve daha doğal Türkçe metinler eklendi." },
+            { title: "Türkçe arayüz cilalandı", text: "Yabancı terimler kaldırıldı, metinler sadeleştirildi." },
+            { title: "Performans iyileştirmeleri", text: "Önceki sürümlerden gelen optimizasyonlar korundu." }
+        ];
+
+        // --- Güvenli localStorage yardımcıları ---
+        const LS_KEYS = {
+            settings: 'mv_grid_settings',
+            stats: 'mv_grid_stats',
+            achievements: 'mv_grid_achievements',
+            highscore: 'mv_grid_highscore'
+        };
+        function lsGet(key, fallback) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (raw == null) return fallback;
+                return JSON.parse(raw);
+            } catch (e) { dbg('lsGet failed', key, e); return fallback; }
+        }
+        function lsSet(key, value) {
+            try { localStorage.setItem(key, JSON.stringify(value)); }
+            catch (e) { dbg('lsSet failed', key, e); }
+        }
+
+        // --- AYARLAR Sistemi ---
+        const DEFAULT_SETTINGS = {
+            sound: true,
+            effects: 'normal', // 'normal' | 'reduced'
+            hints: true,
+            shake: true
+        };
+        let settings = Object.assign({}, DEFAULT_SETTINGS, lsGet(LS_KEYS.settings, {}));
+
+        function saveSettings() { lsSet(LS_KEYS.settings, settings); }
+
+        function applySettings() {
+            // Ses
+            soundEnabled = !!settings.sound;
+            const btnSound = document.getElementById('btn-sound');
+            if (btnSound) btnSound.innerText = soundEnabled ? '🔊' : '🔇';
+
+            // Efektler
+            if (settings.effects === 'reduced') document.body.classList.add('reduced-effects');
+            else document.body.classList.remove('reduced-effects');
+
+            // Sarsıntı
+            if (settings.shake === false) document.body.classList.add('no-shake');
+            else document.body.classList.remove('no-shake');
+
+            // Toggle UI butonlarını güncelle
+            const map = {
+                sound: ['set-sound', settings.sound ? 'Açık' : 'Kapalı', settings.sound ? 'on' : 'off'],
+                effects: ['set-effects', settings.effects === 'reduced' ? 'Azaltılmış' : 'Normal', settings.effects === 'reduced' ? 'off' : 'on'],
+                hints: ['set-hints', settings.hints ? 'Açık' : 'Kapalı', settings.hints ? 'on' : 'off'],
+                shake: ['set-shake', settings.shake ? 'Açık' : 'Kapalı', settings.shake ? 'on' : 'off']
+            };
+            Object.keys(map).forEach(k => {
+                const [id, text, cls] = map[k];
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.textContent = text;
+                el.classList.remove('on', 'off');
+                el.classList.add(cls);
+            });
+        }
+
+        function toggleSetting(name) {
+            if (name === 'sound') settings.sound = !settings.sound;
+            else if (name === 'effects') settings.effects = (settings.effects === 'normal') ? 'reduced' : 'normal';
+            else if (name === 'hints') settings.hints = !settings.hints;
+            else if (name === 'shake') settings.shake = !settings.shake;
+            saveSettings();
+            applySettings();
+            playSynth('select');
+        }
+
+        function confirmResetData() {
+            const c = document.getElementById('reset-confirm');
+            if (c) c.style.display = 'block';
+        }
+        function cancelResetData() {
+            const c = document.getElementById('reset-confirm');
+            if (c) c.style.display = 'none';
+        }
+        function resetGameData() {
+            try {
+                localStorage.removeItem(LS_KEYS.stats);
+                localStorage.removeItem(LS_KEYS.achievements);
+                localStorage.removeItem(LS_KEYS.highscore);
+            } catch (e) { dbg('reset failed', e); }
+            stats = Object.assign({}, DEFAULT_STATS);
+            achievements = JSON.parse(JSON.stringify(DEFAULT_ACHIEVEMENTS));
+            highScore = 0;
+            if (uiHighScore) uiHighScore.innerText = '0';
+            saveStats();
+            saveAchievements();
+            cancelResetData();
+            renderStatsScreen();
+            renderMenuInfo();
+            showToast('Veriler sıfırlandı.');
+        }
+
+        // --- İSTATİSTİK Sistemi ---
+        const DEFAULT_STATS = {
+            games: 0,
+            bestScore: 0,
+            totalScore: 0,
+            blocksPlaced: 0,
+            linesCleared: 0,
+            combos: 0,
+            bestStreak: 1,
+            lastVersion: GAME_VERSION
+        };
+        let stats = Object.assign({}, DEFAULT_STATS, lsGet(LS_KEYS.stats, {}));
+        function saveStats() { lsSet(LS_KEYS.stats, stats); }
+
+        function statsOnGameStart() {
+            stats.games = (stats.games || 0) + 1;
+            stats.lastVersion = GAME_VERSION;
+            saveStats();
+            dbg('stats games=', stats.games);
+        }
+        function statsOnGameOver() {
+            if (score > (stats.bestScore || 0)) stats.bestScore = score;
+            stats.totalScore = (stats.totalScore || 0) + score;
+            if (maxStreak > (stats.bestStreak || 1)) stats.bestStreak = maxStreak;
+            saveStats();
+            renderMenuInfo();
+        }
+        function statsOnBlockPlaced() {
+            stats.blocksPlaced = (stats.blocksPlaced || 0) + 1;
+            saveStats();
+        }
+        function statsOnLinesCleared(count) {
+            stats.linesCleared = (stats.linesCleared || 0) + count;
+            if (count > 1) stats.combos = (stats.combos || 0) + 1;
+            saveStats();
+        }
+
+        function renderStatsScreen() {
+            const grid = document.getElementById('stat-grid');
+            if (!grid) return;
+            const cards = [
+                { label: 'Toplam Oyun', value: stats.games || 0, cls: '' },
+                { label: 'En İyi Skor', value: stats.bestScore || 0, cls: 'gold' },
+                { label: 'Toplam Skor', value: stats.totalScore || 0, cls: '' },
+                { label: 'Yerleştirilen Blok', value: stats.blocksPlaced || 0, cls: '' },
+                { label: 'Temizlenen Çizgi', value: stats.linesCleared || 0, cls: 'accent' },
+                { label: 'Yapılan Kombo', value: stats.combos || 0, cls: '' },
+                { label: 'En Yüksek Seri', value: 'x' + (stats.bestStreak || 1), cls: 'accent' },
+                { label: 'Son Sürüm', value: stats.lastVersion || GAME_VERSION, cls: '' }
+            ];
+            grid.innerHTML = cards.map(c =>
+                `<div class="stat-card ${c.cls}"><div class="stat-card-label">${c.label}</div><div class="stat-card-value">${c.value}</div></div>`
+            ).join('');
+            renderAchievementsList();
+        }
+
+        // --- BAŞARILAR Sistemi ---
+        const DEFAULT_ACHIEVEMENTS = [
+            { id: 'first_game',   title: 'İlk Oyun',       desc: 'İlk oyununu başlat.',           unlocked: false },
+            { id: 'first_clear',  title: 'İlk Temizlik',   desc: 'İlk çizgini temizle.',          unlocked: false },
+            { id: 'streak3',      title: 'Seri Başladı',   desc: '3 seri yap.',                   unlocked: false },
+            { id: 'double_clear', title: 'Güçlü Hamle',    desc: 'Tek hamlede 2 çizgi temizle.',  unlocked: false },
+            { id: 'score1000',    title: 'Skor Avcısı',    desc: '1000 skora ulaş.',              unlocked: false },
+            { id: 'place10',      title: 'Sabırlı Oyuncu', desc: '10 blok yerleştir.',            unlocked: false },
+            { id: 'score5000',    title: 'Usta Oyuncu',    desc: '5000 skora ulaş.',              unlocked: false },
+            { id: 'streak5',      title: 'Seri Ustası',    desc: '5 seri yap.',                   unlocked: false }
+        ];
+        let achievements = mergeAchievements(DEFAULT_ACHIEVEMENTS, lsGet(LS_KEYS.achievements, []));
+        function mergeAchievements(defs, saved) {
+            const savedMap = {};
+            (saved || []).forEach(a => { if (a && a.id) savedMap[a.id] = a; });
+            return defs.map(d => Object.assign({}, d, savedMap[d.id] ? { unlocked: !!savedMap[d.id].unlocked } : {}));
+        }
+        function saveAchievements() { lsSet(LS_KEYS.achievements, achievements); }
+
+        function unlockAchievement(id) {
+            const a = achievements.find(x => x.id === id);
+            if (!a || a.unlocked) return;
+            a.unlocked = true;
+            saveAchievements();
+            showToast('Başarı açıldı', a.title, 'gold');
+            dbg('achievement unlocked', id);
+        }
+
+        function checkAchievements(event) {
+            // event: { type: 'gameStart' | 'lineClear' | 'streak' | 'placement' | 'score' | 'multiClear' }
+            if (event.type === 'gameStart') unlockAchievement('first_game');
+            else if (event.type === 'lineClear') unlockAchievement('first_clear');
+            else if (event.type === 'multiClear') unlockAchievement('double_clear');
+            else if (event.type === 'streak') {
+                if (currentStreak >= 3) unlockAchievement('streak3');
+                if (currentStreak >= 5) unlockAchievement('streak5');
+            }
+            else if (event.type === 'placement') {
+                if ((stats.blocksPlaced || 0) >= 10) unlockAchievement('place10');
+            }
+            else if (event.type === 'score') {
+                if (score >= 1000) unlockAchievement('score1000');
+                if (score >= 5000) unlockAchievement('score5000');
+            }
+        }
+
+        function renderAchievementsList() {
+            const list = document.getElementById('achievements-list');
+            if (!list) return;
+            list.innerHTML = achievements.map(a => {
+                const initial = (a.title || '?').charAt(0).toUpperCase();
+                return `<div class="achievement-item ${a.unlocked ? 'unlocked' : ''}">
+                    <div class="achievement-icon">${a.unlocked ? '✓' : initial}</div>
+                    <div class="achievement-body">
+                        <div class="achievement-title">${a.title}</div>
+                        <div class="achievement-desc">${a.desc}</div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // --- TOAST bildirimi ---
+        const toastEl = document.createElement('div');
+        toastEl.className = 'toast';
+        document.body.appendChild(toastEl);
+        let toastTimer = null;
+        function showToast(title, subtitle, variant) {
+            toastEl.classList.remove('gold');
+            if (variant === 'gold') toastEl.classList.add('gold');
+            toastEl.innerHTML = subtitle ? `${title}<small>${subtitle}</small>` : title;
+            toastEl.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2400);
+        }
+
+        // --- MENÜ BİLGİ KARTLARI ---
+        function renderMenuInfo() {
+            const ib = document.getElementById('info-best');
+            const ig = document.getElementById('info-games');
+            const im = document.getElementById('info-mission');
+            const iv = document.getElementById('info-version');
+            if (ib) ib.textContent = stats.bestScore || 0;
+            if (ig) ig.textContent = stats.games || 0;
+            if (im) im.textContent = activeMission ? activeMission.desc : '—';
+            if (iv) iv.textContent = GAME_VERSION;
+        }
+
+        // --- EKRAN GEÇİŞ FONKSİYONLARI ---
+        function showUpdates() {
+            renderUpdatesScreen();
+            showScreen('screen-updates');
+        }
+        function showSettings() {
+            applySettings();
+            cancelResetData();
+            showScreen('screen-settings');
+        }
+        function showStats() {
+            renderStatsScreen();
+            showScreen('screen-stats');
+        }
+
+        function renderUpdatesScreen() {
+            const ver = document.getElementById('update-version');
+            const dat = document.getElementById('update-date');
+            const list = document.getElementById('update-list');
+            if (ver) ver.textContent = 'Sürüm ' + GAME_VERSION;
+            if (dat) dat.textContent = UPDATE_DATE;
+            if (list) {
+                list.innerHTML = UPDATE_NOTES.map(n =>
+                    `<div class="update-item"><div class="update-item-title">${n.title}</div><div class="update-item-text">${n.text}</div></div>`
+                ).join('');
+            }
+        }
+
+        // --- Görev sistemi genişletme (Türkçe, doğal) ---
+        const missionsExpanded = [
+            { type: 'place',  target: 8,  desc: '8 blok yerleştir',                reward: 120, progress: 0 },
+            { type: 'place',  target: 15, desc: '15 blok yerleştir',               reward: 200, progress: 0 },
+            { type: 'clear',  target: 3,  desc: '3 çizgi temizle',                 reward: 200, progress: 0 },
+            { type: 'clear',  target: 5,  desc: '5 çizgi temizle',                 reward: 300, progress: 0 },
+            { type: 'combo',  target: 2,  desc: '2 kez seri yap',                  reward: 250, progress: 0 },
+            { type: 'combo',  target: 3,  desc: '3 kez seri yap',                  reward: 400, progress: 0 },
+            { type: 'multi',  target: 1,  desc: 'Bir hamlede 2 çizgi temizle',     reward: 350, progress: 0 },
+            { type: 'score',  target: 500,  desc: '500 puan kazan',                reward: 200, progress: 0 },
+            { type: 'score',  target: 1000, desc: '1000 puan kazan',               reward: 350, progress: 0 }
+        ];
+        // missionsDataList tanımı yukarıdaki orijinal listeyi koruyor; biz buraya yenisini push'lamadan,
+        // generateNewMission'ı bu yeni listeyle override ediyoruz.
+        const _oldGenerate_v24 = generateNewMission;
+        generateNewMission = function() {
+            // missionsDataList'in yerine yeni havuzdan örnek seç
+            activeMission = JSON.parse(JSON.stringify(missionsExpanded[Math.floor(Math.random() * missionsExpanded.length)]));
+            setTimeout(() => {
+                if (activeMission) showToast('Yeni görev', activeMission.desc);
+            }, 800);
+            renderMenuInfo();
+            renderMissionHud();
+        };
+
+        // checkMissions'ı 'multi' ve 'score' türleri için genişletelim (orijinal sadece 'clear'/'place'/'combo' biliyor)
+        const _oldCheckMissions_v24 = checkMissions;
+        checkMissions = function(actionType, amount) {
+            if (!activeMission) { _oldCheckMissions_v24(actionType, amount); return; }
+            // Skor tabanlı görev: hangi event olursa olsun her addScore sonrası kontrol ediliyor (aşağıda hook).
+            if (activeMission.type === 'multi' && actionType === 'multiClear') {
+                activeMission.progress += amount;
+                if (activeMission.progress >= activeMission.target) completeMission();
+                renderMissionHud();
+                return;
+            }
+            if (activeMission.type === 'score' && actionType === 'score') {
+                if (score >= activeMission.target) completeMission();
+                renderMissionHud();
+                return;
+            }
+            _oldCheckMissions_v24(actionType, amount);
+        };
+
+        // completeMission popup desc'i sade Türkçe olsun
+        const _oldCompleteMission_v24 = completeMission;
+        completeMission = function() {
+            const am = activeMission;
+            _oldCompleteMission_v24();
+            if (am) showToast('Görev tamamlandı', am.desc + ' (+' + am.reward + ' puan)');
+        };
+
+        // --- Event Hook'ları (stats + achievements + score görevi) ---
+        // placeBlock zaten v2.1/v2.2/v2.3'te wrap edildi. Burada en üste ek bir wrapper koyuyoruz:
+        const _oldPlaceBlock_v24 = placeBlock;
+        placeBlock = function(data, startRow, startCol) {
+            const result = _oldPlaceBlock_v24(data, startRow, startCol);
+            statsOnBlockPlaced();
+            checkAchievements({ type: 'placement' });
+            return result;
+        };
+
+        // checkLines wrapper — line count saymak için yeniden tara
+        const _oldCheckLines_v24 = checkLines;
+        checkLines = function() {
+            const result = _oldCheckLines_v24();
+            // Temizlenen toplam çizgi sayısını saymak için board'a bakmak gerekirdi,
+            // ama checkLines orijinalinde 'totalLines' lokal. Burada notifyLineClear'da hesaplandı.
+            // Daha sade bir yaklaşım: notifyLineClear zaten count veriyor; orada hook'layalım.
+            return result;
+        };
+
+        const _oldNotifyLineClear_v24 = notifyLineClear;
+        notifyLineClear = function(count) {
+            _oldNotifyLineClear_v24(count);
+            statsOnLinesCleared(count);
+            checkAchievements({ type: 'lineClear' });
+            if (count > 1) {
+                checkAchievements({ type: 'multiClear' });
+                if (typeof checkMissions === 'function') checkMissions('multiClear', 1);
+            }
+            checkAchievements({ type: 'streak' });
+        };
+
+        // addScore wrapper — score-based mission ve achievement
+        const _oldAddScore_v24 = addScore;
+        addScore = function(points) {
+            const result = _oldAddScore_v24(points);
+            if (typeof checkMissions === 'function') checkMissions('score', 0);
+            checkAchievements({ type: 'score' });
+            return result;
+        };
+
+        // startGame — stats games sayacı + achievement
+        const _oldStartGame_v24 = startGame;
+        startGame = function() {
+            _oldStartGame_v24();
+            statsOnGameStart();
+            checkAchievements({ type: 'gameStart' });
+            renderMenuInfo();
+            // İpucu kapalıysa start-hint'i gizle
+            if (!settings.hints) {
+                const sh = document.querySelector('.start-hint');
+                if (sh) sh.classList.remove('show');
+            }
+        };
+
+        // gameOver — stats güncelle (defer/retry'a karşı tek seferlik kayıt)
+        let __gameStatsRecorded = false;
+        const _oldGameOver_v24 = gameOver;
+        gameOver = function() {
+            if (!__gameStatsRecorded && !isGameOver) {
+                statsOnGameOver();
+                __gameStatsRecorded = true;
+            }
+            _oldGameOver_v24();
+            renderMenuInfo();
+        };
+        const _oldStartGame_v24b = startGame;
+        startGame = function() {
+            __gameStatsRecorded = false;
+            _oldStartGame_v24b();
+        };
+
+        // setClickSelection — ipucu (smart-hint) ayarına saygı göster
+        const _oldSetClickSelection_v24 = setClickSelection;
+        setClickSelection = function(data, el) {
+            _oldSetClickSelection_v24(data, el);
+            if (!settings.hints) {
+                // Smart-hint'leri kaldır
+                if (typeof hideSmartPreview === 'function') hideSmartPreview();
+            }
+        };
+
+        // --- Klavye: yeni ekranlar için ESC desteği ---
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            const upActive = document.getElementById('screen-updates') && document.getElementById('screen-updates').classList.contains('active');
+            const seActive = document.getElementById('screen-settings') && document.getElementById('screen-settings').classList.contains('active');
+            const stActive = document.getElementById('screen-stats') && document.getElementById('screen-stats').classList.contains('active');
+            if (upActive || seActive || stActive) {
+                showMenu();
+            }
+        });
+
+        // toggleSound (oyun ekranındaki ikon) — settings ile senkronize
+        const _oldToggleSound_v24 = toggleSound;
+        toggleSound = function() {
+            _oldToggleSound_v24();
+            settings.sound = soundEnabled;
+            saveSettings();
+            applySettings();
+        };
+
+        // --- Boot: ayarları uygula, menü kartlarını doldur ---
+        applySettings();
+        renderMenuInfo();
+        renderUpdatesScreen();
+
+        // ===== 2.4 VERSION + UPDATES + SETTINGS + STATS + ACHIEVEMENTS END =====
     </script>
 </body>
 </html>

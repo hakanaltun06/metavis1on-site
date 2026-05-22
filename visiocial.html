@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Visiocial | Metavis1on Ekosistemi v2.0</title>
+    <title>Visiocial | Metavis1on Ekosistemi v2.1</title>
     <style>
         /* ==========================================================================
            1. CSS DEĞİŞKENLERİ & TEMEL AYARLAR (METAVIS1ON THEME)
@@ -542,15 +542,201 @@
             .messages-chat { width: 100%; flex: 1; }
         }
         
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
-        .empty-state svg { width: 80px; height: 80px; margin-bottom: 20px; opacity: 0.3; }
-        .empty-state h3 { font-size: 22px; color: var(--text-main); margin-bottom: 10px; font-weight: 800;}
+        .empty-state { text-align: center; padding: 56px 24px; color: var(--text-muted); }
+        .empty-state svg { width: 64px; height: 64px; margin-bottom: 18px; opacity: 0.6; color: var(--primary-hover); }
+        .empty-state h3 { font-size: 20px; color: var(--text-main); margin-bottom: 8px; font-weight: 800; }
+        .empty-state p { font-size: 14px; color: var(--text-muted); line-height: 1.5; max-width: 360px; margin: 0 auto; }
         
         .skeleton { background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 4px; }
         @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         .load-more-btn { width: 100%; padding: 20px; background: transparent; color: var(--primary-core); font-weight: 700; text-align: center; cursor: pointer; transition: 0.3s; border-bottom: 1px solid var(--border-color);}
         .load-more-btn:hover { background: rgba(94, 0, 255, 0.05); text-shadow: 0 0 10px var(--primary-glow);}
+
+        /* ==========================================================================
+           7. X/TWITTER-STYLE PREMIUM POLISH (v2.1)
+           ========================================================================== */
+        :root {
+            --border-soft: rgba(255, 255, 255, 0.07);
+        }
+        body { background-image:
+            radial-gradient(circle at 20% 20%, rgba(94, 0, 255, 0.04), transparent 30%),
+            radial-gradient(circle at 80% 80%, rgba(0, 229, 255, 0.025), transparent 30%);
+        }
+        /* Sidebar X-style hover (sade ve dengeli) */
+        .nav-item:hover { transform: none; background: rgba(255,255,255,0.06); }
+        .nav-item.active { background: rgba(94, 0, 255, 0.08); }
+        .brand-logo:hover { filter: drop-shadow(0 0 8px var(--primary-glow)); transform: none; }
+        .user-mini-card:hover { transform: none; }
+
+        /* Sticky header: X benzeri, sadece üstte blur */
+        .sticky-header { padding: 12px 18px; gap: 10px; }
+        .feed-tabs { gap: 0; }
+        .feed-tab { padding: 14px 0; font-size: 15px; }
+        .feed-tab.active::after { height: 3px; width: 56px; border-radius: 2px 2px 0 0; box-shadow: none; }
+
+        /* Composer: X-style */
+        .create-post-area { padding: 14px 18px; gap: 12px; }
+        .post-textarea { min-height: 56px; font-size: 19px; line-height: 1.35; }
+        .post-textarea::placeholder { color: #71717a; }
+        .post-actions { padding-top: 12px; }
+        .post-tool-btn { color: var(--primary-hover); }
+        .post-tool-btn:hover { background: rgba(94,0,255,0.10); transform: none; }
+        .char-counter {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 38px; height: 22px; padding: 0 8px; border-radius: 11px; font-size: 12px;
+            background: rgba(255,255,255,0.04); border: 1px solid var(--border-soft);
+            transition: 0.2s; color: var(--text-muted); gap: 4px;
+        }
+        .char-counter.warning { color: var(--warning); border-color: rgba(255,234,0,0.4); }
+        .char-counter.danger { color: var(--danger); border-color: rgba(255,23,68,0.5); background: rgba(255,23,68,0.08); }
+        /* Dairesel ring varyantı */
+        .char-counter.ring {
+            background: transparent; border: none; padding: 0; min-width: 0;
+            width: 26px; height: 26px; color: var(--primary-core);
+            position: relative;
+        }
+        .char-counter.ring svg { display: block; }
+        .char-counter.ring .char-num {
+            position: absolute; inset: 0; display: none;
+            align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 700; line-height: 1;
+        }
+        .char-counter.ring.near .char-num { display: flex; }
+        .char-counter.ring.warning { color: var(--warning); }
+        .char-counter.ring.danger { color: var(--danger); }
+        .char-counter.ring .char-ring-progress { transition: stroke-dashoffset 0.2s ease; }
+        .post-submit-area .btn-primary {
+            box-shadow: 0 4px 14px rgba(94, 0, 255, 0.25);
+            transition: 0.2s;
+        }
+        .post-submit-area .btn-primary[disabled],
+        .post-submit-area .btn-primary[aria-disabled="true"] { opacity: 0.5; pointer-events: none; }
+
+        /* Post card: daha temiz X stili */
+        .post-card { padding: 12px 18px; gap: 12px; border-bottom-color: var(--border-soft); }
+        .post-card:hover { background: rgba(255,255,255,0.025); }
+        .post-name { font-size: 15px; }
+        .post-handle, .post-time { font-size: 14px; }
+        .post-text { font-size: 15px; color: #e6e6ec; line-height: 1.45; }
+        .verified-badge, .premium-badge { width: 18px; height: 18px; }
+        .post-stats { max-width: 100%; margin-top: 6px; }
+        .stat-item {
+            padding: 6px; border-radius: var(--radius-pill);
+            transition: background 0.15s, color 0.15s, transform 0.1s;
+            min-width: 0;
+        }
+        .stat-item span { font-size: 13px; }
+        .stat-item:active { transform: scale(0.95); }
+        .stat-item.liked svg { fill: var(--neon-pink); stroke: var(--neon-pink); }
+        .stat-item.reposted svg { stroke: var(--success); }
+        .stat-item.saved { color: var(--primary-core); }
+        .stat-item.saved svg { stroke: var(--primary-core); fill: rgba(94,0,255,0.18); }
+        .stat-save { padding: 6px; border-radius: 50%; }
+        .stat-save:hover { background: rgba(94,0,255,0.10); color: var(--primary-core); }
+        .stat-save:hover svg { stroke: var(--primary-core); }
+
+        /* Media grid X-style: ince border, hafif radius */
+        .media-grid { border-radius: 16px; border-color: var(--border-soft); }
+        .media-grid img { min-height: 160px; }
+
+        /* Quote */
+        .post-quote { border-radius: 16px; border-color: var(--border-soft); }
+
+        /* Sağ panel paneller: X-tarzı */
+        .panel-card { border-radius: 16px; border-color: var(--border-soft); }
+        .panel-header { padding: 14px 18px; font-size: 19px; }
+        .trend-item:hover { transform: none; background: rgba(255,255,255,0.04); }
+        .trend-name { font-size: 15px; }
+        .trend-category, .trend-stats { font-size: 13px; }
+        .search-box { padding: 11px 18px; border-radius: var(--radius-pill); }
+        .search-box input::placeholder { color: #71717a; }
+
+        .suggested-user { padding: 12px 18px; }
+        .btn-follow { padding: 6px 14px; font-size: 13px; }
+
+        /* Dropdown menü daha okunaklı */
+        .dropdown-menu { min-width: 200px; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.7); }
+        .dropdown-item { padding: 12px 14px; }
+        .dropdown-item:hover { padding-left: 14px; }
+
+        /* Profil */
+        .profile-cover { height: 200px; background: linear-gradient(120deg, #1a0033, #050507 70%, #00141d); }
+        .profile-display-name { font-size: 22px; }
+        .profile-stats { gap: 18px; font-size: 14px; }
+        .chart-container { background: rgba(255,255,255,0.02); }
+
+        /* Mesajlar */
+        .messages-layout { height: calc(100vh - 64px); }
+        .chat-item { padding: 12px 16px; }
+        .chat-item:hover { background: rgba(255,255,255,0.04); }
+        .chat-item.active { background: rgba(94,0,255,0.10); border-right-color: var(--primary-hover); }
+        .msg-sent { background: linear-gradient(135deg, var(--primary-core), #4400b3); }
+        .msg-received { background: #1a1a22; }
+
+        /* Notifications */
+        .notification-card { padding: 14px 18px; }
+        .notification-card.unread { border-left-width: 3px; }
+
+        /* Modal */
+        .modal-content { border-radius: 18px; }
+        .modal-header { padding: 14px 18px; }
+
+        /* Mobil alt nav iyileştirmesi */
+        @media (max-width: 576px) {
+            .sticky-header { padding: 10px 14px; }
+            .feed-tab { padding: 12px 0; font-size: 14px; }
+            .post-card { padding: 11px 14px; }
+            .create-post-area { padding: 12px 14px; }
+            .post-textarea { font-size: 17px; }
+            .sidebar { height: 56px; }
+            .nav-item svg { width: 24px; height: 24px; }
+            .nav-item.active svg { filter: drop-shadow(0 0 6px var(--neon-blue-glow)); }
+            .mobile-fab { bottom: 72px; width: 54px; height: 54px; }
+            .right-panel { display: none; }
+        }
+        @media (max-width: 992px) {
+            .right-panel { display: none; }
+        }
+
+        /* Reduce ripple intensity for cleaner X feel */
+        .ripple { background-color: rgba(255,255,255,0.12); }
+
+        /* Disabled cursor for any non-actionable composer btn */
+        button:disabled, button[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
+
+        /* DM inline media preview */
+        .msg-inline-media {
+            display: block; max-width: 240px; max-height: 200px; width: auto; height: auto;
+            border-radius: 12px; margin-top: 8px; cursor: zoom-in; object-fit: cover;
+            border: 1px solid var(--border-soft);
+        }
+        .msg-bubble { word-break: break-word; }
+
+        /* Long-post "show more" */
+        .post-text.is-clipped { max-height: 6.6em; overflow: hidden; position: relative; }
+        .post-text.is-clipped::after {
+            content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2.2em;
+            background: linear-gradient(to bottom, transparent, var(--bg-base));
+            pointer-events: none;
+        }
+        .post-show-more {
+            display: inline-block; margin-bottom: 10px; color: var(--neon-blue); font-size: 13px;
+            font-weight: 600; cursor: pointer; padding: 4px 8px; border-radius: 8px;
+        }
+        .post-show-more:hover { background: rgba(0, 229, 255, 0.08); }
+
+        /* Hashtag detay başlığı focus okunaklı */
+        :focus-visible { outline: 2px solid var(--neon-blue); outline-offset: 2px; border-radius: 4px; }
+        button:focus-visible, .btn-icon:focus-visible, .nav-item:focus-visible { outline-offset: 4px; }
+
+        /* DM mobil geri butonu daha net */
+        @media (max-width: 576px) {
+            #btn-back-chat { background: rgba(255,255,255,0.06); }
+        }
+
+        /* Post-card role=article (a11y) */
+        .post-card[role="article"]:focus-visible { background: rgba(255,255,255,0.04); }
 
     </style>
 </head>
@@ -579,7 +765,7 @@
     <div id="auth-screen">
         <div class="auth-container glass-panel" id="login-form">
             <img src="assets/logo.png" alt="Logo" class="auth-logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'60\' height=\'60\'><rect width=\'60\' height=\'60\' fill=\'%235e00ff\'/></svg>'">
-            <h1 class="auth-title">Visiocial 2.0</h1>
+            <h1 class="auth-title">Visiocial 2.1</h1>
             <p class="auth-subtitle">Siber Sosyal Ağ Simülasyonu</p>
             
             <div class="form-group">
@@ -648,7 +834,7 @@
             <nav class="sidebar">
                 <div class="brand-logo" onclick="app.switchView('view-home')">
                     <img src="assets/logo.png" alt="V" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'36\' height=\'36\'><rect width=\'36\' height=\'36\' fill=\'%235e00ff\'/></svg>'">
-                    <span class="glitch" data-text="Visiocial">Visiocial <span style="font-size:12px; color:var(--primary-core); vertical-align:top;">2.0</span></span>
+                    <span class="glitch" data-text="Visiocial">Visiocial <span style="font-size:12px; color:var(--primary-core); vertical-align:top;">2.1</span></span>
                 </div>
                 
                 <div class="nav-menu">
@@ -703,8 +889,8 @@
                     <div class="sticky-header">
                         <div class="header-title" onclick="window.scrollTo({top:0, behavior:'smooth'})">Ana Sayfa</div>
                         <div class="feed-tabs">
-                            <div class="feed-tab active ripple-btn" onclick="app.switchHomeFeed('for-you', this)">Sana Özel</div>
-                            <div class="feed-tab ripple-btn" onclick="app.switchHomeFeed('following', this)">Takip Edilenler</div>
+                            <div class="feed-tab active ripple-btn" data-feed-tab="for-you" onclick="app.switchHomeFeed('for-you', this)">Sana Özel</div>
+                            <div class="feed-tab ripple-btn" data-feed-tab="following" onclick="app.switchHomeFeed('following', this)">Takip Edilenler</div>
                         </div>
                     </div>
                     
@@ -724,7 +910,13 @@
                                     <div class="post-tool-btn" title="Emoji (Demo)" onclick="app.showToast('Emoji paneli aktif ediliyor...','info')"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg></div>
                                 </div>
                                 <div class="post-submit-area">
-                                    <span class="char-counter" id="main-char-count">0/280</span>
+                                    <span class="char-counter ring" id="main-char-count" data-len="0" data-max="280" title="0/280">
+                                        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="10" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="2"/>
+                                            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="62.83" stroke-dashoffset="62.83" class="char-ring-progress" transform="rotate(-90 12 12)"/>
+                                        </svg>
+                                        <span class="char-num"></span>
+                                    </span>
                                     <button class="btn-primary ripple-btn" onclick="app.submitPost('main-post-input', 'main-media-url')" style="padding: 8px 20px; font-size: 14px;">Paylaş</button>
                                 </div>
                             </div>
@@ -795,14 +987,14 @@
                     <div class="sticky-header">
                         <div class="search-box" style="margin-bottom: 0;">
                             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                            <input type="text" id="explore-search" placeholder="Visiocial'da Ara" oninput="app.handleFuzzySearch(this.value)">
+                            <input type="text" id="explore-search" placeholder="Visiocial'da Ara" oninput="app.handleFuzzySearch(this.value)" onkeydown="if(event.key === 'Enter') { event.preventDefault(); app.handleSearch(this.value); }">
                             <div class="search-suggestions" id="explore-search-suggestions"></div>
                         </div>
                         <div class="feed-tabs" style="margin-top: 10px;">
-                            <div class="feed-tab active ripple-btn" onclick="app.switchExploreTab('all', this)">Sana Özel</div>
-                            <div class="feed-tab ripple-btn" onclick="app.switchExploreTab('users', this)">Kullanıcılar</div>
-                            <div class="feed-tab ripple-btn" onclick="app.switchExploreTab('posts', this)">Trend Gönderiler</div>
-                            <div class="feed-tab ripple-btn" onclick="app.switchExploreTab('tags', this)">Hashtagler</div>
+                            <div class="feed-tab active ripple-btn" data-explore-tab="all" onclick="app.switchExploreTab('all', this)">Sana Özel</div>
+                            <div class="feed-tab ripple-btn" data-explore-tab="users" onclick="app.switchExploreTab('users', this)">Kullanıcılar</div>
+                            <div class="feed-tab ripple-btn" data-explore-tab="posts" onclick="app.switchExploreTab('posts', this)">Trend Gönderiler</div>
+                            <div class="feed-tab ripple-btn" data-explore-tab="tags" onclick="app.switchExploreTab('tags', this)">Hashtagler</div>
                         </div>
                     </div>
                     
@@ -814,8 +1006,8 @@
                     <div class="sticky-header">
                         <div class="header-title">Bildirimler</div>
                         <div class="feed-tabs">
-                            <div class="feed-tab active ripple-btn" onclick="app.filterNotifications('all', this)">Tümü</div>
-                            <div class="feed-tab ripple-btn" onclick="app.filterNotifications('mentions', this)">Bahsetmeler</div>
+                            <div class="feed-tab active ripple-btn" data-notification-tab="all" onclick="app.filterNotifications('all', this)">Tümü</div>
+                            <div class="feed-tab ripple-btn" data-notification-tab="mentions" onclick="app.filterNotifications('mentions', this)">Bahsetmeler</div>
                         </div>
                     </div>
                     <div style="padding: 10px 20px; text-align: right; border-bottom: 1px solid var(--border-color);">
@@ -940,7 +1132,7 @@
                             </div>
                             <div class="trend-item" onclick="if(confirm('Tüm sistemi sıfırlamak istediğinize emin misiniz?')) app.resetDemoData()">
                                 <div class="trend-name" style="color: var(--warning);">Sistemi Sıfırla (Demo Verilerini Yükle)</div>
-                                <div class="trend-category">Tüm local verileri temizler ve başlangıç haline (v2.0) döner.</div>
+                                <div class="trend-category">Tüm local verileri temizler ve başlangıç haline (v2.1) döner.</div>
                             </div>
                         </div>
                     </div>
@@ -951,7 +1143,7 @@
             <aside class="right-panel">
                 <div class="search-box">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <input type="text" placeholder="Ağda Ara" id="right-panel-search" oninput="app.handleFuzzySearchRightPanel(this.value)" onkeypress="if(event.key === 'Enter') { document.getElementById('explore-search').value = this.value; app.switchView('view-explore'); app.handleSearch(this.value); }">
+                    <input type="text" placeholder="Ağda Ara" id="right-panel-search" oninput="app.handleFuzzySearchRightPanel(this.value)" onkeydown="if(event.key === 'Enter') { event.preventDefault(); const v=this.value.trim(); if(!v) return; const ex=document.getElementById('explore-search'); if(ex) ex.value=v; app.switchView('view-explore'); app.handleSearch(v); }">
                     <div class="search-suggestions" id="right-search-suggestions"></div>
                 </div>
 
@@ -971,7 +1163,7 @@
                     <a href="#">Gizlilik Politikası</a>
                     <a href="#">Simülasyon Kuralları</a>
                     <a href="#">Reklam Bilgisi</a>
-                    <span>© 2026 Metavis1on Corp. v2.0</span>
+                    <span>© 2026 Metavis1on Corp. v2.1</span>
                 </div>
             </aside>
         </div>
@@ -1014,7 +1206,7 @@
             <div class="modal-header">
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <button class="btn-icon" onclick="app.closeModal('post-detail-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
-                    <span class="modal-title">Gönderi Detayı</span>
+                    <span class="modal-title">Gönderi</span>
                 </div>
             </div>
             <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 0;" id="post-detail-content">
@@ -1098,7 +1290,7 @@
 
     <script>
         /* ==========================================================================
-           JS SİSTEMİ - VERİ MODELİ VE SİMÜLASYON MOTORU v2.0
+           JS SİSTEMİ - VERİ MODELİ VE SİMÜLASYON MOTORU v2.1
            ========================================================================== */
         
         const DB_KEY = 'visiocial_db_v2_0';
@@ -1140,7 +1332,7 @@
                 { follower: 'u14', followed: 'u5' }, { follower: 'u15', followed: 'u6' }, { follower: 'u25', followed: 'u2' }, { follower: 'u24', followed: 'u22' }, { follower: 'u16', followed: 'u7' }
             ],
             posts: [
-                { id: 'p1', authorId: 'u1', content: 'Visiocial 2.0 ağı aktif edildi. Etkileşim motoru (Engine) devrede. Metavis1on evrenine hoş geldiniz. 🌐✨\n\nBu güncelleme ile sistem "yaşayan" bir yapıya kavuştu.\n#Metavis1on #Visiocial2.0', media: ['https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1000&auto=format&fit=crop'], timestamp: Date.now() - 86400000 * 5, likes: 4500, reposts: 1200, replies: 340, views: 150000, likedBy: ['u2','u3','u4','u5'], repostedBy: ['u6'], savedBy: [], isPinned: true, engagementScore: 10000 },
+                { id: 'p1', authorId: 'u1', content: 'Visiocial 2.1 ağı yayında. Stabilizasyon güncellemesi + X benzeri yeni arayüz aktif. Etkileşim motoru (Engine) çalışıyor. Metavis1on evrenine hoş geldiniz. 🌐✨\n\n#Metavis1on #Visiocial2_1', media: ['https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1000&auto=format&fit=crop'], timestamp: Date.now() - 86400000 * 5, likes: 4500, reposts: 1200, replies: 340, views: 150000, likedBy: ['u2','u3','u4','u5'], repostedBy: ['u6'], savedBy: [], isPinned: true, engagementScore: 10000 },
                 { id: 'p2', authorId: 'u3', content: 'Engine Tick sistemi gerçekten çalışıyor. Postlar kendi kendine etkileşim alıyor gibi hissettiriyor. @metavis1on tebrikler! 🚀💻', media: null, timestamp: Date.now() - 86400000 * 4, likes: 340, reposts: 12, replies: 5, views: 5000, likedBy: ['u1'], repostedBy: [], savedBy: ['u1'], engagementScore: 500 },
                 { id: 'p3', authorId: 'u1', content: 'Siber güvenlik protokolleri güncellendi. Kullanıcı verileriniz şifreleme altındadır. Güvendesiniz. 🛡️', media: null, timestamp: Date.now() - 86400000 * 3, likes: 8900, reposts: 2300, replies: 120, views: 300000, likedBy: [], repostedBy: [], savedBy: [], engagementScore: 8000 },
                 { id: 'p4', authorId: 'u4', content: 'Sisteme giriş yaptım. Buradaki hız gerçek dünyadan farksız. Hatta daha akıcı.', media: null, timestamp: Date.now() - 3600000 * 20, likes: 500, reposts: 50, replies: 10, views: 12000, likedBy: ['u2'], repostedBy: [], savedBy: [], engagementScore: 600 },
@@ -1148,7 +1340,7 @@
                 { id: 'p6', authorId: 'u5', content: 'Çünkü onları daha önce hiç kullanmadın.', media: null, timestamp: Date.now() - 3600000 * 17, likes: 2500, reposts: 800, replies: 80, views: 100000, likedBy: ['u2','u4'], repostedBy: ['u2'], savedBy: ['u2'], isQuote: 'p5', engagementScore: 3500 },
                 { id: 'p7', authorId: 'u6', content: 'İnsanlık bir virüstür. #gerçekler', media: null, timestamp: Date.now() - 3600000 * 10, likes: 9999, reposts: 5000, replies: 999, views: 500000, likedBy: [], repostedBy: [], savedBy: [], engagementScore: 20000 },
                 { id: 'p8', authorId: 'u7', content: 'Sana bir sır vereceğim. Başlayan her şey biter. Kurabiyeni almayı unutma. 🍪', media: null, timestamp: Date.now() - 3600000 * 5, likes: 1200, reposts: 150, replies: 20, views: 30000, likedBy: ['u1','u2'], repostedBy: [], savedBy: [], engagementScore: 1500 },
-                { id: 'p10', authorId: 'u1', content: 'Visiocial 2.0 ile gelen yenilikler:\n- Yaşayan Etkileşim Motoru\n- Gelişmiş Algoritmik Keşfet\n- Dinamik Trendler\n- Premium/Verified Rolleri\n- Parallax UI ve Smooth Animasyonlar\n\nBu sadece başlangıç. #Visiocial2.0', media: ['https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=800&auto=format&fit=crop'], timestamp: Date.now() - 1800000, likes: 15500, reposts: 4400, replies: 860, views: 550000, likedBy: ['u2','u3','u4','u5','u13'], repostedBy: ['u3','u4'], savedBy: ['u3'], engagementScore: 25000 }
+                { id: 'p10', authorId: 'u1', content: 'Visiocial 2.1 ile gelen yenilikler:\n- Stabilizasyon ve güvenlik patch’leri\n- X benzeri profesyonel arayüz\n- Modernize edilmiş composer ve post kartları\n- Gelişmiş Algoritmik Keşfet + Dinamik Trendler\n- Premium/Verified rolleri ve daha akıcı animasyonlar\n\nBu sadece başlangıç. #Visiocial2_1', media: ['https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=800&auto=format&fit=crop'], timestamp: Date.now() - 1800000, likes: 15500, reposts: 4400, replies: 860, views: 550000, likedBy: ['u2','u3','u4','u5','u13'], repostedBy: ['u3','u4'], savedBy: ['u3'], engagementScore: 25000 }
             ],
             comments: [
                 { id: 'c1', postId: 'p1', authorId: 'u2', content: 'Harika bir başlangıç.', timestamp: Date.now() - 86400000 * 4, likes: 15, likedBy: [], parentId: null },
@@ -1160,14 +1352,14 @@
                 { id: 'c7', postId: 'p10', authorId: 'u6', content: 'Denge bir illüzyondur.', timestamp: Date.now() - 1200000, likes: 50, likedBy: [], parentId: 'c6' }
             ],
             trends: [
-                { category: 'Teknoloji', name: '#Visiocial2.0', posts: '1.8M', score: 100 },
+                { category: 'Teknoloji', name: '#Visiocial2_1', posts: '1.8M', score: 100 },
                 { category: 'Sistem', name: '#Metavis1on', posts: '1.5M', score: 90 },
                 { category: 'Felsefe', name: '#gerçekler', posts: '550K', score: 85 },
                 { category: 'Siber Güvenlik', name: 'Protokol', posts: '25K', score: 40 },
                 { category: 'Eğlence', name: 'Matrix', posts: '12K', score: 20 }
             ],
             notifications: [
-                { id: 'n1', type: 'system', text: '<b>Metavis1on</b> ağına hoş geldin. Sürüm 2.0 yayında.', time: Date.now() - 86400000, read: false, userId: 'u1' },
+                { id: 'n1', type: 'system', text: '<b>Metavis1on</b> ağına hoş geldin. Sürüm 2.1 yayında.', time: Date.now() - 86400000, read: false, userId: 'u1' },
                 { id: 'n2', type: 'follow', text: '<b>Neo</b> seni takip etmeye başladı.', time: Date.now() - 3600000, read: false, userId: 'u1' },
                 { id: 'n3', type: 'like', text: '<b>Ghost</b> gönderini beğendi.', time: Date.now() - 1800000, read: false, userId: 'u1' }
             ],
@@ -1217,17 +1409,19 @@
                 this.loadDB();
                 this.applySettings();
                 this.initParallax();
-                
+
+                const fallback = this.defaultAvatar('U');
                 document.querySelectorAll('.avatar').forEach(img => {
-                    if(!img.src || img.src.includes('undefined')) {
-                        img.src = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>U</text></svg>`;
-                    }
+                    if(!img.src || img.src.includes('undefined')) img.src = fallback;
+                    img.addEventListener('error', () => { img.src = fallback; });
                 });
 
-                if (this.db.currentUser) {
+                if (this.db.currentUser && this.getUser(this.db.currentUser)) {
                     this.showApp();
-                    this.startEngine(); // Start Interaction Engine
+                    this.startEngine();
                 } else {
+                    this.db.currentUser = null;
+                    this.saveDB();
                     this.showAuth();
                 }
 
@@ -1235,20 +1429,30 @@
             },
 
             loadDB() {
-                const data = localStorage.getItem(DB_KEY);
-                if (data) {
-                    this.db = JSON.parse(data);
-                    // v1.2'den v2.0'a veri migrasyonu/güvenliği
-                    if(!this.db.systemStats) this.db.systemStats = { lastTick: Date.now() };
-                    this.db.posts.forEach(p => { if(p.engagementScore === undefined) p.engagementScore = p.likes * 2 + p.reposts * 3 + p.replies * 4; });
-                    this.db.trends.forEach(t => { if(t.score === undefined) t.score = parseInt(t.posts) || 10; });
-                } else {
-                    this.db = JSON.parse(JSON.stringify(defaultData));
-                    this.saveDB();
+                let loaded = false;
+                try {
+                    const data = localStorage.getItem(DB_KEY);
+                    if (data) {
+                        const parsed = JSON.parse(data);
+                        if(parsed && typeof parsed === 'object') {
+                            this.db = parsed;
+                            loaded = true;
+                        }
+                    }
+                } catch(err) {
+                    console.warn('[Visiocial] Local DB bozuk, demo verilere düşülüyor.', err);
                 }
+                if(!loaded) {
+                    this.db = JSON.parse(JSON.stringify(defaultData));
+                }
+                this.normalizeDB();
+                this.saveDB();
             },
 
-            saveDB() { localStorage.setItem(DB_KEY, JSON.stringify(this.db)); },
+            saveDB() {
+                try { localStorage.setItem(DB_KEY, JSON.stringify(this.db)); }
+                catch(err) { console.warn('[Visiocial] DB kaydedilemedi:', err); }
+            },
 
             resetDemoData() {
                 localStorage.removeItem(DB_KEY);
@@ -1266,24 +1470,30 @@
             },
 
             importData(event) {
-                const file = event.target.files[0];
+                const file = event.target && event.target.files && event.target.files[0];
                 if (!file) return;
+                if(file.size > 5 * 1024 * 1024) { this.showToast('Dosya çok büyük (>5MB).', 'error'); return; }
+                if(!confirm('Mevcut tüm verilerin üzerine yazılacak. Devam edilsin mi?')) { event.target.value=''; return; }
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
                         const importedDb = JSON.parse(e.target.result);
-                        if(importedDb.users && importedDb.posts) {
+                        if(importedDb && typeof importedDb === 'object' && Array.isArray(importedDb.users) && Array.isArray(importedDb.posts)) {
                             this.db = importedDb;
+                            this.normalizeDB();
                             this.saveDB();
                             this.showToast('Veriler başarıyla içe aktarıldı. Yeniden başlatılıyor...', 'success');
-                            setTimeout(() => location.reload(), 1500);
+                            setTimeout(() => location.reload(), 1200);
                         } else {
                             this.showToast('Geçersiz dosya formatı.', 'error');
                         }
                     } catch (err) {
-                        this.showToast('Dosya okunamadı.', 'error');
+                        this.showToast('Dosya okunamadı veya bozuk JSON.', 'error');
+                    } finally {
+                        if(event.target) event.target.value = '';
                     }
                 };
+                reader.onerror = () => this.showToast('Dosya okuma hatası.', 'error');
                 reader.readAsText(file);
             },
 
@@ -1369,15 +1579,19 @@
                 // 2. Trend Simulation
                 if(Math.random() < 0.3 || manual) {
                     this.db.trends.forEach(t => {
-                        // Trend skorları hafif dalgalanır
-                        const change = (Math.random() - 0.4) * 5; // -2 ile +3 arası değişim
-                        t.score = Math.max(1, t.score + change);
-                        
-                        // Fake sayı artışı "K" / "M"
-                        if(t.score > 50 && Math.random() > 0.8) {
-                            let currentVal = parseFloat(t.posts);
-                            if(t.posts.includes('K')) currentVal += Math.random() * 2;
-                            t.posts = currentVal.toFixed(1) + (t.posts.includes('M') ? 'M' : 'K');
+                        const change = (Math.random() - 0.4) * 5;
+                        t.score = Math.max(1, (t.score || 10) + change);
+                        // "12.3K", "1.8M" -> hafif artır, formatı koru.
+                        if(t.score > 50 && Math.random() > 0.8 && typeof t.posts === 'string') {
+                            const match = String(t.posts).match(/^([\d.]+)\s*([KM]?)$/i);
+                            if(match) {
+                                let val = parseFloat(match[1]);
+                                const suffix = (match[2] || '').toUpperCase();
+                                if(isFinite(val)) {
+                                    val += Math.random() * (suffix === 'M' ? 0.05 : suffix === 'K' ? 0.5 : 50);
+                                    t.posts = val.toFixed(1).replace(/\.0$/,'') + suffix;
+                                }
+                            }
                         }
                     });
                     changesMade = true;
@@ -1446,12 +1660,18 @@
             },
 
             login() {
-                const id = document.getElementById('login-id').value.trim();
-                const pass = document.getElementById('login-pass').value.trim();
-                
+                const idEl = this.safeGetEl('login-id');
+                const passEl = this.safeGetEl('login-pass');
+                if(!idEl || !passEl) return;
+                const id = idEl.value.trim().replace(/^@/,'').toLowerCase();
+                const pass = passEl.value.trim();
+
                 if(!id || !pass) return this.showToast('Lütfen alanları doldurun.', 'error');
 
-                const user = this.db.users.find(u => u.handle === id || u.email === id);
+                const user = this.db.users.find(u =>
+                    (u.handle && u.handle.toLowerCase() === id) ||
+                    (u.email && u.email.toLowerCase() === id)
+                );
                 if (user) {
                     this.db.currentUser = user.id;
                     this.saveDB();
@@ -1481,7 +1701,14 @@
 
             loginAsGuest() {
                 const guestId = 'guest_' + Date.now();
-                const guestUser = { id: guestId, handle: 'guest' + Math.floor(Math.random()*10000), name: 'Misafir', email: 'guest@visiocial.com', avatar: '', cover:'', bio: 'Sadece keşfediyorum.', location: 'Dünya', joined: new Date().toLocaleDateString('tr-TR', {month:'long', year:'numeric'}), followers: 0, following: 0, isVerified: false, isPremium: false };
+                const guestHandle = 'guest' + Math.floor(Math.random()*10000);
+                const guestUser = {
+                    id: guestId, handle: guestHandle, name: 'Misafir',
+                    email: guestHandle + '@visiocial.com', avatar: '', cover: '',
+                    bio: 'Sadece keşfediyorum.', location: 'Dünya',
+                    joined: new Date().toLocaleDateString('tr-TR', {month:'long', year:'numeric'}),
+                    followers: 0, following: 0, isVerified: false, isPremium: false
+                };
                 this.db.users.push(guestUser);
                 this.db.currentUser = guestId;
                 this.saveDB();
@@ -1491,22 +1718,25 @@
             },
 
             register() {
-                const name = document.getElementById('reg-name').value.trim();
-                const handle = document.getElementById('reg-handle').value.trim().replace('@','');
-                const email = document.getElementById('reg-email').value.trim();
-                const pass = document.getElementById('reg-pass').value;
-                const pass2 = document.getElementById('reg-pass2').value;
-                const dob = document.getElementById('reg-dob').value;
+                const get = (id) => { const el = this.safeGetEl(id); return el ? el.value : ''; };
+                const name = get('reg-name').trim();
+                const handle = get('reg-handle').trim().replace(/^@/, '').replace(/[^A-Za-z0-9_]/g, '');
+                const email = get('reg-email').trim().toLowerCase();
+                const pass = get('reg-pass');
+                const pass2 = get('reg-pass2');
+                const dob = get('reg-dob');
 
                 if(!name || !handle || !email || !pass || !dob) return this.showToast('Tüm alanları doldurun.', 'error');
+                if(handle.length < 3) return this.showToast('Kullanıcı adı en az 3 karakter.', 'error');
+                if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return this.showToast('Geçerli bir e-posta girin.', 'error');
                 if(pass !== pass2) return this.showToast('Şifreler eşleşmiyor.', 'error');
                 if(pass.length < 6) return this.showToast('Şifre en az 6 karakter olmalı.', 'error');
-                if(this.db.users.find(u => u.handle === handle)) return this.showToast('Bu kullanıcı adı alınmış.', 'error');
-                if(this.db.users.find(u => u.email === email)) return this.showToast('Bu e-posta zaten kayıtlı.', 'error');
+                if(this.db.users.find(u => u.handle && u.handle.toLowerCase() === handle.toLowerCase())) return this.showToast('Bu kullanıcı adı alınmış.', 'error');
+                if(this.db.users.find(u => u.email && u.email.toLowerCase() === email)) return this.showToast('Bu e-posta zaten kayıtlı.', 'error');
 
                 const newUser = {
                     id: 'u_' + Date.now(),
-                    handle: handle, name: name, email: email,
+                    handle: handle, name: name.slice(0, 50), email: email,
                     avatar: '', cover: '', bio: 'Visiocial simülasyonuna yeni katıldım.', location: 'Bilinmiyor',
                     joined: new Date().toLocaleDateString('tr-TR', {month:'long', year:'numeric'}),
                     followers: 0, following: 0, isPremium: false, isVerified: false
@@ -1515,7 +1745,7 @@
                 this.db.users.push(newUser);
                 this.db.currentUser = newUser.id;
                 this.saveDB();
-                
+
                 this.showToast('Kimlik oluşturuldu. Ağa katıldın.', 'success');
                 this.showApp();
                 this.startEngine();
@@ -1531,95 +1761,104 @@
 
             updateUIWithCurrentUser() {
                 const me = this.getUser(this.db.currentUser);
-                if(!me) return;
+                if(!me) { this.showAuth(); return; }
 
-                const avatarSrc = me.avatar || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>${me.name.charAt(0)}</text></svg>`;
+                const avatarSrc = this.getAvatar(me);
 
-                // Sidebar mini card update
-                document.getElementById('curr-user-name').innerText = me.name;
-                document.getElementById('curr-user-handle').innerText = '@' + me.handle;
-                document.getElementById('curr-user-avatar').src = avatarSrc;
-                
-                const sidebarCard = document.getElementById('sidebar-user-card');
-                if(me.isPremium) sidebarCard.classList.add('is-premium-user');
-                else sidebarCard.classList.remove('is-premium-user');
-                
-                // Avatars elsewhere
-                document.getElementById('create-post-avatar').src = avatarSrc;
-                document.getElementById('modal-avatar').src = avatarSrc;
-                document.getElementById('reply-avatar').src = avatarSrc;
+                const setText = (id, val) => { const el = this.safeGetEl(id); if(el) el.innerText = val; };
+                const setSrc = (id, val) => { const el = this.safeGetEl(id); if(el) el.src = val; };
+
+                setText('curr-user-name', me.name);
+                setText('curr-user-handle', '@' + me.handle);
+                setSrc('curr-user-avatar', avatarSrc);
+
+                const sidebarCard = this.safeGetEl('sidebar-user-card');
+                if(sidebarCard) sidebarCard.classList.toggle('is-premium-user', !!me.isPremium);
+
+                setSrc('create-post-avatar', avatarSrc);
+                setSrc('modal-avatar', avatarSrc);
+                setSrc('reply-avatar', avatarSrc);
 
                 // Bildirim ve Mesaj Rozetleri (Grouped)
                 const myNotifs = this.db.notifications.filter(n => n.userId === me.id && !n.read);
-                const badgeNotif = document.getElementById('badge-notif');
-                if(myNotifs.length > 0) { 
-                    badgeNotif.style.display = 'block'; 
-                    badgeNotif.innerText = myNotifs.length > 9 ? '9+' : myNotifs.length; 
-                } else { badgeNotif.style.display = 'none'; }
+                const badgeNotif = this.safeGetEl('badge-notif');
+                if(badgeNotif) {
+                    if(myNotifs.length > 0) { badgeNotif.style.display = 'block'; badgeNotif.innerText = myNotifs.length > 9 ? '9+' : myNotifs.length; }
+                    else { badgeNotif.style.display = 'none'; }
+                }
 
                 let unreadMsgs = 0;
                 this.db.messages.forEach(m => {
-                    if(m.participants.includes(me.id) && m.unread[me.id] > 0) unreadMsgs += m.unread[me.id];
+                    if(Array.isArray(m.participants) && m.participants.includes(me.id) && m.unread && m.unread[me.id] > 0) unreadMsgs += m.unread[me.id];
                 });
-                const badgeMsg = document.getElementById('badge-msg');
-                if(unreadMsgs > 0) { 
-                    badgeMsg.style.display = 'block'; 
-                    badgeMsg.innerText = unreadMsgs > 9 ? '9+' : unreadMsgs; 
-                } else { badgeMsg.style.display = 'none'; }
+                const badgeMsg = this.safeGetEl('badge-msg');
+                if(badgeMsg) {
+                    if(unreadMsgs > 0) { badgeMsg.style.display = 'block'; badgeMsg.innerText = unreadMsgs > 9 ? '9+' : unreadMsgs; }
+                    else { badgeMsg.style.display = 'none'; }
+                }
 
                 // Premium Panel Update
                 this.updatePremiumPanel(me);
             },
 
             updatePremiumPanel(me) {
-                const panel = document.getElementById('premium-panel');
+                const panel = this.safeGetEl('premium-panel');
+                if(!panel) return;
                 if(me.isPremium) {
                     panel.innerHTML = `
-                        <div class="panel-header" style="color: var(--premium-gold);">Metavis1on Premium <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align:middle;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-                        <div style="padding: 15px 20px; font-size: 14px; color: var(--text-muted); line-height: 1.5;">
-                            Ayrıcalıklı ekosistem erişimi aktif. Karakter limitiniz artırıldı ve premium algoritmalar devrede.
-                            <div style="margin-top: 10px; font-weight: 700; color: var(--text-main);">Hoş geldin, elit vatandaş.</div>
+                        <div class="panel-header" style="color: var(--premium-gold); display:flex; align-items:center; gap:8px;">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            Premium Aktif
+                        </div>
+                        <div style="padding: 14px 18px; font-size: 14px; color: var(--text-muted); line-height: 1.5;">
+                            Genişletilmiş karakter limiti, premium rozet ve algoritma önceliği aktif.
+                            <div style="margin-top: 10px; font-weight: 700; color: var(--premium-gold);">Hoş geldin, elit vatandaş.</div>
                         </div>
                     `;
                     panel.style.borderColor = 'var(--premium-gold)';
-                    panel.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.1)';
-                    // Increase char limit logic for premium
-                    const counter = document.getElementById('main-char-count');
-                    if(counter) counter.innerText = '0/500';
+                    panel.style.boxShadow = '0 0 20px rgba(255, 215, 0, 0.08)';
+                    this.renderCharRing('main-char-count', 0);
                 } else {
                     panel.innerHTML = `
-                        <div class="panel-header">Metavis1on Premium</div>
-                        <div style="padding: 15px 20px; font-size: 14px; color: var(--text-muted); line-height: 1.5;">
-                            Ekosistemdeki yerini sağlamlaştır. Gelişmiş özellikler, doğrulanmış rozet ve algoritma önceliği için yükselt.
-                            <button class="btn-primary ripple-btn" style="margin-top: 15px; width: 100%; background: linear-gradient(135deg, var(--premium-gold), #b39700); box-shadow: 0 0 15px rgba(255,215,0,0.4); color: #000;" onclick="app.showToast('Satın alma simülasyonu yakında!', 'info')">Aboneliği İncele</button>
+                        <div class="panel-header">Metavis1on Premium’a Yükselt</div>
+                        <div style="padding: 14px 18px; font-size: 14px; color: var(--text-muted); line-height: 1.5;">
+                            500 karakter limiti, premium rozet ve algoritma önceliği için aboneliği aktive et.
+                            <button class="btn-primary ripple-btn" style="margin-top: 14px; width: 100%; background: linear-gradient(135deg, var(--premium-gold), #b39700); box-shadow: 0 4px 14px rgba(255,215,0,0.25); color: #000;" onclick="app.showToast('Satın alma simülasyonu yakında!', 'info')">Aboneliği İncele</button>
                         </div>
                     `;
-                    panel.style.borderColor = 'var(--border-color)';
-                    panel.style.boxShadow = 'none';
-                    const counter = document.getElementById('main-char-count');
-                    if(counter) counter.innerText = '0/280';
+                    panel.style.borderColor = '';
+                    panel.style.boxShadow = '';
+                    this.renderCharRing('main-char-count', 0);
                 }
             },
 
-            createNotification(type, text, targetUserId) {
-                if(targetUserId === this.db.currentUser) return; // Kendine bildirim atma
-                
-                // Grouping Logic: Check if similar unread notification exists
-                const existingNotif = this.db.notifications.find(n => n.userId === targetUserId && n.type === type && !n.read && n.text.includes(text.split(' ')[1])); // basic grouping by action keyword
-                
-                if(existingNotif && (type === 'like' || type === 'repost')) {
-                    // Update existing group
-                    existingNotif.count = (existingNotif.count || 1) + 1;
-                    existingNotif.text = `<b>${existingNotif.count} kişi</b> ${type === 'like' ? 'gönderini beğendi' : 'gönderini repostladı'}.`;
-                    existingNotif.time = Date.now();
+            createNotification(type, text, targetUserId, link) {
+                if(!targetUserId || targetUserId === this.db.currentUser) return;
+                if(!this.getUser(targetUserId)) return;
+
+                const safeLink = (link && link.type && link.id) ? { type: link.type, id: link.id } : null;
+
+                // Son 24 saatte aynı tip + aynı hedef için okunmamış grup varsa birleştir.
+                const groupable = (type === 'like' || type === 'repost');
+                const existing = groupable ? this.db.notifications.find(n =>
+                    n.userId === targetUserId && n.type === type && !n.read &&
+                    (Date.now() - (n.time || 0)) < 86400000 &&
+                    ((!safeLink && !n.link) || (n.link && safeLink && n.link.id === safeLink.id && n.link.type === safeLink.type))
+                ) : null;
+
+                if(existing) {
+                    existing.count = (existing.count || 1) + 1;
+                    existing.text = `<b>${existing.count} kişi</b> ${type === 'like' ? 'gönderini beğendi' : 'gönderini repostladı'}.`;
+                    existing.time = Date.now();
                 } else {
-                    // Create new
                     this.db.notifications.push({
-                        id: 'n_' + Date.now(),
-                        type: type, text: text, time: Date.now(), read: false, userId: targetUserId, count: 1
+                        id: 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2,5),
+                        type: type, text: text, time: Date.now(),
+                        read: false, userId: targetUserId, count: 1,
+                        link: safeLink
                     });
                 }
-                
+
                 this.saveDB();
                 this.updateUIWithCurrentUser();
             },
@@ -1628,17 +1867,19 @@
             // 4. ROUTING / VIEWS
             // ==========================================
             switchView(viewId, isMyProfile = false) {
+                const target = this.safeGetEl(viewId);
+                if(!target) return;
                 document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
                 document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-                
-                document.getElementById(viewId).classList.add('active');
+
+                target.classList.add('active');
                 const navItem = document.querySelector(`.nav-item[data-target="${viewId}"]`);
                 if(navItem) navItem.classList.add('active');
 
                 window.scrollTo({top:0, behavior:'smooth'});
-                
-                if (viewId === 'view-home') this.renderHomeFeed(true); // Reset feed page
-                if (viewId === 'view-profile') this.renderProfile(isMyProfile ? this.db.currentUser : this.currentProfileId || this.db.currentUser);
+
+                if (viewId === 'view-home') this.renderHomeFeed(true);
+                if (viewId === 'view-profile') this.renderProfile(isMyProfile ? this.db.currentUser : (this.currentProfileId || this.db.currentUser));
                 if (viewId === 'view-notifications') this.renderNotifications();
                 if (viewId === 'view-bookmarks') this.renderBookmarks();
                 if (viewId === 'view-explore') this.renderExplore();
@@ -1649,44 +1890,54 @@
             // POST KARTI VE DETAYLARI
             // ==========================================
             generateMediaHTML(mediaArray) {
-                if(!mediaArray || mediaArray.length === 0) return '';
-                const count = Math.min(mediaArray.length, 4);
+                if(!Array.isArray(mediaArray)) return '';
+                const safe = mediaArray.map(u => this.sanitizeURL(u)).filter(u => u);
+                if(safe.length === 0) return '';
+                const count = Math.min(safe.length, 4);
                 let html = `<div class="media-grid media-grid-${count}">`;
                 for(let i=0; i<count; i++) {
-                    html += `<img src="${mediaArray[i]}" onclick="event.stopPropagation(); app.zoomImage(this.src)" onerror="this.style.display='none'">`;
+                    const url = safe[i].replace(/"/g,'&quot;');
+                    html += `<img src="${url}" onclick="event.stopPropagation(); app.zoomImage('${url}')" onerror="this.style.display='none'" loading="lazy">`;
                 }
                 html += `</div>`;
                 return html;
             },
 
             generatePostHTML(post, isDetailView = false) {
+                if(!post) return '';
                 const author = this.getUser(post.authorId);
                 if(!author) return '';
-                
-                const icons = this.getIcons();
-                const isLiked = post.likedBy?.includes(this.db.currentUser);
-                const isReposted = post.repostedBy?.includes(this.db.currentUser);
-                const isSaved = post.savedBy?.includes(this.db.currentUser);
-                const isMine = post.authorId === this.db.currentUser;
 
-                const avatarSrc = author.avatar || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>${author.name.charAt(0)}</text></svg>`;
+                const icons = this.getIcons();
+                const myId = this.db.currentUser;
+                const isLiked = Array.isArray(post.likedBy) && post.likedBy.includes(myId);
+                const isReposted = Array.isArray(post.repostedBy) && post.repostedBy.includes(myId);
+                const isSaved = Array.isArray(post.savedBy) && post.savedBy.includes(myId);
+                const isMine = post.authorId === myId;
+
+                const avatarSrc = this.getAvatar(author);
+                const safeName = this.escapeHTML(author.name);
+                const safeHandle = this.escapeHTML(author.handle);
 
                 let quoteHtml = '';
                 if(post.isQuote) {
                     const qPost = this.db.posts.find(p => p.id === post.isQuote);
                     if(qPost) {
                         const qAuthor = this.getUser(qPost.authorId);
-                        quoteHtml = `
-                        <div class="post-quote" onclick="event.stopPropagation(); app.openPostDetail('${qPost.id}')">
-                            <div style="display:flex; align-items:center; gap:5px; margin-bottom:5px;">
-                                <img src="${qAuthor.avatar || avatarSrc}" style="width:20px; height:20px; border-radius:50%;">
-                                <span style="font-weight:700; font-size:14px; ${qAuthor.isPremium ? 'color:var(--premium-gold);' : ''}">${qAuthor.name}</span>
-                                ${qAuthor.isVerified ? icons.verified : ''}
-                                <span style="color:var(--text-muted); font-size:13px;">@${qAuthor.handle}</span>
-                            </div>
-                            <div style="font-size:14px; color:var(--text-muted);">${this.parseContent(qPost.content)}</div>
-                            ${this.generateMediaHTML(qPost.media)}
-                        </div>`;
+                        if(qAuthor) {
+                            const qAvatar = this.getAvatar(qAuthor);
+                            quoteHtml = `
+                            <div class="post-quote" onclick="event.stopPropagation(); app.openPostDetail('${qPost.id}')">
+                                <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                                    <img src="${qAvatar}" style="width:20px; height:20px; border-radius:50%;">
+                                    <span style="font-weight:700; font-size:14px; ${qAuthor.isPremium ? 'color:var(--premium-gold);' : ''}">${this.escapeHTML(qAuthor.name)}</span>
+                                    ${qAuthor.isVerified ? icons.verified : ''}
+                                    <span style="color:var(--text-muted); font-size:13px;">@${this.escapeHTML(qAuthor.handle)} · ${this.formatTime(qPost.timestamp)}</span>
+                                </div>
+                                <div style="font-size:14px; color:#cfcfd6;">${this.parseContent(qPost.content)}</div>
+                                ${this.generateMediaHTML(qPost.media)}
+                            </div>`;
+                        }
                     }
                 }
 
@@ -1706,40 +1957,42 @@
                     </div>
                 `;
 
+                const isLongContent = !isDetailView && typeof post.content === 'string' && post.content.length > 280;
                 return `
-                <div class="post-card ${pinnedLabel ? 'is-pinned' : ''} ${repostLabel ? 'is-repost' : ''} ${author.isPremium ? 'is-premium-user' : ''}" data-id="${post.id}" onclick="app.openPostDetail('${post.id}')">
+                <div class="post-card ${pinnedLabel ? 'is-pinned' : ''} ${repostLabel ? 'is-repost' : ''} ${author.isPremium ? 'is-premium-user' : ''}" data-id="${post.id}" role="article" tabindex="0" onclick="app.openPostDetail('${post.id}')">
                     ${pinnedLabel}
                     ${repostLabel}
-                    <div style="width: 48px;">
+                    <div style="width: 48px; flex-shrink:0;">
                         <img src="${avatarSrc}" class="avatar avatar-md" onclick="event.stopPropagation(); app.goToProfile('${author.id}')">
                     </div>
                     <div class="post-content-area">
                         <div class="post-header">
-                            <span class="post-name" onclick="event.stopPropagation(); app.goToProfile('${author.id}')">${author.name}</span>
+                            <span class="post-name" onclick="event.stopPropagation(); app.goToProfile('${author.id}')">${safeName}</span>
                             ${author.isVerified ? icons.verified : ''}
                             ${author.isPremium ? icons.premium : ''}
-                            <span class="post-handle">@${author.handle}</span>
+                            <span class="post-handle">@${safeHandle}</span>
                             <span class="post-time">${this.formatTime(post.timestamp)}</span>
                             ${dropdownHtml}
                         </div>
-                        <div class="post-text">${this.parseContent(post.content)}</div>
+                        <div class="post-text ${isLongContent ? 'is-clipped' : ''}">${this.parseContent(post.content)}</div>
+                        ${isLongContent ? `<span class="post-show-more" onclick="event.stopPropagation(); app.openPostDetail('${post.id}')">Daha fazla göster</span>` : ''}
                         ${this.generateMediaHTML(post.media)}
                         ${quoteHtml}
-                        
+
                         <div class="post-stats">
-                            <div class="stat-item stat-reply ripple-btn" onclick="event.stopPropagation(); app.openPostDetail('${post.id}')">
+                            <div class="stat-item stat-reply ripple-btn" onclick="event.stopPropagation(); app.openPostDetail('${post.id}')" aria-label="Yanıtla">
                                 ${icons.reply} <span>${this.formatNumber(post.replies)}</span>
                             </div>
-                            <div class="stat-item stat-repost ripple-btn ${isReposted ? 'reposted' : ''}" onclick="event.stopPropagation(); app.toggleRepost('${post.id}')">
+                            <div class="stat-item stat-repost ripple-btn ${isReposted ? 'reposted' : ''}" onclick="event.stopPropagation(); app.toggleRepost('${post.id}')" aria-label="Repost">
                                 ${icons.repost} <span>${this.formatNumber(post.reposts)}</span>
                             </div>
-                            <div class="stat-item stat-like ripple-btn ${isLiked ? 'liked' : ''}" onclick="event.stopPropagation(); app.toggleLike('${post.id}')">
+                            <div class="stat-item stat-like ripple-btn ${isLiked ? 'liked' : ''}" onclick="event.stopPropagation(); app.toggleLike('${post.id}')" aria-label="Beğen">
                                 ${icons.like} <span>${this.formatNumber(post.likes)}</span>
                             </div>
-                            <div class="stat-item stat-view ripple-btn" onclick="event.stopPropagation(); app.showToast('Etkileşim Skoru: ' + ${post.engagementScore}, 'info')">
+                            <div class="stat-item stat-view ripple-btn" onclick="event.stopPropagation(); app.showToast('Etkileşim Skoru: ' + ${Number(post.engagementScore)||0}, 'info')" aria-label="Görüntüleme">
                                 ${icons.view} <span>${this.formatNumber(post.views)}</span>
                             </div>
-                            <div class="stat-item stat-save ripple-btn ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); app.toggleBookmark('${post.id}')" style="margin-left:auto; ${isSaved ? 'color:var(--primary-core);' : ''}">
+                            <div class="stat-item stat-save ripple-btn ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); app.toggleBookmark('${post.id}')" style="margin-left:auto;" aria-label="Kaydet">
                                 ${icons.save}
                             </div>
                         </div>
@@ -1752,11 +2005,10 @@
                 document.getElementById(id).classList.toggle('show');
             },
             closeAllDropdowns(e) {
+                if(!e || !e.target || typeof e.target.closest !== 'function') return;
                 if(!e.target.closest('.post-options') && !e.target.closest('.dropdown')) {
                     document.querySelectorAll('.dropdown-menu').forEach(el => el.classList.remove('show'));
                 }
-                
-                // Also close search suggestions if clicking outside
                 if(!e.target.closest('.search-box')) {
                     document.querySelectorAll('.search-suggestions').forEach(el => el.classList.remove('active'));
                 }
@@ -1769,39 +2021,43 @@
                 const comments = this.db.comments.filter(c => c.postId === postId && c.parentId === parentId).sort((a,b) => b.timestamp - a.timestamp);
                 if(comments.length === 0) return '';
 
+                const icons = this.getIcons();
                 let html = '';
                 comments.forEach(c => {
                     const cAuthor = this.getUser(c.authorId);
-                    const cAvatar = cAuthor.avatar || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>${cAuthor.name.charAt(0)}</text></svg>`;
-                    const isLiked = c.likedBy?.includes(this.db.currentUser);
+                    if(!cAuthor) return;
+                    const cAvatar = this.getAvatar(cAuthor);
+                    const isLiked = Array.isArray(c.likedBy) && c.likedBy.includes(this.db.currentUser);
                     const isMine = c.authorId === this.db.currentUser;
-                    
+
                     const childHtml = this.renderNestedComments(postId, c.id, level + 1);
+                    const safeName = this.escapeHTML(cAuthor.name);
+                    const safeHandle = this.escapeHTML(cAuthor.handle);
 
                     html += `
                     <div class="comment-card" id="comment-${c.id}">
                         <div style="display:flex; gap:10px;">
                             <img src="${cAvatar}" class="avatar avatar-sm" onclick="app.goToProfile('${cAuthor.id}')" style="cursor:pointer; width:${Math.max(24, 40 - level*4)}px; height:${Math.max(24, 40 - level*4)}px;">
-                            <div style="flex:1;">
+                            <div style="flex:1; min-width:0;">
                                 <div style="display:flex; align-items:center; gap:5px; justify-content:space-between;">
                                     <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
-                                        <span style="font-weight:700; cursor:pointer; ${cAuthor.isPremium ? 'color:var(--premium-gold);' : ''}" onclick="app.goToProfile('${cAuthor.id}')">${cAuthor.name}</span>
-                                        ${cAuthor.isVerified ? this.getIcons().verified : ''}
-                                        <span style="color:var(--text-muted); font-size:13px;">@${cAuthor.handle} · ${this.formatTime(c.timestamp)}</span>
+                                        <span style="font-weight:700; cursor:pointer; ${cAuthor.isPremium ? 'color:var(--premium-gold);' : ''}" onclick="app.goToProfile('${cAuthor.id}')">${safeName}</span>
+                                        ${cAuthor.isVerified ? icons.verified : ''}
+                                        <span style="color:var(--text-muted); font-size:13px;">@${safeHandle} · ${this.formatTime(c.timestamp)}</span>
                                     </div>
-                                    ${isMine ? `<button class="btn-icon" style="width:24px; height:24px; color:var(--danger);" onclick="app.deleteComment('${c.id}')">${this.getIcons().close}</button>` : ''}
+                                    ${isMine ? `<button class="btn-icon" style="width:26px; height:26px; color:var(--danger);" onclick="app.deleteComment('${c.id}')">${icons.close}</button>` : ''}
                                 </div>
-                                <div style="margin-top:5px; line-height:1.4;">${this.parseContent(c.content)}</div>
-                                <div style="display:flex; gap:15px; margin-top:8px; color:var(--text-muted);">
+                                <div style="margin-top:5px; line-height:1.45;">${this.parseContent(c.content)}</div>
+                                <div style="display:flex; gap:18px; margin-top:8px; color:var(--text-muted);">
                                     <span style="cursor:pointer; font-size:13px; display:flex; align-items:center; gap:5px; transition:0.2s;" onclick="app.toggleCommentLike('${c.id}')" onmouseover="this.style.color='var(--neon-pink)'" onmouseout="this.style.color=''">
-                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="${isLiked ? 'var(--neon-pink)' : 'none'}" stroke="${isLiked ? 'var(--neon-pink)' : 'currentColor'}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="${isLiked ? 'var(--neon-pink)' : 'none'}" stroke="${isLiked ? 'var(--neon-pink)' : 'currentColor'}" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                                         <span id="comment-like-count-${c.id}">${c.likes || 0}</span>
                                     </span>
-                                    <span style="cursor:pointer; font-size:13px; display:flex; align-items:center; gap:5px; transition:0.2s;" onclick="app.setReplyTarget('${c.id}', '${cAuthor.handle}')" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color=''">
-                                        ${this.getIcons().reply} Yanıtla
+                                    <span style="cursor:pointer; font-size:13px; display:flex; align-items:center; gap:5px; transition:0.2s;" onclick="app.setReplyTarget('${c.id}', '${safeHandle}')" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color=''">
+                                        ${icons.reply} Yanıtla
                                     </span>
                                 </div>
-                                ${childHtml ? `<div class="toggle-thread-btn ripple-btn" onclick="const t=document.getElementById('thread-${c.id}'); t.classList.toggle('collapsed');">Yanıtları Göster/Gizle</div><div class="comment-thread" id="thread-${c.id}">${childHtml}</div>` : ''}
+                                ${childHtml ? `<div class="toggle-thread-btn ripple-btn" onclick="event.stopPropagation(); const t=document.getElementById('thread-${c.id}'); if(t) t.classList.toggle('collapsed');">Yanıtları Göster/Gizle</div><div class="comment-thread" id="thread-${c.id}">${childHtml}</div>` : ''}
                             </div>
                         </div>
                     </div>`;
@@ -1809,32 +2065,48 @@
                 return html;
             },
 
-            openPostDetail(postId) {
+            openPostDetail(postId, opts) {
                 const post = this.db.posts.find(p => p.id === postId);
                 if(!post) return;
-                
-                post.views++; 
-                post.engagementScore += 1;
-                this.saveDB(); 
+                opts = opts || {};
+                const silent = !!opts.silent;
+                const preserveScroll = !!opts.preserveScroll;
+
+                if(!silent) {
+                    post.views = (post.views||0) + 1;
+                    post.engagementScore = (post.engagementScore||0) + 1;
+                    this.saveDB();
+                }
 
                 this.viewingPostId = postId;
-                this.replyingToCommentId = null; 
-                document.getElementById('replying-to-info').style.display = 'none';
+                if(!preserveScroll) {
+                    this.replyingToCommentId = null;
+                    const info = this.safeGetEl('replying-to-info');
+                    if(info) info.style.display = 'none';
+                }
 
-                const container = document.getElementById('post-detail-content');
+                const container = this.safeGetEl('post-detail-content');
+                if(!container) return;
+
+                // Scroll konumunu koru (yorum eklendiğinde sıçramasın).
+                const modalBody = container;
+                const prevScroll = preserveScroll ? modalBody.scrollTop : 0;
+
                 let html = this.generatePostHTML(post, true);
                 html += `<div style="padding: 15px 20px; font-weight:800; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.2);">Yorum Zinciri</div>`;
-                
+
                 const commentsHtml = this.renderNestedComments(postId, null, 0);
-                
                 if(!commentsHtml) {
-                    html += `<div class="empty-state" style="padding: 40px;"><h3>Kimse Ses Çıkarmadı</h3><p>İlk yanıtı sen ver, etkileşimi başlat.</p></div>`;
+                    html += `<div class="empty-state" style="padding: 40px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><h3>Kimse Ses Çıkarmadı</h3><p>İlk yanıtı sen ver, etkileşimi başlat.</p></div>`;
                 } else {
                     html += `<div style="padding: 0 20px;">${commentsHtml}</div>`;
                 }
-                
                 container.innerHTML = html;
+
                 this.openModal('post-detail-modal');
+                if(preserveScroll && prevScroll) {
+                    requestAnimationFrame(() => { modalBody.scrollTop = prevScroll; });
+                }
             },
 
             setReplyTarget(commentId, handle) {
@@ -1880,14 +2152,14 @@
                         const parentComment = this.db.comments.find(c => c.id === this.replyingToCommentId);
                         if(parentComment) targetUser = parentComment.authorId;
                     }
-                    this.createNotification('reply', `<b>${me.name}</b> sana yanıt verdi.`, targetUser);
+                    if(me) this.createNotification('reply', `<b>${this.escapeHTML(me.name)}</b> sana yanıt verdi.`, targetUser, { type: 'post', id: this.viewingPostId });
 
                     this.saveDB();
                     input.value = '';
                     this.cancelNestedReply();
-                    this.openPostDetail(this.viewingPostId); 
-                    this.silentUpdateFeedStats(); 
-                    this.showToast('Yanıt sisteme eklendi.', 'success');
+                    this.openPostDetail(this.viewingPostId, { silent: true, preserveScroll: true });
+                    this.silentUpdateFeedStats();
+                    this.showToast('Yanıtın eklendi.', 'success');
                 }
             },
 
@@ -1909,34 +2181,39 @@
                 }
                 
                 this.saveDB();
-                this.openPostDetail(this.viewingPostId);
+                this.openPostDetail(this.viewingPostId, { silent: true, preserveScroll: true });
                 this.showToast('Yorum silindi.', 'success');
             },
 
             toggleCommentLike(commentId) {
                 const comment = this.db.comments.find(c => c.id === commentId);
                 if(!comment) return;
-                
-                if(!comment.likedBy) comment.likedBy = [];
+                if(!Array.isArray(comment.likedBy)) comment.likedBy = [];
                 const myId = this.db.currentUser;
+                if(!myId) { this.showToast('Önce giriş yap.', 'error'); return; }
                 const idx = comment.likedBy.indexOf(myId);
-                
+                const liked = idx === -1;
                 if(idx > -1) {
                     comment.likedBy.splice(idx, 1);
-                    comment.likes--;
+                    comment.likes = Math.max(0, (comment.likes||0) - 1);
                 } else {
                     comment.likedBy.push(myId);
-                    comment.likes++;
+                    comment.likes = (comment.likes||0) + 1;
                     const me = this.getUser(myId);
-                    this.createNotification('like', `<b>${me.name}</b> yanıtını beğendi.`, comment.authorId);
+                    if(me && comment.authorId !== myId) {
+                        this.createNotification('like', `<b>${this.escapeHTML(me.name)}</b> yanıtını beğendi.`, comment.authorId, { type: 'post', id: comment.postId });
+                    }
                 }
                 this.saveDB();
-                // DOM update without full re-render for smooth experience
-                const countSpan = document.getElementById(`comment-like-count-${commentId}`);
+                const countSpan = this.safeGetEl(`comment-like-count-${commentId}`);
                 if(countSpan) countSpan.innerText = comment.likes;
-                const svg = countSpan.previousElementSibling;
-                if(idx > -1) { svg.setAttribute('fill', 'none'); } 
-                else { svg.setAttribute('fill', 'var(--neon-pink)'); }
+                if(countSpan) {
+                    const svg = countSpan.previousElementSibling;
+                    if(svg && svg.tagName && svg.tagName.toLowerCase() === 'svg') {
+                        svg.setAttribute('fill', liked ? 'var(--neon-pink)' : 'none');
+                        svg.setAttribute('stroke', liked ? 'var(--neon-pink)' : 'currentColor');
+                    }
+                }
             },
 
             deletePost(postId) {
@@ -2011,10 +2288,11 @@
 
             renderHomeFeed(resetPage = false) {
                 if(resetPage) this.feedPage = 1;
-                const activeTab = document.querySelector('#view-home .feed-tab.active').innerText.trim();
+                const activeEl = document.querySelector('#view-home .feed-tab.active');
+                const tabKey = (activeEl && activeEl.dataset.feedTab) || 'for-you';
                 let feedPosts = [];
 
-                if (activeTab === 'Sana Özel') {
+                if (tabKey === 'for-you') {
                     // Algorithmic Feed: Mix of popular, recent, and followed
                     const myFollows = this.db.follows.filter(f => f.follower === this.db.currentUser).map(f => f.followed);
                     feedPosts = [...this.db.posts].sort((a,b) => {
@@ -2034,25 +2312,34 @@
 
                         return scoreB - scoreA;
                     });
-                } else if (activeTab === 'Takip Edilenler') {
-                    // Chronological followed feed
+                } else if (tabKey === 'following') {
                     const myFollows = this.db.follows.filter(f => f.follower === this.db.currentUser).map(f => f.followed);
                     myFollows.push(this.db.currentUser);
                     feedPosts = this.db.posts.filter(p => myFollows.includes(p.authorId));
-                    // Keep chronological
                 }
 
                 const limit = 10;
                 const paginated = feedPosts.slice(0, this.feedPage * limit);
-                
-                this.renderFeed(paginated, 'home-feed-container', false);
-                
-                const btn = document.getElementById('home-load-more');
-                if(paginated.length < feedPosts.length) {
-                    btn.style.display = 'block';
-                } else {
-                    btn.style.display = 'none';
+
+                // Takip Edilenler boşsa keşfet CTA'sı.
+                const container = this.safeGetEl('home-feed-container');
+                if(tabKey === 'following' && feedPosts.length === 0 && container) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <h3>Henüz kimseyi takip etmiyorsun</h3>
+                            <p style="margin-bottom:16px;">Akışını canlandırmak için birkaç hesap takip et.</p>
+                            <button class="btn-primary ripple-btn" onclick="app.switchView('view-explore')">Kişileri Keşfet</button>
+                        </div>`;
+                    const btn = this.safeGetEl('home-load-more');
+                    if(btn) btn.style.display = 'none';
+                    return;
                 }
+
+                this.renderFeed(paginated, 'home-feed-container', false);
+
+                const btn = this.safeGetEl('home-load-more');
+                if(btn) btn.style.display = (paginated.length < feedPosts.length) ? 'block' : 'none';
             },
 
             loadMoreHomeFeed() {
@@ -2081,16 +2368,21 @@
                 const myFollowers = this.db.follows.filter(f => f.followed === userId).length;
                 const myFollowing = this.db.follows.filter(f => f.follower === userId).length;
 
-                document.getElementById('prof-header-name').innerText = user.name;
+                const setText = (id, val) => { const el = this.safeGetEl(id); if(el) el.innerText = val; };
+                setText('prof-header-name', user.name);
                 const userPosts = this.db.posts.filter(p => p.authorId === userId);
-                document.getElementById('prof-header-count').innerText = `${userPosts.length} gönderi`;
+                setText('prof-header-count', `${userPosts.length} gönderi`);
 
-                const avatarSrc = user.avatar || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>${user.name.charAt(0)}</text></svg>`;
-                
-                document.getElementById('prof-cover').src = user.cover || '';
-                if(!user.cover) document.getElementById('prof-cover').style.display = 'none'; else document.getElementById('prof-cover').style.display = 'block';
-                
-                document.getElementById('prof-avatar').src = avatarSrc;
+                const avatarSrc = this.getAvatar(user);
+
+                const cover = this.safeGetEl('prof-cover');
+                if(cover) {
+                    const safeCover = this.sanitizeURL(user.cover);
+                    cover.src = safeCover || '';
+                    cover.style.display = safeCover ? 'block' : 'none';
+                }
+                const profAvatar = this.safeGetEl('prof-avatar');
+                if(profAvatar) profAvatar.src = avatarSrc;
                 
                 // Premium Styling
                 const nameEl = document.getElementById('prof-name');
@@ -2133,30 +2425,63 @@
 
                 this.renderProfileChart(userId);
 
-                const tabsContainer = document.getElementById('profile-tabs-container');
-                const currentActiveTab = tabsContainer.querySelector('.active')?.innerText || 'Gönderiler';
-                
-                tabsContainer.innerHTML = `
-                    <div class="feed-tab ripple-btn ${currentActiveTab === 'Gönderiler' ? 'active' : ''}" onclick="app.switchProfileTab('Gönderiler', this, '${userId}')">Gönderiler</div>
-                    <div class="feed-tab ripple-btn ${currentActiveTab === 'Yanıtlar' ? 'active' : ''}" onclick="app.switchProfileTab('Yanıtlar', this, '${userId}')">Yanıtlar</div>
-                    <div class="feed-tab ripple-btn ${currentActiveTab === 'Medya' ? 'active' : ''}" onclick="app.switchProfileTab('Medya', this, '${userId}')">Medya</div>
-                    <div class="feed-tab ripple-btn ${currentActiveTab === 'Beğeniler' ? 'active' : ''}" onclick="app.switchProfileTab('Beğeniler', this, '${userId}')">Beğeniler</div>
-                `;
+                const tabsContainer = this.safeGetEl('profile-tabs-container');
+                if(!tabsContainer) return;
+                const labels = { posts: 'Gönderiler', replies: 'Yanıtlar', media: 'Medya', likes: 'Beğeniler' };
+                const prev = tabsContainer.querySelector('.feed-tab.active');
+                const currentKey = (prev && prev.dataset.profileTab) || 'posts';
 
-                this.loadProfileFeed(currentActiveTab, userId);
+                tabsContainer.innerHTML = Object.keys(labels).map(k => `
+                    <div class="feed-tab ripple-btn ${currentKey === k ? 'active' : ''}" data-profile-tab="${k}" onclick="app.switchProfileTab('${k}', this, '${userId}')">${labels[k]}</div>
+                `).join('');
+
+                this.loadProfileFeed(currentKey, userId);
             },
 
             renderProfileChart(userId) {
-                // Simulate 7 day activity chart based on engagement score of user's posts
-                const chart = document.getElementById('prof-activity-chart');
-                let html = '';
-                for(let i=6; i>=0; i--) {
-                    // Fake data generation based on user ID to keep it consistent
-                    let val = Math.floor(Math.abs(Math.sin(userId.charCodeAt(1) + i)) * 100); 
-                    if(val < 10) val = 10;
-                    html += `<div class="chart-bar" style="height: ${val}%;" data-val="${val}"></div>`;
-                }
+                const chart = this.safeGetEl('prof-activity-chart');
+                if(!chart) return;
+                const counts = this.computeActivityBuckets(userId, 7);
+                const max = Math.max(1, ...counts);
+                const labels = ['7g', '6g', '5g', '4g', '3g', 'Dün', 'Bugün'];
+                const html = counts.map((val, i) => {
+                    const pct = Math.max(6, Math.round((val / max) * 100));
+                    const label = labels[i] || `${7-i}g`;
+                    return `<div class="chart-bar" style="height: ${pct}%;" data-val="${val} aktivite" title="${label}: ${val} aktivite"></div>`;
+                }).join('');
                 chart.innerHTML = html;
+                const total = counts.reduce((a,b) => a+b, 0);
+                chart.setAttribute('title', total === 0 ? 'Son 7 günde aktivite yok' : `Son 7 gün toplam aktivite: ${total}`);
+            },
+
+            computeActivityBuckets(userId, days) {
+                const now = new Date();
+                const buckets = new Array(days).fill(0);
+                const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+                const bucketFor = (ts) => {
+                    const diff = dayStart - new Date(ts).setHours(0,0,0,0);
+                    const idx = (days - 1) - Math.floor(diff / 86400000);
+                    return (idx >= 0 && idx < days) ? idx : -1;
+                };
+                this.db.posts.forEach(p => {
+                    if(p.authorId === userId) {
+                        const b = bucketFor(p.timestamp);
+                        if(b >= 0) buckets[b]++;
+                    }
+                });
+                this.db.comments.forEach(c => {
+                    if(c.authorId === userId) {
+                        const b = bucketFor(c.timestamp);
+                        if(b >= 0) buckets[b]++;
+                    }
+                });
+                this.db.posts.forEach(p => {
+                    if(Array.isArray(p.repostedBy) && p.repostedBy.includes(userId)) {
+                        const b = bucketFor(p.timestamp);
+                        if(b >= 0) buckets[b]++;
+                    }
+                });
+                return buckets;
             },
 
             goToProfile(userId) {
@@ -2164,33 +2489,35 @@
                 this.switchView('view-profile', false);
             },
 
-            switchProfileTab(tabName, el, userId) {
+            switchProfileTab(tabKey, el, userId) {
                 document.querySelectorAll('#profile-tabs-container .feed-tab').forEach(t => t.classList.remove('active'));
-                el.classList.add('active');
-                this.loadProfileFeed(tabName, userId);
+                if(el) el.classList.add('active');
+                this.loadProfileFeed(tabKey, userId);
             },
 
-            loadProfileFeed(tabName, userId) {
+            loadProfileFeed(tabKey, userId) {
+                // Geri uyumluluk: eski metin anahtarları gelirse normalize et.
+                const legacyMap = { 'Gönderiler': 'posts', 'Yanıtlar': 'replies', 'Medya': 'media', 'Beğeniler': 'likes' };
+                if(legacyMap[tabKey]) tabKey = legacyMap[tabKey];
                 let postsToRender = [];
-                if(tabName === 'Gönderiler') {
+                const user = this.getUser(userId);
+                if(tabKey === 'posts') {
                     postsToRender = this.db.posts.filter(p => p.authorId === userId);
-                    const reposts = this.db.posts.filter(p => p.repostedBy?.includes(userId) && p.authorId !== userId);
-                    const user = this.getUser(userId);
+                    const reposts = this.db.posts.filter(p => Array.isArray(p.repostedBy) && p.repostedBy.includes(userId) && p.authorId !== userId);
                     reposts.forEach(r => {
                         const copy = {...r};
-                        copy.isRepostInfo = user.name;
-                        copy.timestamp = Date.now(); // Put reposts at top
+                        copy.isRepostInfo = user ? user.name : 'Kullanıcı';
+                        copy.timestamp = Date.now();
                         postsToRender.push(copy);
                     });
-                } else if(tabName === 'Yanıtlar') {
+                } else if(tabKey === 'replies') {
                     const commentedPostIds = this.db.comments.filter(c => c.authorId === userId).map(c => c.postId);
                     postsToRender = this.db.posts.filter(p => commentedPostIds.includes(p.id));
-                } else if(tabName === 'Medya') {
-                    postsToRender = this.db.posts.filter(p => p.authorId === userId && p.media && p.media.length > 0);
-                } else if(tabName === 'Beğeniler') {
-                    postsToRender = this.db.posts.filter(p => p.likedBy?.includes(userId));
+                } else if(tabKey === 'media') {
+                    postsToRender = this.db.posts.filter(p => p.authorId === userId && Array.isArray(p.media) && p.media.length > 0);
+                } else if(tabKey === 'likes') {
+                    postsToRender = this.db.posts.filter(p => Array.isArray(p.likedBy) && p.likedBy.includes(userId));
                 }
-                
                 this.renderFeed(postsToRender, 'profile-feed-container');
             },
 
@@ -2206,7 +2533,7 @@
                     this.db.follows.push({ follower: myId, followed: targetUserId });
                     targetUser.followers++;
                     const me = this.getUser(myId);
-                    this.createNotification('follow', `<b>${me.name}</b> seni takip etmeye başladı.`, targetUserId);
+                    if(me) this.createNotification('follow', `<b>${this.escapeHTML(me.name)}</b> seni takip etmeye başladı.`, targetUserId, { type: 'profile', id: myId });
                 }
                 this.saveDB();
                 this.renderProfile(targetUserId); 
@@ -2275,51 +2602,44 @@
             },
 
             renderSuggestedUsers() {
-                const container = document.getElementById('suggested-users-panel');
+                const container = this.safeGetEl('suggested-users-panel');
+                if(!container) return;
                 let html = '<div class="panel-header">Ağ Önerileri</div>';
-                
+
                 const myId = this.db.currentUser;
                 const myFollows = this.db.follows.filter(f => f.follower === myId).map(f => f.followed);
-                
-                // Algoritma: 
-                // 1. Ortak takipçisi olanlar
-                // 2. Verified/Premium hesaplar
-                // 3. Çok takipçisi olanlar
-                
-                let suggestions = this.db.users.filter(u => u.id !== myId && !myFollows.includes(u.id));
-                
-                suggestions.forEach(u => {
-                    let score = u.followers / 1000;
-                    if(u.isPremium) score += 50;
-                    if(u.isVerified) score += 30;
-                    
-                    // Mutual check
-                    const theirFollowers = this.db.follows.filter(f => f.followed === u.id).map(f => f.follower);
-                    const mutual = myFollows.filter(id => theirFollowers.includes(id)).length;
-                    score += mutual * 20;
-                    u.tempScore = score;
-                    u.mutualCount = mutual;
-                });
 
-                suggestions.sort((a,b) => b.tempScore - a.tempScore);
-                const finalSuggestions = suggestions.slice(0, 3);
-                
-                finalSuggestions.forEach(u => {
-                    const avatarSrc = u.avatar || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>${u.name.charAt(0)}</text></svg>`;
-                    const subText = u.mutualCount > 0 ? `${u.mutualCount} ortak takipçi` : `@${u.handle}`;
+                // Skor verisini ayrı tutuyoruz — db.users objesini KİRLETMEK YOK.
+                const scored = this.db.users
+                    .filter(u => u && u.id !== myId && !myFollows.includes(u.id))
+                    .map(u => {
+                        let score = (u.followers || 0) / 1000;
+                        if(u.isPremium) score += 50;
+                        if(u.isVerified) score += 30;
+                        const theirFollowers = this.db.follows.filter(f => f.followed === u.id).map(f => f.follower);
+                        const mutual = myFollows.filter(id => theirFollowers.includes(id)).length;
+                        score += mutual * 20;
+                        return { user: u, score, mutual };
+                    })
+                    .sort((a,b) => b.score - a.score)
+                    .slice(0, 3);
 
+                const icons = this.getIcons();
+                scored.forEach(({ user: u, mutual }) => {
+                    const avatarSrc = this.getAvatar(u);
+                    const subText = mutual > 0 ? `${mutual} ortak takipçi` : `@${this.escapeHTML(u.handle)}`;
                     html += `
                         <div class="suggested-user" onclick="app.goToProfile('${u.id}')">
                             <img src="${avatarSrc}" class="avatar avatar-sm" style="${u.isPremium ? 'border:2px solid var(--premium-gold); padding:2px;' : ''}">
                             <div class="suggested-info">
-                                <div class="suggested-name" style="${u.isPremium ? 'color:var(--premium-gold);' : ''}">${u.name} ${u.isVerified ? this.getIcons().verified : ''}</div>
+                                <div class="suggested-name" style="${u.isPremium ? 'color:var(--premium-gold);' : ''}">${this.escapeHTML(u.name)} ${u.isVerified ? icons.verified : ''}</div>
                                 <div class="suggested-handle">${subText}</div>
                             </div>
                             <button class="btn-follow ripple-btn" onclick="event.stopPropagation(); app.toggleFollow('${u.id}');">Takip Et</button>
                         </div>
                     `;
                 });
-                if(finalSuggestions.length === 0) html += `<div style="padding:15px 20px; color:var(--text-muted); font-size:13px;">Tüm ağı fethettin!</div>`;
+                if(scored.length === 0) html += `<div style="padding:15px 20px; color:var(--text-muted); font-size:13px;">Tüm ağı fethettin.</div>`;
                 container.innerHTML = html;
             },
 
@@ -2366,8 +2686,53 @@
 
             switchExploreTab(tab, el) {
                 document.querySelectorAll('#view-explore .feed-tab').forEach(t => t.classList.remove('active'));
-                el.classList.add('active');
-                this.handleSearch(document.getElementById('explore-search').value, tab);
+                if(el) el.classList.add('active');
+                const input = this.safeGetEl('explore-search');
+                this.handleSearch(input ? input.value : '', tab);
+            },
+
+            showHashtagDetail(tag) {
+                const container = this.safeGetEl('explore-content');
+                if(!container) return;
+                const clean = String(tag || '').trim();
+                const display = clean.startsWith('#') ? clean : '#' + clean;
+                const key = display.toLowerCase();
+
+                // İlgili gönderiler (content'te etiket arıyoruz, kelime sınırını gözetiyoruz).
+                const escaped = display.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const re = new RegExp(escaped + '(?![\\wçğıöşüÇĞİÖŞÜ_])', 'i');
+                const posts = this.db.posts
+                    .filter(p => p.content && re.test(p.content))
+                    .sort((a,b) => (b.engagementScore || 0) - (a.engagementScore || 0));
+
+                const trend = this.db.trends.find(t => (t.name || '').toLowerCase() === key);
+                const statsText = trend ? `${trend.posts} gönderi · ${trend.category}` : `${posts.length} gönderi`;
+
+                container.innerHTML = `
+                    <div style="padding: 22px 22px 16px; border-bottom: 1px solid var(--border-soft); display: flex; align-items: center; gap: 14px;">
+                        <button class="btn-icon ripple-btn" aria-label="Geri" onclick="app.renderExplore()" title="Keşfet'e dön">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                        </button>
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size: 13px; color: var(--text-muted);">Etiket</div>
+                            <div style="font-size: 22px; font-weight: 800; color: var(--text-main); word-break: break-word;">${this.escapeHTML(display)}</div>
+                            <div style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">${this.escapeHTML(statsText)}</div>
+                        </div>
+                    </div>
+                    <div id="hashtag-posts-container"></div>
+                `;
+
+                if(posts.length === 0) {
+                    const target = this.safeGetEl('hashtag-posts-container');
+                    if(target) target.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+                            <h3>Bu etiketle gönderi yok</h3>
+                            <p>İlk sen paylaş; etiketi kullanan herkes bu sayfada toplanır.</p>
+                        </div>`;
+                } else {
+                    this.renderFeed(posts, 'hashtag-posts-container');
+                }
             },
 
             renderExplore() {
@@ -2399,77 +2764,88 @@
             },
 
             searchTag(tag) {
-                document.getElementById('explore-search').value = tag;
+                const input = this.safeGetEl('explore-search');
+                if(input) input.value = tag;
                 this.switchView('view-explore');
-                document.querySelectorAll('#view-explore .feed-tab').forEach((t, i) => {
-                    t.classList.remove('active');
-                    if(i === 3) t.classList.add('active'); // Hashtags tab
+                document.querySelectorAll('#view-explore .feed-tab').forEach(t => {
+                    t.classList.toggle('active', t.dataset.exploreTab === 'tags');
                 });
-                this.handleSearch(tag, 'tags');
+                this.showHashtagDetail(tag);
             },
 
             searchUser(handle) {
-                document.getElementById('explore-search').value = handle;
+                const input = this.safeGetEl('explore-search');
+                if(input) input.value = handle;
                 this.switchView('view-explore');
-                document.querySelectorAll('#view-explore .feed-tab').forEach((t, i) => {
-                    t.classList.remove('active');
-                    if(i === 1) t.classList.add('active'); // Users tab
+                document.querySelectorAll('#view-explore .feed-tab').forEach(t => {
+                    t.classList.toggle('active', t.dataset.exploreTab === 'users');
                 });
                 this.handleSearch(handle, 'users');
             },
 
             handleSearch(val, forceTab = null) {
-                document.getElementById('explore-search-suggestions').classList.remove('active');
-                if(!val && !forceTab) return this.renderExplore(); 
-                
-                const low = val.toLowerCase().replace('#','').replace('@','');
-                const container = document.getElementById('explore-content');
-                
-                const activeTabEl = document.querySelector('#view-explore .feed-tab.active');
-                const activeTab = forceTab || (activeTabEl ? activeTabEl.innerText.toLowerCase() : 'sana özel');
+                const suggBox = this.safeGetEl('explore-search-suggestions');
+                if(suggBox) suggBox.classList.remove('active');
+                if(!val && !forceTab) return this.renderExplore();
 
+                const rawLow = String(val || '').toLowerCase();
+                const isHashtag = rawLow.startsWith('#');
+                const low = rawLow.replace(/^[#@]/,'');
+                const container = this.safeGetEl('explore-content');
+                if(!container) return;
+
+                // Hashtag explicit: detay görünüm.
+                if(isHashtag || forceTab === 'tags') {
+                    this.showHashtagDetail('#' + low.replace(/^#/,''));
+                    return;
+                }
+
+                const activeTabEl = document.querySelector('#view-explore .feed-tab.active');
+                const tab = forceTab || (activeTabEl && activeTabEl.dataset.exploreTab) || 'all';
+
+                const icons = this.getIcons();
                 let html = '<div style="padding: 20px;">';
-                
-                if (activeTab === 'sana özel' || activeTab === 'kullanıcılar' || forceTab === 'users') {
-                    const users = this.db.users.filter(u => u.name.toLowerCase().includes(low) || u.handle.toLowerCase().includes(low));
+
+                if (tab === 'all' || tab === 'users') {
+                    const users = this.db.users.filter(u => u.name && (u.name.toLowerCase().includes(low) || u.handle.toLowerCase().includes(low)));
                     if(users.length > 0) {
                         html += '<h3 style="margin-bottom: 15px; color:var(--primary-core);">Kişiler</h3>';
                         users.forEach(u => {
-                            const avatarSrc = u.avatar || `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>${u.name.charAt(0)}</text></svg>`;
+                            const avatarSrc = this.getAvatar(u);
                             html += `
                             <div class="suggested-user glass-panel" style="margin-bottom:10px;" onclick="app.goToProfile('${u.id}')">
                                 <img src="${avatarSrc}" class="avatar avatar-md" style="${u.isPremium ? 'border:2px solid var(--premium-gold); padding:2px;' : ''}">
                                 <div class="suggested-info">
-                                    <div class="suggested-name" style="${u.isPremium ? 'color:var(--premium-gold);' : ''}">${u.name} ${u.isVerified ? this.getIcons().verified : ''}</div>
-                                    <div class="suggested-handle">@${u.handle}</div>
+                                    <div class="suggested-name" style="${u.isPremium ? 'color:var(--premium-gold);' : ''}">${this.escapeHTML(u.name)} ${u.isVerified ? icons.verified : ''}</div>
+                                    <div class="suggested-handle">@${this.escapeHTML(u.handle)}</div>
                                 </div>
                             </div>`;
                         });
                     }
                 }
 
-                if (activeTab === 'sana özel' || activeTab === 'trend gönderiler' || forceTab === 'posts' || activeTab === 'hashtagler' || forceTab === 'tags') {
-                    const posts = this.db.posts.filter(p => p.content.toLowerCase().includes(low)).sort((a,b) => b.engagementScore - a.engagementScore);
+                if (tab === 'all' || tab === 'posts') {
+                    const posts = this.db.posts.filter(p => (p.content || '').toLowerCase().includes(low)).sort((a,b) => (b.engagementScore||0) - (a.engagementScore||0));
                     if(posts.length > 0) {
                         html += '<h3 style="margin: 20px 0 15px; color:var(--neon-blue);">Gönderiler</h3>';
                         html += `<div id="search-posts-container"></div>`;
                     }
                 }
-                
+
                 if(html === '<div style="padding: 20px;">') {
                     html += `
                     <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <h3>Boşluk</h3>
-                        <p>"${val}" ile ilgili veriye ulaşılamadı.</p>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <h3>Sonuç bulunamadı</h3>
+                        <p>"${this.escapeHTML(val)}" ile eşleşen veri yok. Farklı bir anahtar kelime dene.</p>
                     </div>`;
                 }
                 html += '</div>';
                 container.innerHTML = html;
 
-                const postsContainer = document.getElementById('search-posts-container');
+                const postsContainer = this.safeGetEl('search-posts-container');
                 if(postsContainer) {
-                    const posts = this.db.posts.filter(p => p.content.toLowerCase().includes(low)).sort((a,b) => b.engagementScore - a.engagementScore);
+                    const posts = this.db.posts.filter(p => (p.content || '').toLowerCase().includes(low)).sort((a,b) => (b.engagementScore||0) - (a.engagementScore||0));
                     this.renderFeed(posts, 'search-posts-container');
                 }
             },
@@ -2484,16 +2860,17 @@
             },
 
             renderNotifications(filter = 'all') {
-                const container = document.getElementById('notifications-container');
+                const container = this.safeGetEl('notifications-container');
+                if(!container) return;
                 let myNotifs = this.db.notifications.filter(n => n.userId === this.db.currentUser);
-                
+
                 if(filter === 'mentions') myNotifs = myNotifs.filter(n => n.type === 'mention' || n.type === 'reply');
 
                 if(myNotifs.length === 0) {
-                    container.innerHTML = `<div class="empty-state"><h3>Karanlık ve Sessiz</h3><p>Şu an için sistemde sana ulaşan bir sinyal yok.</p></div>`;
+                    container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><h3>Karanlık ve Sessiz</h3><p>Şu an için sistemde sana ulaşan bir sinyal yok.</p></div>`;
                     return;
                 }
-                
+
                 let html = '';
                 myNotifs.sort((a,b) => b.time - a.time).forEach(n => {
                     let iconSvg = `<svg viewBox="0 0 24 24" fill="var(--primary-core)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
@@ -2501,9 +2878,10 @@
                     if(n.type === 'repost') iconSvg = `<svg viewBox="0 0 24 24" fill="var(--success)"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>`;
                     if(n.type === 'follow') iconSvg = `<svg viewBox="0 0 24 24" fill="var(--neon-blue)"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
                     if(n.type === 'reply') iconSvg = `<svg viewBox="0 0 24 24" fill="var(--primary-hover)"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>`;
+                    if(n.type === 'mention') iconSvg = `<svg viewBox="0 0 24 24" fill="var(--neon-blue)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c2.21 0 4.27-.72 5.93-1.93l-1.4-1.4A7.97 7.97 0 0 1 12 20a8 8 0 1 1 8-8v.5a1.5 1.5 0 0 1-3 0V12a5 5 0 1 0-1.46 3.54A4 4 0 0 0 22 12.5V12c0-5.52-4.48-10-10-10zm0 14a4 4 0 1 1 0-8 4 4 0 0 1 0 8z"/></svg>`;
 
                     html += `
-                        <div class="notification-card ${n.read ? '' : 'unread'}" onclick="app.markAsRead('${n.id}')">
+                        <div class="notification-card ${n.read ? '' : 'unread'}" onclick="app.onNotificationClick('${n.id}')">
                             <div class="notif-icon">${iconSvg}</div>
                             <div class="notif-content">
                                 <div class="notif-text">${n.text}</div>
@@ -2519,8 +2897,31 @@
                 const n = this.db.notifications.find(x => x.id === notifId);
                 if(n) n.read = true;
                 this.saveDB();
-                this.renderNotifications(document.querySelector('#view-notifications .feed-tab.active').innerText === 'Bahsetmeler' ? 'mentions' : 'all');
+                const activeEl = document.querySelector('#view-notifications .feed-tab.active');
+                const tab = (activeEl && activeEl.dataset.notificationTab) || 'all';
+                this.renderNotifications(tab);
                 this.updateUIWithCurrentUser();
+            },
+
+            onNotificationClick(notifId) {
+                const n = this.db.notifications.find(x => x.id === notifId);
+                if(!n) return;
+                n.read = true;
+                this.saveDB();
+                this.updateUIWithCurrentUser();
+                // Route if link is present.
+                if(n.link && n.link.type && n.link.id) {
+                    if(n.link.type === 'post') {
+                        const post = this.db.posts.find(p => p.id === n.link.id);
+                        if(post) { this.openPostDetail(post.id); return; }
+                    } else if(n.link.type === 'profile') {
+                        if(this.getUser(n.link.id)) { this.goToProfile(n.link.id); return; }
+                    }
+                }
+                // Link yoksa sadece bildirim listesini tazele.
+                const activeEl = document.querySelector('#view-notifications .feed-tab.active');
+                const tab = (activeEl && activeEl.dataset.notificationTab) || 'all';
+                this.renderNotifications(tab);
             },
 
             markAllNotifsRead() {
@@ -2563,7 +2964,10 @@
             },
 
             renderMessagesList() {
-                const container = document.getElementById('msg-list');
+                const container = this.safeGetEl('msg-list');
+                if(!container) return;
+                // Mobilden masaüstüne dönüldüğünde liste display:none kalmış olabilir, reset.
+                container.style.display = '';
                 const myId = this.db.currentUser;
                 
                 let html = `<div style="padding: 15px;">
@@ -2704,30 +3108,29 @@
                 const validMsgs = chat.messages.filter(m => !m.isDeleted);
 
                 if(validMsgs.length === 0) {
-                    msgBox.innerHTML = `<div class="empty-state"><p>Ağ bağlantısı kuruldu. İletişime geç.</p></div>`;
+                    msgBox.innerHTML = `<div class="empty-state" style="padding:36px 24px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><h3>Sohbet boş</h3><p>İlk mesajı sen at, bağlantıyı başlat.</p></div>`;
                 } else {
                     let html = '';
-                    validMsgs.forEach((m, idx) => {
+                    validMsgs.forEach(m => {
                         const isMe = m.senderId === myId;
                         let statusIcon = '';
                         if(isMe) {
-                            if(m.readBy && m.readBy.includes(this.currentChatUserId)) {
-                                statusIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-                            } else {
-                                statusIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>`; // could be single tick logic here
-                            }
+                            const seen = m.readBy && m.readBy.includes(this.currentChatUserId);
+                            statusIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="${seen ? 'var(--neon-blue)' : 'currentColor'}" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
                         }
 
-                        // Message Reactions Sim
                         let reactHtml = '';
-                        if(m.reaction) {
-                            reactHtml = `<div class="msg-reactions">${m.reaction}</div>`;
-                        }
+                        if(m.reaction) reactHtml = `<div class="msg-reactions">${this.escapeHTML(m.reaction)}</div>`;
+
+                        // Görsel URL preview (sanitize edilmiş + image uzantısı).
+                        const mediaSafe = this.detectMessageImage(m.text);
+                        const inlineMedia = mediaSafe ? `<img src="${mediaSafe}" class="msg-inline-media" onclick="event.stopPropagation(); app.zoomImage('${mediaSafe}')" onerror="this.style.display='none'" loading="lazy">` : '';
 
                         html += `
                             <div class="msg-bubble-wrapper ${isMe ? 'sent' : 'received'}" ondblclick="app.addReactionToMsg('${chat.id}', '${m.id}')">
                                 <div class="msg-bubble ${isMe ? 'msg-sent' : 'msg-received'}">
                                     ${this.parseContent(m.text)}
+                                    ${inlineMedia}
                                     ${reactHtml}
                                 </div>
                                 <span class="msg-time">${new Date(m.timestamp).toLocaleTimeString('tr-TR', {hour:'2-digit', minute:'2-digit'})} ${statusIcon}</span>
@@ -2737,7 +3140,19 @@
                     msgBox.innerHTML = html;
                     msgBox.scrollTop = msgBox.scrollHeight;
                 }
-                setTimeout(() => document.getElementById('chat-msg-input').focus(), 100);
+                setTimeout(() => { const el = this.safeGetEl('chat-msg-input'); if(el) el.focus(); }, 80);
+            },
+
+            detectMessageImage(text) {
+                if(!text || typeof text !== 'string') return '';
+                const match = text.match(/https?:\/\/[^\s]+/i);
+                if(!match) return '';
+                const safe = this.sanitizeURL(match[0]);
+                if(!safe) return '';
+                // Yaygın görsel uzantıları veya bilinen hosting domain'leri.
+                if(/\.(jpg|jpeg|png|gif|webp|avif)(\?|$)/i.test(safe)) return safe;
+                if(/^https?:\/\/(images|cdn|i)\./i.test(safe)) return safe;
+                return '';
             },
 
             addReactionToMsg(chatId, msgId) {
@@ -2842,20 +3257,33 @@
             // 5. ETKİLEŞİMLER VE POST İŞLEMLERİ
             // ==========================================
             submitPost(inputId, mediaInputId) {
-                const input = document.getElementById(inputId);
-                const mediaInput = document.getElementById(mediaInputId);
+                const input = this.safeGetEl(inputId);
+                if(!input) return;
+                const mediaInput = this.safeGetEl(mediaInputId);
                 const content = input.value.trim();
                 const mediaVal = mediaInput ? mediaInput.value.trim() : '';
-                
-                if(!content && !mediaVal && !this.pendingQuoteId) return;
-                
+
+                const me = this.getUser(this.db.currentUser);
+                if(!me) { this.showToast('Oturum geçersiz, tekrar giriş yap.', 'error'); return; }
+                const limit = me.isPremium ? 500 : 280;
+
+                if(!content && !mediaVal && !this.pendingQuoteId) {
+                    this.showToast('Boş gönderi paylaşılamaz.', 'error');
+                    return;
+                }
+                if(content.length > limit) {
+                    this.showToast(`Karakter limiti aşıldı (${content.length}/${limit}).`, 'error');
+                    return;
+                }
+
                 let mediaArray = null;
                 if(mediaVal) {
-                    mediaArray = mediaVal.split(',').map(u => u.trim()).filter(u => u.length > 0);
+                    mediaArray = mediaVal.split(',').map(u => this.sanitizeURL(u)).filter(u => u.length > 0).slice(0, 4);
+                    if(mediaArray.length === 0) mediaArray = null;
                 }
-                
+
                 const newPost = {
-                    id: 'p_' + Date.now(),
+                    id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,5),
                     authorId: this.db.currentUser,
                     content: content,
                     media: mediaArray,
@@ -2863,98 +3291,186 @@
                     timestamp: Date.now(),
                     likes: 0, reposts: 0, replies: 0, views: 0,
                     likedBy: [], repostedBy: [], savedBy: [],
-                    engagementScore: 50 // base score
+                    engagementScore: 50
                 };
 
                 this.db.posts.unshift(newPost);
                 this.saveDB();
-                
+
+                // Mention bildirimleri — yeni post içeriğindeki benzersiz geçerli @handle'lara bildirim üret.
+                this.fanoutMentionNotifications(newPost);
+
                 input.value = '';
-                if(mediaInput) { mediaInput.value = ''; mediaInput.parentElement.classList.remove('active'); }
-                if(inputId === 'main-post-input') document.getElementById('main-char-count').innerText = '0/' + (this.getUser(this.db.currentUser).isPremium ? '500' : '280');
-                
+                if(mediaInput) { mediaInput.value = ''; if(mediaInput.parentElement) mediaInput.parentElement.classList.remove('active'); }
+                if(inputId === 'main-post-input') this.renderCharRing('main-char-count', 0);
+                this.updateComposerSubmitState();
+
                 this.pendingQuoteId = null;
                 this.closeModal('post-modal');
                 this.showToast('Gönderin ağa eklendi.', 'success');
-                
-                if(document.getElementById('view-home').classList.contains('active')) this.renderHomeFeed(true);
+
+                const homeView = this.safeGetEl('view-home');
+                if(homeView && homeView.classList.contains('active')) this.renderHomeFeed(true);
+            },
+
+            fanoutMentionNotifications(post) {
+                if(!post || !post.content) return;
+                const matches = String(post.content).match(/@([A-Za-z0-9_]+)/g);
+                if(!matches || matches.length === 0) return;
+                const me = this.getUser(post.authorId);
+                if(!me) return;
+                const seen = new Set();
+                matches.forEach(m => {
+                    const handle = m.slice(1).toLowerCase();
+                    if(seen.has(handle)) return;
+                    seen.add(handle);
+                    const target = this.db.users.find(u => u.handle && u.handle.toLowerCase() === handle);
+                    if(!target || target.id === me.id) return;
+                    this.createNotification(
+                        'mention',
+                        `<b>${this.escapeHTML(me.name)}</b> seni bir gönderide etiketledi.`,
+                        target.id,
+                        { type: 'post', id: post.id }
+                    );
+                });
+            },
+
+            renderCharRing(counterId, len) {
+                const counter = this.safeGetEl(counterId);
+                if(!counter) return;
+                const me = this.getUser(this.db.currentUser);
+                const lim = (me && me.isPremium) ? 500 : 280;
+                counter.dataset.max = lim;
+                counter.dataset.len = len;
+                counter.title = `${len}/${lim}`;
+                const ratio = Math.min(1, len / lim);
+                const ring = counter.querySelector('.char-ring-progress');
+                if(ring) {
+                    const C = 62.83; // 2 * PI * 10
+                    ring.style.strokeDashoffset = (C * (1 - ratio)).toFixed(2);
+                }
+                counter.classList.toggle('warning', len > lim - 20 && len <= lim);
+                counter.classList.toggle('danger', len > lim);
+                counter.classList.toggle('near', len > lim - 20);
+                const numEl = counter.querySelector('.char-num');
+                if(numEl) numEl.innerText = (len > lim) ? `-${len - lim}` : `${lim - len}`;
+            },
+
+            updateComposerSubmitState() {
+                // Composer "Paylaş" butonu: içerik boşsa veya limit aşıldıysa pasif görünür.
+                const me = this.getUser(this.db.currentUser);
+                const limit = me && me.isPremium ? 500 : 280;
+                const wire = (inpId, btn) => {
+                    const inp = this.safeGetEl(inpId);
+                    if(!inp || !btn) return;
+                    const len = inp.value.trim().length;
+                    const ok = (len > 0 && len <= limit);
+                    btn.style.opacity = ok ? '1' : '0.5';
+                    btn.style.pointerEvents = ok ? '' : 'none';
+                };
+                const mainArea = document.querySelector('#view-home .create-post-area .post-submit-area .btn-primary');
+                wire('main-post-input', mainArea);
+                const modalBtn = document.querySelector('#post-modal .modal-header .btn-primary');
+                wire('modal-post-input', modalBtn);
             },
 
             toggleLike(postId) {
                 const post = this.db.posts.find(p => p.id === postId);
                 if(!post) return;
-                if(!post.likedBy) post.likedBy = [];
-                
+                if(!Array.isArray(post.likedBy)) post.likedBy = [];
                 const myId = this.db.currentUser;
+                if(!myId) { this.showToast('Önce giriş yap.', 'error'); return; }
                 const idx = post.likedBy.indexOf(myId);
+                const liked = idx === -1;
                 if(idx > -1) {
                     post.likedBy.splice(idx, 1);
-                    post.likes--;
-                    post.engagementScore = Math.max(0, post.engagementScore - 2);
+                    post.likes = Math.max(0, (post.likes||0) - 1);
+                    post.engagementScore = Math.max(0, (post.engagementScore||0) - 2);
                 } else {
                     post.likedBy.push(myId);
-                    post.likes++;
-                    post.engagementScore += 2;
+                    post.likes = (post.likes||0) + 1;
+                    post.engagementScore = (post.engagementScore||0) + 2;
                     const me = this.getUser(myId);
-                    this.createNotification('like', `<b>${me.name}</b> gönderini beğendi.`, post.authorId);
+                    if(me && post.authorId !== myId) {
+                        this.createNotification('like', `<b>${this.escapeHTML(me.name)}</b> gönderini beğendi.`, post.authorId, { type: 'post', id: post.id });
+                    }
                 }
-                this.saveDB(); this.silentUpdateFeedStats();
-                
-                // Toggle visually without re-render
-                event.currentTarget.classList.toggle('liked');
-                const svg = event.currentTarget.querySelector('svg');
-                if(idx > -1) { svg.setAttribute('fill', 'none'); } else { svg.setAttribute('fill', 'var(--neon-pink)'); }
+                this.saveDB();
+                this.silentUpdateFeedStats();
+                document.querySelectorAll(`.post-card[data-id="${postId}"] .stat-like`).forEach(el => {
+                    el.classList.toggle('liked', liked);
+                    const svg = el.querySelector('svg');
+                    if(svg) svg.setAttribute('fill', liked ? 'var(--neon-pink)' : 'none');
+                });
             },
 
             toggleRepost(postId) {
                 const post = this.db.posts.find(p => p.id === postId);
                 if(!post) return;
-                if(!post.repostedBy) post.repostedBy = [];
-                
+                if(!Array.isArray(post.repostedBy)) post.repostedBy = [];
                 const myId = this.db.currentUser;
+                if(!myId) { this.showToast('Önce giriş yap.', 'error'); return; }
                 const idx = post.repostedBy.indexOf(myId);
                 if(idx > -1) {
                     post.repostedBy.splice(idx, 1);
-                    post.reposts--;
-                    post.engagementScore = Math.max(0, post.engagementScore - 5);
+                    post.reposts = Math.max(0, (post.reposts||0) - 1);
+                    post.engagementScore = Math.max(0, (post.engagementScore||0) - 5);
+                    this.showToast('Repost kaldırıldı.', 'info');
                 } else {
                     post.repostedBy.push(myId);
-                    post.reposts++;
-                    post.engagementScore += 5;
+                    post.reposts = (post.reposts||0) + 1;
+                    post.engagementScore = (post.engagementScore||0) + 5;
                     const me = this.getUser(myId);
-                    this.createNotification('repost', `<b>${me.name}</b> gönderini repostladı.`, post.authorId);
+                    if(me && post.authorId !== myId) {
+                        this.createNotification('repost', `<b>${this.escapeHTML(me.name)}</b> gönderini repostladı.`, post.authorId, { type: 'post', id: post.id });
+                    }
                     this.showToast('Gönderi repost edildi.', 'success');
                 }
-                this.saveDB(); this.refreshCurrentFeed();
+                this.saveDB();
+                this.silentUpdateFeedStats();
+                document.querySelectorAll(`.post-card[data-id="${postId}"] .stat-repost`).forEach(el => {
+                    el.classList.toggle('reposted', post.repostedBy.includes(myId));
+                });
             },
 
             toggleBookmark(postId) {
                 const post = this.db.posts.find(p => p.id === postId);
                 if(!post) return;
-                if(!post.savedBy) post.savedBy = [];
-                
+                if(!Array.isArray(post.savedBy)) post.savedBy = [];
                 const myId = this.db.currentUser;
+                if(!myId) { this.showToast('Önce giriş yap.', 'error'); return; }
                 const idx = post.savedBy.indexOf(myId);
                 if(idx > -1) {
                     post.savedBy.splice(idx, 1);
                     this.showToast('Kaydedilenlerden çıkarıldı.', 'info');
-                    event.currentTarget.style.color = '';
                 } else {
                     post.savedBy.push(myId);
                     this.showToast('Gönderi kaydedildi.', 'success');
-                    event.currentTarget.style.color = 'var(--primary-core)';
                 }
                 this.saveDB();
+                document.querySelectorAll(`.post-card[data-id="${postId}"] .stat-save`).forEach(el => {
+                    const saved = post.savedBy.includes(myId);
+                    el.classList.toggle('saved', saved);
+                    el.style.color = saved ? 'var(--primary-core)' : '';
+                });
+                if(this.safeGetEl('view-bookmarks') && this.safeGetEl('view-bookmarks').classList.contains('active')) {
+                    this.renderBookmarks();
+                }
             },
 
             refreshCurrentFeed() {
-                if(document.getElementById('view-home').classList.contains('active')) this.renderHomeFeed();
-                if(document.getElementById('view-profile').classList.contains('active')) {
-                    const activeTab = document.querySelector('#profile-tabs-container .feed-tab.active').innerText;
-                    this.loadProfileFeed(activeTab, this.currentProfileId);
+                const homeView = this.safeGetEl('view-home');
+                const profileView = this.safeGetEl('view-profile');
+                const bookmarksView = this.safeGetEl('view-bookmarks');
+                const postModal = this.safeGetEl('post-detail-modal');
+                if(homeView && homeView.classList.contains('active')) this.renderHomeFeed();
+                if(profileView && profileView.classList.contains('active')) {
+                    const tabEl = document.querySelector('#profile-tabs-container .feed-tab.active');
+                    const tabKey = (tabEl && tabEl.dataset.profileTab) || 'posts';
+                    this.loadProfileFeed(tabKey, this.currentProfileId || this.db.currentUser);
                 }
-                if(document.getElementById('view-bookmarks').classList.contains('active')) this.renderBookmarks();
-                if(document.getElementById('post-detail-modal').classList.contains('active')) this.openPostDetail(this.viewingPostId);
+                if(bookmarksView && bookmarksView.classList.contains('active')) this.renderBookmarks();
+                if(postModal && postModal.classList.contains('active') && this.viewingPostId) this.openPostDetail(this.viewingPostId, { silent: true, preserveScroll: true });
             },
 
             // ==========================================
@@ -2976,27 +3492,45 @@
             },
 
             openModal(id) {
-                document.getElementById(id).classList.add('active');
+                const el = this.safeGetEl(id);
+                if(!el) return;
+                el.classList.add('active');
                 document.body.style.overflow = 'hidden';
+                if(id === 'post-modal') {
+                    const me = this.getUser(this.db.currentUser);
+                    const mi = this.safeGetEl('modal-post-input');
+                    if(mi) { mi.value = ''; setTimeout(() => mi.focus(), 50); }
+                    const mc = this.safeGetEl('modal-media-url');
+                    if(mc) { mc.value = ''; if(mc.parentElement) mc.parentElement.classList.remove('active'); }
+                    if(me) {
+                        const ma = this.safeGetEl('modal-avatar');
+                        if(ma) ma.src = this.getAvatar(me);
+                    }
+                    this.updateComposerSubmitState();
+                }
             },
             closeModal(id) {
-                document.getElementById(id).classList.remove('active');
+                const el = this.safeGetEl(id);
+                if(!el) return;
+                el.classList.remove('active');
                 if(!document.querySelector('.modal-overlay.active')) document.body.style.overflow = '';
             },
 
             setupEventListeners() {
-                const mainInput = document.getElementById('main-post-input');
-                const mainCounter = document.getElementById('main-char-count');
+                const mainInput = this.safeGetEl('main-post-input');
                 if(mainInput) {
                     mainInput.addEventListener('input', (e) => {
-                        const len = e.target.value.length;
-                        const limit = this.getUser(this.db.currentUser).isPremium ? 500 : 280;
-                        mainCounter.innerText = `${len}/${limit}`;
-                        if(len > limit - 20) mainCounter.className = 'char-counter danger';
-                        else if(len > limit - 80) mainCounter.className = 'char-counter warning';
-                        else mainCounter.className = 'char-counter';
+                        this.renderCharRing('main-char-count', e.target.value.length);
+                        this.updateComposerSubmitState();
                     });
                 }
+                const modalInput = this.safeGetEl('modal-post-input');
+                if(modalInput) {
+                    modalInput.addEventListener('input', () => this.updateComposerSubmitState());
+                }
+                // İlk durum.
+                this.renderCharRing('main-char-count', mainInput ? mainInput.value.length : 0);
+                this.updateComposerSubmitState();
 
                 // Global Click for Ripple
                 document.addEventListener('click', function(e) {
@@ -3018,6 +3552,19 @@
                     }
                 });
 
+                // Escape ile aktif modali kapat.
+                document.addEventListener('keydown', (e) => this.handleGlobalKey(e));
+
+                // Viewport resize: mobil → desktop'a geçişte gizlenmiş mesaj listesini geri getir.
+                window.addEventListener('resize', () => {
+                    if(window.innerWidth > 576) {
+                        const list = this.safeGetEl('msg-list');
+                        if(list && list.style.display === 'none') list.style.display = '';
+                        const back = this.safeGetEl('btn-back-chat');
+                        if(back) back.style.display = 'none';
+                    }
+                });
+
                 // Infinite Scroll Simulation
                 const mainScrollArea = document.getElementById('main-scroll-area');
                 if(mainScrollArea) {
@@ -3025,12 +3572,269 @@
                         if(document.getElementById('view-home').classList.contains('active')) {
                             if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) {
                                 const btn = document.getElementById('home-load-more');
-                                if(btn.style.display !== 'none') {
+                                if(btn && btn.style.display !== 'none') {
                                     btn.click();
                                 }
                             }
                         }
                     });
+                }
+            },
+
+            // ==========================================
+            // 6. GÜVENLİ YARDIMCI FONKSİYONLAR (v2.1)
+            // ==========================================
+            safeGetEl(id) { return document.getElementById(id) || null; },
+
+            escapeHTML(text) {
+                if(text === null || text === undefined) return '';
+                return String(text)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            },
+
+            sanitizeURL(url) {
+                if(!url || typeof url !== 'string') return '';
+                const trimmed = url.trim();
+                if(/^https?:\/\//i.test(trimmed) || /^data:image\//i.test(trimmed) || trimmed.startsWith('assets/')) return trimmed;
+                return '';
+            },
+
+            defaultAvatar(name) {
+                const letter = encodeURIComponent(((name || '?').toString().trim().charAt(0) || '?').toUpperCase());
+                return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><rect width='100' height='100' fill='%232a2a35'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23fff' font-size='40' font-family='sans-serif'>${letter}</text></svg>`;
+            },
+
+            getAvatar(user) {
+                if(!user) return this.defaultAvatar('?');
+                const safe = this.sanitizeURL(user.avatar);
+                return safe || this.defaultAvatar(user.name);
+            },
+
+            getUser(id) {
+                if(!id || !this.db || !Array.isArray(this.db.users)) return null;
+                return this.db.users.find(u => u && u.id === id) || null;
+            },
+
+            formatNumber(n) {
+                n = Number(n);
+                if(!isFinite(n) || n < 0) n = 0;
+                if(n >= 1e9) return (n/1e9).toFixed(1).replace(/\.0$/,'') + 'B';
+                if(n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/,'') + 'M';
+                if(n >= 1e3) return (n/1e3).toFixed(1).replace(/\.0$/,'') + 'K';
+                return String(Math.floor(n));
+            },
+
+            formatTime(t) {
+                if(!t) return '';
+                const diff = Date.now() - Number(t);
+                if(!isFinite(diff) || diff < 0) return 'şimdi';
+                const sec = Math.floor(diff/1000);
+                if(sec < 60) return sec + 'sn';
+                if(sec < 3600) return Math.floor(sec/60) + 'dk';
+                if(sec < 86400) return Math.floor(sec/3600) + 'sa';
+                if(sec < 604800) return Math.floor(sec/86400) + 'g';
+                try {
+                    const d = new Date(Number(t));
+                    return d.toLocaleDateString('tr-TR', {day:'numeric', month:'short'});
+                } catch(e) { return ''; }
+            },
+
+            parseContent(text) {
+                if(text === null || text === undefined) return '';
+                let s = this.escapeHTML(text);
+                // Hashtag (Türkçe karakter desteği)
+                s = s.replace(/#([0-9A-Za-zçğıöşüÇĞİÖŞÜ_\.]+)/g, (m, tag) =>
+                    `<span class="hashtag" onclick="event.stopPropagation(); app.searchTag('#${tag}')">#${tag}</span>`);
+                // Mention
+                s = s.replace(/@([0-9A-Za-z_]+)/g, (m, h) =>
+                    `<span class="mention" onclick="event.stopPropagation(); app.searchUser('${h}')">@${h}</span>`);
+                // Newlines stay (white-space:pre-wrap on .post-text)
+                return s;
+            },
+
+            zoomImage(src) {
+                const safe = this.sanitizeURL(src);
+                if(!safe) return;
+                const img = this.safeGetEl('zoomed-image');
+                if(img) img.src = safe;
+                this.openModal('img-zoom-modal');
+            },
+
+            fillEditForm() {
+                const me = this.getUser(this.db.currentUser);
+                if(!me) return;
+                const set = (id, v) => { const el = this.safeGetEl(id); if(el) el.value = v || ''; };
+                set('edit-name', me.name);
+                set('edit-bio', me.bio);
+                set('edit-location', me.location);
+                set('edit-avatar', me.avatar);
+                set('edit-cover', me.cover);
+            },
+
+            saveProfile() {
+                const me = this.getUser(this.db.currentUser);
+                if(!me) { this.showToast('Oturum geçersiz.', 'error'); return; }
+                const get = (id) => { const el = this.safeGetEl(id); return el ? el.value.trim() : ''; };
+                const newName = get('edit-name');
+                if(!newName) { this.showToast('İsim boş olamaz.', 'error'); return; }
+                me.name = newName.slice(0, 50);
+                me.bio = get('edit-bio').slice(0, 280);
+                me.location = get('edit-location').slice(0, 60);
+                me.avatar = this.sanitizeURL(get('edit-avatar'));
+                me.cover = this.sanitizeURL(get('edit-cover'));
+                this.saveDB();
+                this.closeModal('edit-profile-modal');
+                this.updateUIWithCurrentUser();
+                this.renderProfile(me.id);
+                this.showToast('Profil güncellendi.', 'success');
+            },
+
+            renderBookmarks() {
+                const myId = this.db.currentUser;
+                const saved = this.db.posts.filter(p => Array.isArray(p.savedBy) && p.savedBy.includes(myId));
+                const container = this.safeGetEl('bookmarks-container');
+                if(saved.length === 0 && container) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                            <h3>Kaydedilenler boş</h3>
+                            <p>Beğendiğin gönderileri kaydet, burada sadece sen göreceksin.</p>
+                        </div>`;
+                    return;
+                }
+                this.renderFeed(saved, 'bookmarks-container');
+            },
+
+            getIcons() {
+                return {
+                    verified: `<svg class="verified-badge" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-4-3.818-4-.47 0-.92.088-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.162-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .493.083.964.237 1.4-1.272.65-2.147 2.022-2.147 3.6 0 1.58.875 2.95 2.148 3.6-.154.435-.238.906-.238 1.4 0 2.21 1.71 4 3.818 4 .47 0 .92-.087 1.336-.25.62 1.334 1.926 2.25 3.437 2.25 1.51 0 2.816-.916 3.437-2.25.415.163.866.25 1.336.25 2.11 0 3.818-1.79 3.818-4 0-.494-.083-.965-.237-1.4 1.272-.65 2.147-2.022 2.147-3.6zM10.5 16.42l-3.92-3.92 1.41-1.41 2.51 2.5 5.59-5.59 1.41 1.42-7 7z"/></svg>`,
+                    premium: `<svg class="premium-badge" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
+                    reply: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`,
+                    repost: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>`,
+                    like: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`,
+                    view: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><polyline points="7 14 11 10 14 13 21 6"/></svg>`,
+                    save: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`,
+                    more: `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/><circle cx="5" cy="12" r="1.6"/></svg>`,
+                    pin: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 4l6 6-4 1-4 4-1 5-2-2-5 5-1-1 5-5-2-2 5-1 4-4 1-4z"/></svg>`,
+                    close: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+                };
+            },
+
+            // ==========================================
+            // 7. VERİ NORMALİZASYONU (v2.1)
+            // ==========================================
+            normalizeDB() {
+                const db = this.db = this.db || {};
+                if(!Array.isArray(db.users)) db.users = [];
+                if(!Array.isArray(db.posts)) db.posts = [];
+                if(!Array.isArray(db.comments)) db.comments = [];
+                if(!Array.isArray(db.follows)) db.follows = [];
+                if(!Array.isArray(db.notifications)) db.notifications = [];
+                if(!Array.isArray(db.messages)) db.messages = [];
+                if(!Array.isArray(db.trends)) db.trends = [];
+                if(!Array.isArray(db.bookmarks)) db.bookmarks = [];
+                if(!db.settings || typeof db.settings !== 'object') db.settings = { theme: 'default', fontSize: 'base', density: 'comfortable', anim: 'high' };
+                if(!db.systemStats || typeof db.systemStats !== 'object') db.systemStats = { lastTick: Date.now() };
+
+                db.users.forEach(u => {
+                    if(!u || typeof u !== 'object') return;
+                    if(!u.id) u.id = 'u_' + Math.random().toString(36).slice(2,9);
+                    if(!u.name) u.name = 'Anonim';
+                    if(!u.handle) u.handle = 'user_' + String(u.id).slice(-4);
+                    if(u.avatar === undefined || u.avatar === null) u.avatar = '';
+                    if(u.cover === undefined || u.cover === null) u.cover = '';
+                    if(u.bio === undefined || u.bio === null) u.bio = '';
+                    if(u.location === undefined || u.location === null) u.location = '';
+                    if(!u.joined) u.joined = 'Ocak 2026';
+                    if(!isFinite(u.followers)) u.followers = 0;
+                    if(!isFinite(u.following)) u.following = 0;
+                    if(typeof u.isPremium !== 'boolean') u.isPremium = false;
+                    if(typeof u.isVerified !== 'boolean') u.isVerified = false;
+                    if(!u.email) u.email = u.handle + '@visiocial.com';
+                });
+
+                db.posts.forEach(p => {
+                    if(!p || typeof p !== 'object') return;
+                    if(!Array.isArray(p.likedBy)) p.likedBy = [];
+                    if(!Array.isArray(p.repostedBy)) p.repostedBy = [];
+                    if(!Array.isArray(p.savedBy)) p.savedBy = [];
+                    if(!isFinite(p.likes)) p.likes = p.likedBy.length;
+                    if(!isFinite(p.reposts)) p.reposts = p.repostedBy.length;
+                    if(!isFinite(p.replies)) p.replies = 0;
+                    if(!isFinite(p.views)) p.views = 0;
+                    if(p.likes < 0) p.likes = 0;
+                    if(p.reposts < 0) p.reposts = 0;
+                    if(p.replies < 0) p.replies = 0;
+                    if(p.views < 0) p.views = 0;
+                    if(!isFinite(p.engagementScore)) p.engagementScore = p.likes * 2 + p.reposts * 3 + p.replies * 4;
+                    if(!p.timestamp) p.timestamp = Date.now();
+                    if(p.content === undefined || p.content === null) p.content = '';
+                });
+
+                db.comments.forEach(c => {
+                    if(!c || typeof c !== 'object') return;
+                    if(!Array.isArray(c.likedBy)) c.likedBy = [];
+                    if(!isFinite(c.likes)) c.likes = c.likedBy.length;
+                    if(c.likes < 0) c.likes = 0;
+                    if(!c.timestamp) c.timestamp = Date.now();
+                    if(c.parentId === undefined) c.parentId = null;
+                    if(c.content === undefined || c.content === null) c.content = '';
+                });
+
+                db.notifications.forEach(n => {
+                    if(!n || typeof n !== 'object') return;
+                    if(typeof n.read !== 'boolean') n.read = false;
+                    if(!n.time) n.time = Date.now();
+                    if(!isFinite(n.count)) n.count = 1;
+                });
+
+                db.messages.forEach(m => {
+                    if(!m || typeof m !== 'object') return;
+                    if(!Array.isArray(m.messages)) m.messages = [];
+                    if(!Array.isArray(m.participants)) m.participants = [];
+                    if(!m.unread || typeof m.unread !== 'object') m.unread = {};
+                    m.participants.forEach(p => { if(!isFinite(m.unread[p])) m.unread[p] = 0; });
+                    m.messages.forEach(msg => {
+                        if(!msg || typeof msg !== 'object') return;
+                        if(!Array.isArray(msg.readBy)) msg.readBy = [];
+                        if(typeof msg.isDeleted !== 'boolean') msg.isDeleted = false;
+                        if(!msg.timestamp) msg.timestamp = Date.now();
+                        if(msg.text === undefined || msg.text === null) msg.text = '';
+                    });
+                    if(!m.lastUpdated) m.lastUpdated = Date.now();
+                });
+
+                db.trends.forEach(t => {
+                    if(!t || typeof t !== 'object') return;
+                    if(!isFinite(t.score)) t.score = 10;
+                    if(!t.posts) t.posts = '1K';
+                    if(!t.name) t.name = '#trend';
+                    if(!t.category) t.category = 'Genel';
+                });
+
+                if(db.currentUser && !this.getUser(db.currentUser)) db.currentUser = null;
+
+                // Bildirim büyümesini sınırla (en yeni 200).
+                if(db.notifications.length > 200) {
+                    db.notifications.sort((a,b) => (b.time||0) - (a.time||0));
+                    db.notifications = db.notifications.slice(0, 200);
+                }
+            },
+
+            // Escape modali, klavye akışı, vb. global tuş yönetimi.
+            handleGlobalKey(e) {
+                if(!e) return;
+                if(e.key === 'Escape') {
+                    const open = document.querySelectorAll('.modal-overlay.active');
+                    if(open.length > 0) {
+                        const top = open[open.length - 1];
+                        if(top && top.id) this.closeModal(top.id);
+                        e.preventDefault();
+                    }
                 }
             }
         };

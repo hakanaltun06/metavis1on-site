@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>metavis1on | Borç Yönetim Paneli v4.1</title>
+    <title>metavis1on | Borç Yönetim Paneli v5.0 (Ultimate Stability)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
@@ -136,7 +136,7 @@
         .auth-guest { background: rgba(255,255,255,0.05); color: var(--text-muted); border-color: var(--border-light); }
         .auth-admin { background: rgba(176,38,255,0.1); color: var(--accent-purple); border-color: var(--accent-purple); box-shadow: 0 0 15px rgba(176,38,255,0.2); }
 
-        /* İstatistik Kartları V4 */
+        /* İstatistik Kartları V5 */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 30px; }
         .stat-card { padding: 18px; border-radius: 12px; }
         .stat-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--text-muted), transparent); opacity: 0.3; }
@@ -156,7 +156,7 @@
         .action-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
         .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
 
-        /* Kilitli Alan Overlay V4 */
+        /* Kilitli Alan Overlay V5 */
         .locked-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-locked); backdrop-filter: blur(6px);
@@ -186,7 +186,7 @@
         .form-row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
         .form-row > * { flex: 1; min-width: 200px; }
 
-        /* Tablo Alanı V4 */
+        /* Tablo Alanı V5 */
         .table-container { width: 100%; overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-light); }
         table { width: 100%; border-collapse: collapse; min-width: 1200px; text-align: left; }
         th { background: rgba(0,0,0,0.8); padding: 15px; font-family: var(--font-display); font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border-light); cursor: pointer; white-space: nowrap; position: sticky; top: 0;}
@@ -219,7 +219,7 @@
         .charts-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .chart-container { height: 240px; width: 100%; position: relative; display: flex; align-items: center; justify-content: center;}
 
-        /* Modallar V4 */
+        /* Modallar V5 */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--bg-modal); backdrop-filter: blur(10px); 
@@ -240,7 +240,7 @@
         .close-modal { background: none; border: none; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; transition: 0.2s;}
         .close-modal:hover { color: var(--accent-red); transform: rotate(90deg);}
         
-        /* Ödeme Geçmişi Timeline V4 */
+        /* Ödeme Geçmişi Timeline V5 */
         .timeline { margin-top: 20px; padding-left: 15px; border-left: 2px solid rgba(255,255,255,0.1); }
         .timeline-item { position: relative; margin-bottom: 20px; padding-left: 25px; }
         .timeline-item::before { content: ''; position: absolute; left: -26px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-blue); border: 3px solid var(--bg-surface); box-shadow: 0 0 10px var(--accent-blue);}
@@ -259,7 +259,7 @@
         .progress-bar { height: 100%; background: var(--accent-green); width: 0%; transition: width 1s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative;}
         .progress-bar::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation: shimmer 2s infinite;}
 
-        /* Mini Admin & Log Paneli V4 */
+        /* Mini Admin & Log Paneli V5 */
         #adminPanel { display: none; margin-bottom: 30px; border-color: var(--accent-purple); box-shadow: 0 0 25px rgba(176,38,255,0.1); animation: fadeIn 0.5s; }
         #adminPanel.active { display: block; }
         .log-box { background: rgba(0,0,0,0.6); border: 1px solid var(--border-light); border-radius: 8px; height: 180px; overflow-y: auto; padding: 15px; font-family: monospace; font-size: 0.8rem; }
@@ -282,7 +282,7 @@
         .fb-online { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); border: 1px solid rgba(0,230,118,0.4); }
         .fb-offline { background: rgba(255, 51, 102, 0.15); color: var(--accent-red); border: 1px solid rgba(255,51,102,0.4); animation: pulse-red 2s infinite;}
 
-        /* Toast Bildirimleri V4 */
+        /* Toast Bildirimleri V5 */
         .toast-container { position: fixed; bottom: 25px; right: 25px; display: flex; flex-direction: column; gap: 12px; z-index: 9999; }
         .toast { 
             background: rgba(12, 12, 16, 0.95); border-left: 5px solid var(--accent-blue); backdrop-filter: blur(12px);
@@ -343,7 +343,7 @@
             <img src="assets/logo.png" alt="M" onerror="this.style.display='none'">
             <div>
                 <h1>metavis1on</h1>
-                <div class="header-slogan">Debt Management System v4.1</div>
+                <div class="header-slogan">Debt Management System v5.0 Ultimate Stability Edition</div>
             </div>
         </div>
         <div class="system-info">
@@ -374,7 +374,7 @@
                 <button class="btn" onclick="document.getElementById('importFile').click()" style="width: 100%;">📤 JSON Yedek Yükle</button>
                 <input type="file" id="importFile" style="display:none" accept=".json" onchange="importJSONAuth(event)">
                 <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px;">
-                    💡 İşlemler anlık olarak yansır ve yerelde de yedeklenir.
+                    💡 Firebase senkronizasyonu devrede. İşlemler anlık olarak buluta yansır ve yerelde de yedeklenir.
                 </div>
             </div>
             <div style="grid-column: span 2;">
@@ -406,6 +406,7 @@
             <div class="stat-title">Genel Tahsilat Oranı</div>
             <div class="stat-value number-font" id="stat-ratio">%0</div>
         </div>
+        
         <div class="glass-card stat-card glow-orange">
             <div class="stat-icon">📅</div>
             <div class="stat-title">Bu Hafta Vadesi Dolacak</div>
@@ -631,8 +632,8 @@
 
     <footer>
         <div style="font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 5px; color: #fff; letter-spacing: 2px;">metavis1on</div>
-        <div style="color: var(--accent-blue); font-weight: 500;">Debt Management System v4.1 &copy; 2026</div>
-        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--accent-gray);">Veriler güvenle korunmaktadır.</div>
+        <div style="color: var(--accent-blue); font-weight: 500;">Ultimate Debt Management System v5.0 &copy; 2026</div>
+        <div style="margin-top: 12px; font-size: 0.75rem; color: var(--accent-gray);">Gerçek zamanlı Firestore altyapısı ile güvenle korunmaktadır.</div>
     </footer>
 </div>
 
@@ -706,7 +707,7 @@
         <input type="hidden" id="pay_id">
         <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; border-top: 1px solid var(--border-light); padding-top: 20px;">
             <button class="btn" onclick="closeModal('paymentModal')">Vazgeç</button>
-            <button class="btn btn-success" onclick="savePaymentAuth()" style="padding: 10px 25px; font-size: 1rem;"><i class="locked-icon">🔒</i> Tahsilatı Onayla</button>
+            <button class="btn btn-success" id="paySubmitBtn" onclick="savePaymentAuth()" style="padding: 10px 25px; font-size: 1rem;"><i class="locked-icon">🔒</i> Tahsilatı Onayla</button>
         </div>
     </div>
 </div>
@@ -727,7 +728,7 @@
 
 <script type="module">
     /* ========================================================================
-       1. GLOBAL TOAST VE BINDING SISTEMI (EN ÜSTTE TANIMLANMALI - HATA ÇÖZÜMÜ)
+       1. GLOBAL TOAST VE BINDING SİSTEMİ (EN ÜSTTE TANIMLI - SIFIR HATA)
        ======================================================================== */
     window.showToast = function(message, type = "success") {
         try {
@@ -752,15 +753,15 @@
             setTimeout(() => toast.classList.add('show'), 10);
             setTimeout(() => {
                 toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 400);
-            }, 3500);
+                setTimeout(() => { if(toast.parentNode) toast.remove(); }, 400);
+            }, 4000); // 4 saniye auto-hide
         } catch(e) {
             console.error("Toast Bildirim Hatası:", e, message);
         }
     };
-    const showToast = window.showToast; // Local referans oluştur
+    const showToast = window.showToast; // Kendi içimizde de kullanmak için
 
-    // Modüler Importlar
+    // Modüler Firebase Importları
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, writeBatch, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -794,6 +795,8 @@
 
     let useFirebase = false;
     let app, auth, db;
+    let unsubscribeDebts = null;
+    let unsubscribeLogs = null;
 
     const COLORS = { blue: '#00E5FF', purple: '#B026FF', red: '#FF3366', green: '#00E676', orange: '#FF9100', gray: '#5A5A6E' };
 
@@ -802,6 +805,7 @@
         initClock();
         setupNetworkListeners();
 
+        // Firebase Başlatma Denemesi (Try/Catch korumalı)
         try {
             if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
                 app = initializeApp(firebaseConfig);
@@ -811,49 +815,21 @@
                 updateConnectionStatus(true);
                 initFirebaseAuth();
             } else {
-                console.warn("Firebase ayarları girilmemiş. Lokal mod ile devam ediliyor.");
-                useFirebase = false;
-                updateConnectionStatus(false, "☁️ Lokal Mod (Bağlantı Yok)");
-                const migrateBtn = document.getElementById('migrateBtn');
-                if(migrateBtn) migrateBtn.style.display = 'none'; 
-                checkLocalAuth();
-                loadDataLocal();
-                loadLogsLocal();
+                throw new Error("Geçerli Firebase config bulunamadı.");
             }
         } catch (error) {
-            console.error("Firebase başlatılırken hata:", error);
+            console.warn("Firebase başlatılamadı. Lokal moda geçiliyor:", error.message);
             useFirebase = false;
-            updateConnectionStatus(false, "☁️ Lokal Mod (Hata)");
+            updateConnectionStatus(false, "☁️ Lokal Mod (Bağlantı Yok)");
+            const migrateBtn = document.getElementById('migrateBtn');
+            if(migrateBtn) migrateBtn.style.display = 'none'; 
             checkLocalAuth();
             loadDataLocal();
             loadLogsLocal();
         }
 
-        const today = new Date().toISOString().split('T')[0];
-        const fIssue = document.getElementById('f_issueDate');
-        const fDue = document.getElementById('f_dueDate');
-        if(fIssue) fIssue.value = today;
-        if(fDue) fDue.value = today;
-
-        const fAmount = document.getElementById('f_amount');
-        const fPaid = document.getElementById('f_paid');
-        if(fPaid && fAmount) {
-            fPaid.addEventListener('input', () => {
-                if(parseFloat(fPaid.value) > parseFloat(fAmount.value)) {
-                    fPaid.value = fAmount.value;
-                    showToast("Ödenen tutar, toplam borcu aşamaz.", "warning");
-                }
-            });
-        }
-        
-        if(fDue && fIssue) {
-            fDue.addEventListener('change', () => {
-                if(fDue.value < fIssue.value) {
-                    showToast("Son ödeme tarihi, veriliş tarihinden önce olamaz.", "warning");
-                    fDue.value = fIssue.value;
-                }
-            });
-        }
+        // Form Validasyon Dinleyicileri
+        setupFormListeners();
     });
 
     function initClock() {
@@ -871,45 +847,71 @@
         window.addEventListener('online', () => {
             isOnline = true;
             if(useFirebase) updateConnectionStatus(true);
-            showToast("İnternet bağlantısı yeniden sağlandı.", "success");
-            addLog("ONLINE_MODE", "Sistem tekrar çevrimiçi oldu.");
+            showToast("İnternet bağlantısı sağlandı.", "success");
+            addLog("ONLINE_MODE", "Sistem çevrimiçi oldu.");
         });
         window.addEventListener('offline', () => {
             isOnline = false;
             updateConnectionStatus(false, "⚠️ Çevrimdışı");
             showToast("İnternet bağlantısı koptu. Sadece okunabilir mod.", "warning");
-            addLog("OFFLINE_MODE", "Sistem çevrimdışı. Bulut işlemleri durduruldu.");
+            addLog("OFFLINE_MODE", "Sistem çevrimdışı. Bulut durduruldu.");
         });
     }
 
     function updateConnectionStatus(online, text = "☁️ Bulut Aktif") {
         const statusEl = document.getElementById('fbStatus');
         if(!statusEl) return;
-        if(online && isOnline) {
-            statusEl.className = "firebase-status fb-online";
-            statusEl.innerHTML = text;
-        } else {
-            statusEl.className = "firebase-status fb-offline";
-            statusEl.innerHTML = text;
+        statusEl.className = (online && isOnline) ? "firebase-status fb-online" : "firebase-status fb-offline";
+        statusEl.innerHTML = text;
+    }
+
+    function setupFormListeners() {
+        const today = new Date().toISOString().split('T')[0];
+        const fIssue = document.getElementById('f_issueDate');
+        const fDue = document.getElementById('f_dueDate');
+        if(fIssue) fIssue.value = today;
+        if(fDue) fDue.value = today;
+
+        const fAmount = document.getElementById('f_amount');
+        const fPaid = document.getElementById('f_paid');
+        if(fPaid && fAmount) {
+            fPaid.addEventListener('input', () => {
+                let amt = parseFloat(fAmount.value) || 0;
+                let pd = parseFloat(fPaid.value) || 0;
+                if(pd > amt) {
+                    fPaid.value = fAmount.value;
+                    showToast("Ödenen tutar, toplam borcu aşamaz.", "warning");
+                }
+            });
+        }
+        
+        if(fDue && fIssue) {
+            fDue.addEventListener('change', () => {
+                if(fDue.value < fIssue.value) {
+                    showToast("Vade tarihi, veriliş tarihinden önce olamaz.", "warning");
+                    fDue.value = fIssue.value;
+                }
+            });
         }
     }
 
-    // --- AUTHENTICATION (STABILIZED) ---
+    // --- AUTHENTICATION (KIRILMAZ YAPI V5) ---
     function initFirebaseAuth() {
-        onAuthStateChanged(auth, (user) => {
-            if(user) {
-                isAdmin = true;
-                ADMIN_USER = user.email.split('@')[0];
-                // Sayfa ilk yüklendiğinde de açık oturum varsa toast göster
-                // Ama her onAuthStateChanged tetiklendiğinde spama düşmemesi için hafif kontrol eklenebilir. 
-                // Şimdilik sorunsuz.
-            } else {
-                isAdmin = false;
-            }
-            updateUIForAuth();
-            loadDataFirebase();
-            loadLogsFirebase();
-        });
+        try {
+            onAuthStateChanged(auth, (user) => {
+                if(user) {
+                    isAdmin = true;
+                    ADMIN_USER = user.email.split('@')[0];
+                } else {
+                    isAdmin = false;
+                }
+                updateUIForAuth();
+                loadDataFirebase();
+                loadLogsFirebase();
+            });
+        } catch(e) {
+            console.error("Auth state dinleme hatası:", e);
+        }
     }
 
     function checkLocalAuth() {
@@ -928,10 +930,12 @@
         const u = userEl.value.trim();
         const p = passEl.value;
         
-        if(!u || !p) return showToast("Lütfen kullanıcı adı ve şifreyi eksiksiz girin.", "warning");
+        if(!u || !p) {
+            return showToast("Lütfen e-posta/kullanıcı adı ve şifreyi girin.", "warning");
+        }
 
         const originalBtnText = btn.innerHTML;
-        btn.innerHTML = "⏳ Bağlanıyor...";
+        btn.innerHTML = "⏳ Yetki Doğrulanıyor...";
         btn.disabled = true;
 
         try {
@@ -951,7 +955,7 @@
                     showToast("Yönetici girişi başarılı. (Lokal)", "success");
                     updateUIForAuth();
                 } else {
-                    showToast("Hatalı kullanıcı bilgisi veya çevrimdışısınız.", "error");
+                    showToast("Hatalı kullanıcı bilgisi veya bulut çevrimdışı.", "error");
                     addLog("AUTH_ERROR", "Başarısız lokal giriş denemesi.");
                 }
             }
@@ -960,10 +964,11 @@
             let errMsg = "Bilinmeyen bir hata oluştu.";
             if(e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') errMsg = "Hatalı şifre veya e-posta.";
             else if(e.code === 'auth/user-not-found') errMsg = "Kullanıcı bulunamadı.";
-            else if(e.code === 'auth/network-request-failed') errMsg = "Ağ hatası. İnternet bağlantınızı kontrol edin.";
+            else if(e.code === 'auth/network-request-failed') errMsg = "Ağ hatası. İnternet yok.";
+            else if(e.code === 'auth/too-many-requests') errMsg = "Çok fazla deneme yapıldı. Lütfen bekleyin.";
             
             showToast("Giriş Başarısız: " + errMsg, "error");
-            addLog("AUTH_ERROR", `Başarısız bulut giriş denemesi: ${u}`);
+            addLog("AUTH_ERROR", `Başarısız giriş denemesi: ${u}`);
         } finally {
             btn.innerHTML = originalBtnText;
             btn.disabled = false;
@@ -976,15 +981,15 @@
                 try {
                     await signOut(auth);
                     addLog("AUTH_LOGOUT", "Yönetici buluttan çıkış yaptı.");
-                    showToast("Misafir moduna dönüldü.", "info");
+                    showToast("Güvenli çıkış yapıldı. Misafir moduna dönüldü.", "info");
                 } catch(e) {
-                    showToast("Çıkış yapılırken bir hata oluştu.", "error");
+                    showToast("Çıkış yapılırken hata: " + e.message, "error");
                 }
             } else {
                 isAdmin = false;
                 sessionStorage.removeItem('metavis1on_admin');
                 addLog("AUTH_LOGOUT", "Yönetici lokalden çıkış yaptı.");
-                showToast("Misafir moduna dönüldü.", "info");
+                showToast("Çıkış yapıldı. Misafir moduna dönüldü.", "info");
                 updateUIForAuth();
             }
         } else {
@@ -993,8 +998,7 @@
             if(userEl) userEl.value = '';
             if(passEl) passEl.value = '';
             openModal('loginModal');
-            // Modal açılınca input'a focuslan
-            setTimeout(() => { if(userEl) userEl.focus(); }, 100);
+            setTimeout(() => { if(userEl) userEl.focus(); }, 150);
         }
     }
 
@@ -1023,7 +1027,7 @@
                 if(adminPanel) adminPanel.classList.remove('active');
                 
                 adminFields.forEach(f => f.disabled = true);
-                lockedIcons.forEach(i => i.style.display = "inline");
+                lockedIcons.forEach(i => i.style.display = "inline-block");
                 if(editBadge) editBadge.style.display = "none";
                 
                 // Formu temizle (Güvenlik)
@@ -1051,11 +1055,13 @@
         return true;
     }
 
-    // --- LOG SİSTEMİ V4.1 ---
+    // --- LOG SİSTEMİ V5 ---
     function loadLogsFirebase() {
+        if(!useFirebase) return;
         try {
+            if(unsubscribeLogs) unsubscribeLogs();
             const qLogs = query(collection(db, "sysLogs"), orderBy("timestamp", "desc"));
-            onSnapshot(qLogs, (snapshot) => {
+            unsubscribeLogs = onSnapshot(qLogs, (snapshot) => {
                 sysLogs = [];
                 snapshot.forEach(doc => sysLogs.push(doc.data()));
                 renderLogs();
@@ -1099,17 +1105,15 @@
         const container = document.getElementById('sysLogsContainer');
         if(!container) return;
         container.innerHTML = '';
-        if(!sysLogs || sysLogs.length === 0) {
-            container.innerHTML = '<div class="log-item" style="color:var(--text-muted);">Sistem kaydı bulunmuyor.</div>';
+        if(!Array.isArray(sysLogs) || sysLogs.length === 0) {
+            container.innerHTML = '<div class="log-item" style="color:var(--text-muted); justify-content:center;">Sistem kaydı bulunmuyor.</div>';
             return;
         }
         
-        const renderList = sysLogs.slice(0, 50);
+        const renderList = sysLogs.slice(0, 50); // Sadece son 50
         renderList.forEach(l => {
             const div = document.createElement('div');
             div.className = 'log-item';
-            
-            // Renkleri CSS'te tanımlanan class'lara göre alacak
             div.innerHTML = `
                 <span class="log-time">${l.time || ""}</span> 
                 <span class="log-type ${l.type || "SYSTEM"}">${l.type || "SYSTEM"}</span> 
@@ -1119,41 +1123,50 @@
         });
     }
 
-    // --- VERİ YÖNETİMİ (NORMALIZATION V4.1) ---
+    // --- DATA NORMALIZATION V5 ---
     function normalizeDebt(d, docId = null) {
-        if(!d) return null;
-        return {
-            id: docId || d.id || generateId(),
-            refCode: d.refCode || ("SYS-" + Math.floor(Math.random()*100000)),
-            name: d.name || "Bilinmiyor",
-            phone: d.phone || "",
-            amount: parseFloat(d.amount) || 0,
-            paid: parseFloat(d.paid) || 0,
-            isInst: Boolean(d.isInst),
-            instCount: parseInt(d.instCount) || null,
-            issueDate: d.issueDate || new Date().toISOString().split('T')[0],
-            dueDate: d.dueDate || new Date().toISOString().split('T')[0],
-            priority: d.priority || "normal",
-            tag: d.tag || "diger",
-            note: d.note || "",
-            createdAt: d.createdAt || new Date().toISOString(),
-            updatedAt: d.updatedAt || new Date().toISOString(),
-            payments: Array.isArray(d.payments) ? d.payments : []
-        };
+        if(typeof d !== 'object' || d === null) return null;
+        try {
+            return {
+                id: docId || d.id || generateId(),
+                refCode: d.refCode || ("SYS-" + Math.floor(Math.random()*100000)),
+                name: d.name || "İsimsiz",
+                phone: d.phone || "",
+                amount: parseFloat(d.amount) || 0,
+                paid: parseFloat(d.paid) || 0,
+                isInst: Boolean(d.isInst),
+                instCount: parseInt(d.instCount) || null,
+                issueDate: d.issueDate || new Date().toISOString().split('T')[0],
+                dueDate: d.dueDate || new Date().toISOString().split('T')[0],
+                priority: d.priority || "normal",
+                tag: d.tag || "diger",
+                note: d.note || "",
+                createdAt: d.createdAt || new Date().toISOString(),
+                updatedAt: d.updatedAt || new Date().toISOString(),
+                payments: Array.isArray(d.payments) ? d.payments : []
+            };
+        } catch(e) {
+            console.error("Data Normalization Error:", e, d);
+            return null;
+        }
     }
 
     function loadDataFirebase() {
+        if(!useFirebase) return;
         try {
-            onSnapshot(collection(db, "debts"), (snapshot) => {
+            if(unsubscribeDebts) unsubscribeDebts();
+            unsubscribeDebts = onSnapshot(collection(db, "debts"), (snapshot) => {
                 debts = [];
                 snapshot.forEach(doc => {
                     let data = normalizeDebt(doc.data(), doc.id);
                     if(data) debts.push(data);
                 });
                 
-                // Backup mechanism
-                localStorage.setItem('metavis1on_debts_backup', JSON.stringify(debts));
-                localStorage.setItem('metavis1on_last_backup', new Date().toLocaleString());
+                // Güvenli Local Backup
+                try {
+                    localStorage.setItem('metavis1on_debts_backup', JSON.stringify(debts));
+                    localStorage.setItem('metavis1on_last_backup', new Date().toLocaleString());
+                } catch(e) { console.warn("Local backup failed:", e); }
                 
                 updateAllStatuses();
                 applyFilters();
@@ -1162,7 +1175,7 @@
             }, (error) => {
                 console.error("Veri onSnapshot hatası:", error);
                 if(error.code === 'permission-denied') {
-                    showToast("Veri okuma reddedildi: Firebase kuralları veya yetki sorunu.", "error");
+                    showToast("Veri okuma reddedildi: Firebase kuralları veya yetki eksik.", "error");
                 }
             });
         } catch (e) {
@@ -1192,14 +1205,16 @@
     }
 
     function saveDataLocalOnly() {
-        localStorage.setItem('metavis1on_debts', JSON.stringify(debts));
+        try {
+            localStorage.setItem('metavis1on_debts', JSON.stringify(debts));
+        } catch(e) { console.error("Save Data Error:", e); }
         updateAllStatuses();
         applyFilters();
         updateStats();
         drawCharts();
     }
 
-    // Migration
+    // --- MIGRATION & DEMO ---
     async function migrateLocalToFirebase() {
         if(!requireAdmin() || !useFirebase) return;
         const localData = localStorage.getItem('metavis1on_debts') || localStorage.getItem('metavis1on_debts_backup');
@@ -1216,16 +1231,16 @@
         try {
             const batch = writeBatch(db);
             parsed.forEach(d => {
-                const docRef = doc(collection(db, "debts"));
                 const dataToSave = normalizeDebt(d);
                 if(dataToSave) {
+                    const docRef = doc(collection(db, "debts"));
                     delete dataToSave.id; 
                     batch.set(docRef, dataToSave);
                 }
             });
             await batch.commit();
             localStorage.removeItem('metavis1on_debts'); 
-            addLog("MIGRATE_LOCAL_TO_FIREBASE", `${parsed.length} adet yerel kayıt buluta aktarıldı.`);
+            addLog("MIGRATE_LOCAL_TO_FIREBASE", `${parsed.length} yerel kayıt buluta geçirildi.`);
             showToast("Aktarım başarılı!", "success");
         } catch(e) {
             console.error("Migrate Hatası:", e);
@@ -1258,7 +1273,7 @@
                 await batch.commit();
                 addLog("LOAD_DEMO", "Demo veriler buluta yüklendi.");
                 showToast("Demo veriler yüklendi.", "success");
-            } catch(e) { showToast("Hata: "+e.message, "error"); }
+            } catch(e) { showToast("Demo yükleme hatası: "+e.message, "error"); }
         } else {
             demoSet.forEach(d => { 
                 let normalized = normalizeDebt(d, generateId());
@@ -1272,12 +1287,13 @@
 
     function confirmResetDataAuth() {
         if(!requireAdmin()) return;
-        document.getElementById('confirmText').innerHTML = "TÜM borç verileri, grafikler ve geçmiş silinecek!<br><br><strong style='color:var(--accent-red);'>Bu işlem geri döndürülemez.</strong>";
+        const cText = document.getElementById('confirmText');
+        if(cText) cText.innerHTML = "TÜM borç verileri, grafikler ve geçmiş silinecek!<br><br><strong style='color:var(--accent-red);'>Bu işlem geri döndürülemez.</strong>";
         openModal('confirmModal');
         
         confirmCallback = async () => {
             const btn = document.getElementById('confirmActionBtn');
-            btn.innerText = "Siliniyor... ⏳"; btn.disabled = true;
+            if(btn) { btn.innerText = "Siliniyor... ⏳"; btn.disabled = true; }
 
             try {
                 if(useFirebase && isOnline) {
@@ -1290,23 +1306,26 @@
                 } else {
                     let s = debts.length;
                     debts = [];
+                    sysLogs = [];
                     saveDataLocalOnly();
                     localStorage.removeItem('metavis1on_debts_backup');
+                    localStorage.removeItem('metavis1on_logs');
                     addLog("RESET_SYSTEM", `Sistem sıfırlandı. ${s} lokal kayıt silindi.`);
                     showToast("Tüm lokal veriler sıfırlandı.", "success");
                 }
             } catch(e) {
                 console.error("Reset Error:", e);
-                showToast("Sıfırlama sırasında hata oluştu.", "error");
+                showToast("Sıfırlama sırasında hata.", "error");
             } finally {
-                btn.innerHTML = `<i class="locked-icon">🔒</i> Evet, Kesinlikle Onaylıyorum`; 
-                btn.disabled = false;
+                if(btn) { btn.innerHTML = `<i class="locked-icon">🔒</i> Evet, Kesinlikle Onaylıyorum`; btn.disabled = false; }
                 closeModal('confirmModal');
             }
         };
-        document.getElementById('confirmActionBtn').onclick = confirmCallback;
+        const actBtn = document.getElementById('confirmActionBtn');
+        if(actBtn) actBtn.onclick = confirmCallback;
     }
 
+    // --- YARDIMCI FONKSİYONLAR ---
     function generateId() { return 'debt_' + Math.random().toString(36).substr(2, 9); }
     
     function calculateStatus(debt) {
@@ -1343,7 +1362,7 @@
         return isNaN(d) ? '-' : d.toLocaleDateString('tr-TR');
     }
 
-    // --- FORM İŞLEMLERİ V4.1 ---
+    // --- FORM İŞLEMLERİ V5 ---
     function toggleSection(id) {
         const sec = document.getElementById(id);
         if(!sec) return;
@@ -1367,34 +1386,45 @@
         btn.innerHTML = "⏳ İşleniyor..."; 
         btn.disabled = true;
 
-        const id = document.getElementById('editId').value;
-        const amount = parseFloat(document.getElementById('f_amount').value) || 0;
-        let paid = parseFloat(document.getElementById('f_paid').value) || 0;
-        if(paid > amount) paid = amount;
-
-        const isInstEl = document.getElementById('f_isInst');
-        const isInst = isInstEl ? isInstEl.checked : false;
-        const instCount = isInst ? parseInt(document.getElementById('f_instCount').value) : null;
-        let refCodeInput = document.getElementById('f_ref').value.trim().toUpperCase();
-        if(!refCodeInput) refCodeInput = "SYS-" + Math.floor(Math.random()*100000);
-
-        const debtObj = normalizeDebt({
-            refCode: refCodeInput,
-            name: document.getElementById('f_name').value.trim(),
-            phone: document.getElementById('f_phone').value.trim(),
-            amount: amount,
-            paid: paid,
-            isInst: isInst,
-            instCount: instCount,
-            issueDate: document.getElementById('f_issueDate').value,
-            dueDate: document.getElementById('f_dueDate').value,
-            priority: document.getElementById('f_priority').value,
-            tag: document.getElementById('f_tag').value,
-            note: document.getElementById('f_note').value.trim(),
-            updatedAt: new Date().toISOString()
-        });
-
         try {
+            const idEl = document.getElementById('editId');
+            const amtEl = document.getElementById('f_amount');
+            const pdEl = document.getElementById('f_paid');
+            const isInstEl = document.getElementById('f_isInst');
+            const instCEl = document.getElementById('f_instCount');
+            const refEl = document.getElementById('f_ref');
+            const nameEl = document.getElementById('f_name');
+
+            if(!amtEl || !nameEl) throw new Error("Gerekli form alanları bulunamadı.");
+
+            const id = idEl.value;
+            const amount = parseFloat(amtEl.value) || 0;
+            let paid = parseFloat(pdEl ? pdEl.value : 0) || 0;
+            if(paid > amount) paid = amount;
+
+            const isInst = isInstEl ? isInstEl.checked : false;
+            const instCount = isInst && instCEl ? parseInt(instCEl.value) : null;
+            let refCodeInput = refEl ? refEl.value.trim().toUpperCase() : "";
+            if(!refCodeInput) refCodeInput = "SYS-" + Math.floor(Math.random()*100000);
+
+            const debtObj = normalizeDebt({
+                refCode: refCodeInput,
+                name: nameEl.value.trim(),
+                phone: document.getElementById('f_phone')?.value.trim() || "",
+                amount: amount,
+                paid: paid,
+                isInst: isInst,
+                instCount: instCount,
+                issueDate: document.getElementById('f_issueDate')?.value || "",
+                dueDate: document.getElementById('f_dueDate')?.value || "",
+                priority: document.getElementById('f_priority')?.value || "normal",
+                tag: document.getElementById('f_tag')?.value || "diger",
+                note: document.getElementById('f_note')?.value.trim() || "",
+                updatedAt: new Date().toISOString()
+            });
+
+            if(!debtObj) throw new Error("Veri oluşturulamadı.");
+
             if (id) {
                 // Düzenleme Modu
                 const existing = debts.find(d => d.id === id);
@@ -1439,7 +1469,7 @@
         } catch(err) {
             console.error("Form Submit Hatası:", err);
             let eMsg = "İşlem reddedildi.";
-            if(err.code === 'permission-denied') eMsg = "Yazma izni reddedildi (Güvenlik Kuralı).";
+            if(err.code === 'permission-denied') eMsg = "Yazma izni reddedildi (Güvenlik).";
             showToast("Kayıt hatası: " + eMsg, "error");
         } finally {
             btn.innerHTML = originalText;
@@ -1479,37 +1509,45 @@
         const debt = debts.find(d => d.id === id);
         if(!debt) return;
 
-        document.getElementById('editId').value = debt.id || '';
-        document.getElementById('f_ref').value = debt.refCode || '';
-        document.getElementById('f_name').value = debt.name || '';
-        document.getElementById('f_phone').value = debt.phone || '';
-        document.getElementById('f_amount').value = debt.amount || 0;
-        document.getElementById('f_paid').value = debt.paid || 0;
-        document.getElementById('f_isInst').checked = debt.isInst || false;
-        document.getElementById('f_instCount').value = debt.instCount || '';
-        toggleInst();
-        document.getElementById('f_issueDate').value = debt.issueDate || '';
-        document.getElementById('f_dueDate').value = debt.dueDate || '';
-        document.getElementById('f_priority').value = debt.priority || 'normal';
-        document.getElementById('f_tag').value = debt.tag || 'diger';
-        document.getElementById('f_note').value = debt.note || '';
+        try {
+            document.getElementById('editId').value = debt.id || '';
+            document.getElementById('f_ref').value = debt.refCode || '';
+            document.getElementById('f_name').value = debt.name || '';
+            document.getElementById('f_phone').value = debt.phone || '';
+            document.getElementById('f_amount').value = debt.amount || 0;
+            document.getElementById('f_paid').value = debt.paid || 0;
+            
+            const isInstEl = document.getElementById('f_isInst');
+            if(isInstEl) {
+                isInstEl.checked = debt.isInst || false;
+                toggleInst();
+            }
+            
+            document.getElementById('f_instCount').value = debt.instCount || '';
+            document.getElementById('f_issueDate').value = debt.issueDate || '';
+            document.getElementById('f_dueDate').value = debt.dueDate || '';
+            document.getElementById('f_priority').value = debt.priority || 'normal';
+            document.getElementById('f_tag').value = debt.tag || 'diger';
+            document.getElementById('f_note').value = debt.note || '';
 
-        const editBadge = document.getElementById('editBadge');
-        if(editBadge) editBadge.style.display = "inline-block";
-        
-        const btn = document.getElementById('formSubmitBtn');
-        if(btn) btn.innerHTML = `Kaydı Güncelle`;
-        
-        const formSec = document.getElementById('addFormSection');
-        if(formSec && !formSec.classList.contains('active')) toggleSection('addFormSection');
-        if(formSec) formSec.scrollIntoView({ behavior: 'smooth' });
+            const editBadge = document.getElementById('editBadge');
+            if(editBadge) editBadge.style.display = "inline-block";
+            
+            const btn = document.getElementById('formSubmitBtn');
+            if(btn) btn.innerHTML = `Kaydı Güncelle`;
+            
+            const formSec = document.getElementById('addFormSection');
+            if(formSec && !formSec.classList.contains('active')) toggleSection('addFormSection');
+            if(formSec) formSec.scrollIntoView({ behavior: 'smooth' });
+        } catch(e) { console.error("Edit form fill error:", e); }
     }
 
-    // --- TABLO VE FİLTRELEME V4.1 ---
+    // --- TABLO VE FİLTRELEME V5 ---
     function setSort(col) {
         if(currentSortCol === col+'_desc') currentSortCol = col+'_asc';
         else currentSortCol = col+'_desc';
-        document.getElementById('filter_sort').value = currentSortCol;
+        const sEl = document.getElementById('filter_sort');
+        if(sEl) sEl.value = currentSortCol;
         applyFilters();
     }
 
@@ -1521,52 +1559,54 @@
     }
 
     function applyFilters() {
-        const textEl = document.getElementById('filter_text');
-        const text = textEl ? textEl.value.toLowerCase() : "";
-        const statusEl = document.getElementById('filter_status');
-        const status = statusEl ? statusEl.value : "all";
-        const priorityEl = document.getElementById('filter_priority');
-        const priority = priorityEl ? priorityEl.value : "all";
-        const sortEl = document.getElementById('filter_sort');
-        const sort = sortEl ? (sortEl.value || currentSortCol) : currentSortCol;
+        try {
+            const textEl = document.getElementById('filter_text');
+            const text = textEl ? textEl.value.toLowerCase() : "";
+            const statusEl = document.getElementById('filter_status');
+            const status = statusEl ? statusEl.value : "all";
+            const priorityEl = document.getElementById('filter_priority');
+            const priority = priorityEl ? priorityEl.value : "all";
+            const sortEl = document.getElementById('filter_sort');
+            const sort = sortEl ? (sortEl.value || currentSortCol) : currentSortCol;
 
-        filteredDebts = debts.filter(d => {
-            if(!d) return false;
-            const sName = (d.name||"").toLowerCase();
-            const sNote = (d.note||"").toLowerCase();
-            const sPhone = (d.phone||"");
-            const sRef = (d.refCode||"").toLowerCase();
-            
-            const matchText = sName.includes(text) || sNote.includes(text) || sPhone.includes(text) || sRef.includes(text);
-            const matchStatus = status === 'all' || d.status === status;
-            
-            let matchPriority = true;
-            if(priority === 'taksitli') matchPriority = d.isInst === true;
-            else if(priority !== 'all') matchPriority = d.priority === priority;
+            filteredDebts = debts.filter(d => {
+                if(!d) return false;
+                const sName = (d.name||"").toLowerCase();
+                const sNote = (d.note||"").toLowerCase();
+                const sPhone = (d.phone||"");
+                const sRef = (d.refCode||"").toLowerCase();
+                
+                const matchText = sName.includes(text) || sNote.includes(text) || sPhone.includes(text) || sRef.includes(text);
+                const matchStatus = status === 'all' || d.status === status;
+                
+                let matchPriority = true;
+                if(priority === 'taksitli') matchPriority = d.isInst === true;
+                else if(priority !== 'all') matchPriority = d.priority === priority;
 
-            return matchText && matchStatus && matchPriority;
-        });
+                return matchText && matchStatus && matchPriority;
+            });
 
-        filteredDebts.sort((a, b) => {
-            if(sort === 'date_desc') return new Date(b.createdAt||0) - new Date(a.createdAt||0);
-            if(sort === 'date_asc') return new Date(a.createdAt||0) - new Date(b.createdAt||0);
-            if(sort === 'amount_desc') return (b.amount||0) - (a.amount||0);
-            if(sort === 'amount_asc') return (a.amount||0) - (b.amount||0);
-            if(sort === 'rem_desc') return ((b.amount||0) - (b.paid||0)) - ((a.amount||0) - (a.paid||0));
-            if(sort === 'due_asc') return new Date(a.dueDate||0) - new Date(b.dueDate||0);
-            if(sort === 'name_asc') return (a.name||"").localeCompare(b.name||"");
-            if(sort === 'name_desc') return (b.name||"").localeCompare(a.name||"");
-            if(sort === 'status_asc') return (a.status||"").localeCompare(b.status||"");
-            if(sort === 'status_desc') return (b.status||"").localeCompare(a.status||"");
-            if(sort === 'tag_asc') return (a.tag||"").localeCompare(b.tag||"");
-            if(sort === 'tag_desc') return (b.tag||"").localeCompare(a.tag||"");
-            return 0;
-        });
+            filteredDebts.sort((a, b) => {
+                if(sort === 'date_desc') return new Date(b.createdAt||0) - new Date(a.createdAt||0);
+                if(sort === 'date_asc') return new Date(a.createdAt||0) - new Date(b.createdAt||0);
+                if(sort === 'amount_desc') return (b.amount||0) - (a.amount||0);
+                if(sort === 'amount_asc') return (a.amount||0) - (b.amount||0);
+                if(sort === 'rem_desc') return ((b.amount||0) - (b.paid||0)) - ((a.amount||0) - (a.paid||0));
+                if(sort === 'due_asc') return new Date(a.dueDate||0) - new Date(b.dueDate||0);
+                if(sort === 'name_asc') return (a.name||"").localeCompare(b.name||"");
+                if(sort === 'name_desc') return (b.name||"").localeCompare(a.name||"");
+                if(sort === 'status_asc') return (a.status||"").localeCompare(b.status||"");
+                if(sort === 'status_desc') return (b.status||"").localeCompare(a.status||"");
+                if(sort === 'tag_asc') return (a.tag||"").localeCompare(b.tag||"");
+                if(sort === 'tag_desc') return (b.tag||"").localeCompare(a.tag||"");
+                return 0;
+            });
 
-        const fCount = document.getElementById('filter_count');
-        if(fCount) fCount.innerText = filteredDebts.length;
-        currentPage = 1; 
-        renderTable();
+            const fCount = document.getElementById('filter_count');
+            if(fCount) fCount.innerText = filteredDebts.length;
+            currentPage = 1; 
+            renderTable();
+        } catch(e) { console.error("Filter Error:", e); }
     }
 
     function renderTable() {
@@ -1578,8 +1618,8 @@
             tbody.innerHTML = `<tr><td colspan="7">
                 <div class="empty-state">
                     <i>📁</i>
-                    <h3>Veri Bulunamadı</h3>
-                    <p>Mevcut filtrelere uygun borç kaydı yok veya liste tamamen boş.</p>
+                    <h3 style="color:var(--text-main); margin-bottom:5px;">Veri Bulunamadı</h3>
+                    <p style="font-size:0.9rem;">Mevcut filtrelere uygun borç kaydı yok veya liste tamamen boş.</p>
                 </div>
             </td></tr>`;
             renderPagination();
@@ -1622,7 +1662,7 @@
             tr.innerHTML = `
                 <td data-label="Ref / Kişi">
                     <div style="font-size:0.75rem; color:var(--accent-blue); font-family:var(--font-display); letter-spacing:0.5px;">${d.refCode || "-"}</div>
-                    <div style="font-weight:600; margin:3px 0; font-size:1rem;">
+                    <div style="font-weight:600; margin:3px 0; font-size:1rem; color:white;">
                         <i class="priority-dot p-${d.priority||"normal"}" title="Öncelik: ${d.priority||"normal"}"></i> ${d.name || "İsimsiz"}
                     </div>
                     <div style="font-size:0.8rem; color:var(--text-muted);">${d.phone || '-'}</div>
@@ -1690,7 +1730,7 @@
         }
     }
 
-    // --- MODALLAR V4.1 ---
+    // --- MODALLAR V5 ---
     function openModal(id) { 
         const m = document.getElementById(id);
         if(m) m.classList.add('active'); 
@@ -1811,7 +1851,7 @@
         }, 50);
     }
 
-    // --- ÖDEME İŞLEMLERİ V4.1 ---
+    // --- ÖDEME İŞLEMLERİ V5 ---
     function openPaymentModalAuth(id) {
         if(!requireAdmin()) return;
         const d = debts.find(x => x.id === id);
@@ -1878,46 +1918,49 @@
     async function savePaymentAuth() {
         if(!requireAdmin()) return;
         
-        const idEl = document.getElementById('pay_id');
-        const amountEl = document.getElementById('pay_amount');
-        const noteEl = document.getElementById('pay_note');
-        const typeEl = document.getElementById('pay_type');
-
-        if(!idEl || !amountEl) return;
-
-        const id = idEl.value;
-        const amountStr = amountEl.value;
-        const note = noteEl ? noteEl.value : "";
-        const type = typeEl ? typeEl.value : "Diğer";
-        
-        if(!amountStr) return showToast("Lütfen tahsil edilecek miktarı girin.", "error");
-        
-        const payAmount = parseFloat(amountStr);
-        if(payAmount <= 0) return showToast("Miktar sıfırdan büyük olmalıdır.", "error");
-
-        const index = debts.findIndex(x => x.id === id);
-        if(index === -1) return showToast("Kayıt bulunamadı.", "error");
-        
-        const debt = debts[index];
-        const amt = parseFloat(debt.amount)||0;
-        const currentPaid = parseFloat(debt.paid)||0;
-        const rem = amt - currentPaid;
-        
-        if(payAmount > rem) {
-            return showToast("Hata: Ödenen miktar kalan borçtan fazla olamaz.", "error");
-        }
-
-        const newPaid = currentPaid + payAmount;
-        const payments = Array.isArray(debt.payments) ? debt.payments : [];
-        payments.push({
-            date: new Date().toISOString(),
-            amount: payAmount,
-            note: `${type} - ${note}`, 
-            admin: ADMIN_USER,
-            remaining: amt - newPaid
-        });
+        const btn = document.getElementById('paySubmitBtn');
+        if(btn) { btn.innerHTML = "İşleniyor..."; btn.disabled = true; }
 
         try {
+            const idEl = document.getElementById('pay_id');
+            const amountEl = document.getElementById('pay_amount');
+            const noteEl = document.getElementById('pay_note');
+            const typeEl = document.getElementById('pay_type');
+
+            if(!idEl || !amountEl) throw new Error("Gerekli alanlar bulunamadı.");
+
+            const id = idEl.value;
+            const amountStr = amountEl.value;
+            const note = noteEl ? noteEl.value : "";
+            const type = typeEl ? typeEl.value : "Diğer";
+            
+            if(!amountStr) return showToast("Lütfen tahsil edilecek miktarı girin.", "error");
+            
+            const payAmount = parseFloat(amountStr);
+            if(payAmount <= 0) return showToast("Miktar sıfırdan büyük olmalıdır.", "error");
+
+            const index = debts.findIndex(x => x.id === id);
+            if(index === -1) return showToast("Kayıt bulunamadı.", "error");
+            
+            const debt = debts[index];
+            const amt = parseFloat(debt.amount)||0;
+            const currentPaid = parseFloat(debt.paid)||0;
+            const rem = amt - currentPaid;
+            
+            if(payAmount > rem) {
+                return showToast("Hata: Ödenen miktar kalan borçtan fazla olamaz.", "error");
+            }
+
+            const newPaid = currentPaid + payAmount;
+            const payments = Array.isArray(debt.payments) ? debt.payments : [];
+            payments.push({
+                date: new Date().toISOString(),
+                amount: payAmount,
+                note: `${type} - ${note}`, 
+                admin: ADMIN_USER,
+                remaining: amt - newPaid
+            });
+
             if(useFirebase && isOnline) {
                 await updateDoc(doc(db, "debts", id), {
                     paid: newPaid,
@@ -1937,6 +1980,8 @@
             console.error("Ödeme Hatası:", e);
             let eMsg = e.code === 'permission-denied' ? "Yazma izni reddedildi." : e.message;
             showToast("Ödeme kaydedilemedi: " + eMsg, "error");
+        } finally {
+            if(btn) { btn.innerHTML = `<i class="locked-icon">🔒</i> Tahsilatı Onayla`; btn.disabled = false; }
         }
     }
 
@@ -2018,20 +2063,20 @@
         if(actionBtn) actionBtn.onclick = confirmCallback;
     }
 
-    // --- DIŞA/İÇE AKTARMA (V4.1) ---
+    // --- DIŞA/İÇE AKTARMA (V5) ---
     function exportJSONAuth() {
         if(!requireAdmin()) return;
-        const dataToExport = {
-            metadata: {
-                exportedAt: new Date().toISOString(),
-                version: "4.1",
-                totalRecords: debts.length,
-                admin: ADMIN_USER
-            },
-            data: debts
-        };
-        
         try {
+            const dataToExport = {
+                metadata: {
+                    exportedAt: new Date().toISOString(),
+                    version: "5.0",
+                    totalRecords: debts.length,
+                    admin: ADMIN_USER
+                },
+                data: debts
+            };
+            
             const dataStr = JSON.stringify(dataToExport, null, 2);
             const blob = new Blob([dataStr], { type: "application/json" });
             const url = URL.createObjectURL(blob);
@@ -2039,7 +2084,7 @@
             a.href = url;
             
             const dStr = new Date().toISOString().replace(/:/g, '-').split('.')[0]; 
-            a.download = `metavis1on_v4_backup_${dStr}.json`;
+            a.download = `metavis1on_v5_backup_${dStr}.json`;
             a.click();
             URL.revokeObjectURL(url);
             
@@ -2076,7 +2121,6 @@
 
                 showToast("Yedek işleniyor... Lütfen sayfayı kapatmayın.", "info");
 
-                // Normalize immediately to catch errors early
                 const safeImports = imported.map(d => normalizeDebt(d)).filter(d => d !== null);
 
                 if (useFirebase && isOnline) {
@@ -2089,13 +2133,17 @@
                     });
                     await batch.commit();
                 } else {
-                    // Safe merging to prevent errors
                     const cleaned = safeImports.map(d => {
                         d.id = generateId();
                         return d;
                     });
-                    // DO NOT use debts = [.debts] etc, spread safely.
-                    debts = [...debts, ...cleaned];
+                    
+                    // Güvenli Merge (Bozuk spread hatasına karşı map/concat)
+                    let newArray = [];
+                    debts.forEach(x => newArray.push(x));
+                    cleaned.forEach(x => newArray.push(x));
+                    debts = newArray;
+                    
                     saveDataLocalOnly();
                 }
                 addLog("IMPORT_JSON", `Sisteme dışarıdan yedek yüklendi. (+${safeImports.length} kayıt)`);
@@ -2105,7 +2153,7 @@
                 console.error("Import JSON Error:", error);
                 showToast("Dosya okunurken hata oluştu. Bozuk JSON.", "error");
             } finally {
-                event.target.value = ''; // Reset input
+                event.target.value = ''; 
             }
         };
         reader.onerror = () => {
@@ -2115,7 +2163,7 @@
         reader.readAsText(file);
     }
 
-    // --- İSTATİSTİKLER V4.1 ---
+    // --- İSTATİSTİKLER V5 ---
     function updateStats() {
         try {
             let totalActiveDebt = 0, totalPaidOverall = 0, overdueCount = 0, paidCount = 0, totalAmountAll = 0;
@@ -2205,7 +2253,7 @@
         window.requestAnimationFrame(step);
     }
 
-    // --- CANVAS GRAFİKLERİ V4.1 ---
+    // --- CANVAS GRAFİKLERİ V5 ---
     function drawCharts() {
         try {
             drawStatusChart();
@@ -2219,7 +2267,7 @@
         const canvas = document.getElementById(id);
         if(!canvas) return null;
         const rect = canvas.parentElement.getBoundingClientRect();
-        if(rect.width === 0 || rect.height === 0) return null; // Modal veya tab gizliyse
+        if(rect.width === 0 || rect.height === 0) return null; 
         canvas.width = rect.width;
         canvas.height = rect.height;
         return { ctx: canvas.getContext('2d'), w: canvas.width, h: canvas.height, canvas: canvas };
@@ -2251,7 +2299,6 @@
             ctx.fillStyle = colorMap[key];
             ctx.fill();
             
-            // Modern gap
             ctx.lineWidth = 4; ctx.strokeStyle = '#070709'; ctx.stroke();
             startAngle += sliceAngle;
         }
@@ -2315,10 +2362,12 @@
         });
 
         const dataArray = Object.values(months);
-        const maxVal = Math.max(...dataArray.map(m => m.total), 100);
+        let maxVal = 0;
+        dataArray.forEach(m => { if(m.total > maxVal) maxVal = m.total; });
+        if(maxVal < 100) maxVal = 100; // Minimum scale
 
         const barWidth = (w - padding * 2) / 8 - 15;
-        if(barWidth <= 0) return; // Prevent negative width errors on small screens
+        if(barWidth <= 0) return; 
         
         ctx.beginPath(); ctx.moveTo(padding, padding); ctx.lineTo(padding, h - padding); ctx.lineTo(w - padding, h - padding);
         ctx.strokeStyle = "rgba(255,255,255,0.1)"; ctx.stroke();
@@ -2352,9 +2401,8 @@
     window.addEventListener('resize', drawCharts);
 
     /* ========================================================================
-       2. GLOBAL SCOPE (MODULE BINDING) - HTML ONCLICK İÇİN GEREKLİ
+       3. BINDING SİSTEMİ DEVAMI
        ======================================================================== */
-    // window.showToast is explicitly defined at the top to prevent undefined errors.
     window.openLoginModal = openLoginModal;
     window.handleLogin = handleLogin;
     window.closeModal = closeModal;
