@@ -81,6 +81,61 @@
         legacyUrl: '../borc.html',
         targetUrl: '../admin/borc/'
       }
+    ],
+
+    // ---------- v11.0.5 eklemeleri (statik feed) ----------
+    // Yeni duyuru/etkinlik eklemek için bu dizilere kayıt eklemek yeterlidir.
+    // Backend yok; veri tamamen client-side okunur. Yeni alanlar mevcut
+    // siteName / discordInvite / themes / apps yapısını etkilemez.
+    announcements: [
+      {
+        id: 'portal-v11',
+        date: 'Mayıs 2026',
+        title: 'metavis1on portal yapısı yenileniyor',
+        text: 'Ana site, projeler vitrini ve yönetim alanı daha modern bir yapıya taşınıyor.'
+      },
+      {
+        id: 'apps-showcase',
+        date: 'Mayıs 2026',
+        title: 'Uygulamalar vitrini aktif',
+        text: 'Visiocial, Tetris, GRID ve yönetim modülleri tek vitrin altında listelenmeye başladı.'
+      },
+      {
+        id: 'admin-module',
+        date: 'Mayıs 2026',
+        title: 'Yönetim alanı modüler hale geliyor',
+        text: 'Borç paneli admin alanına taşındı; diğer yönetim modülleri aşamalı olarak hazırlanıyor.'
+      }
+    ],
+
+    events: [
+      {
+        id: 'community-night',
+        day: '24',
+        month: 'MAY',
+        title: 'Topluluk sohbet gecesi',
+        time: '21:00',
+        location: 'Discord',
+        status: 'Planlandı'
+      },
+      {
+        id: 'mini-games',
+        day: '26',
+        month: 'MAY',
+        title: 'Mini oyun deneme akşamı',
+        time: '20:30',
+        location: 'Tetris / GRID',
+        status: 'Yakında'
+      },
+      {
+        id: 'portal-review',
+        day: '29',
+        month: 'MAY',
+        title: 'Portal geliştirme kontrolü',
+        time: '22:00',
+        location: 'metavis1on',
+        status: 'Hazırlık'
+      }
     ]
   };
 

@@ -199,6 +199,46 @@
       flex-wrap: wrap;
     }
 
+    /* ---------- Duyuru şeridi başlığı ---------- */
+    .v11-strip-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--mv-space-md);
+      margin-bottom: var(--mv-space-md);
+      flex-wrap: wrap;
+    }
+    .v11-strip-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: var(--mv-letter-wide);
+      text-transform: uppercase;
+      color: var(--mv-theme-primary);
+      margin-bottom: 4px;
+    }
+    .v11-strip-title {
+      font-family: var(--mv-font-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: var(--mv-letter-tight);
+      color: var(--mv-text-main);
+      margin: 0;
+    }
+    .v11-strip-hint {
+      font-size: 0.82rem;
+      font-family: var(--mv-font-mono);
+    }
+    @media (max-width: 540px) {
+      .v11-strip-hint { display: none; }
+    }
+
+    /* ---------- Etkinlik listesi placeholder ---------- */
+    .v11-events-empty {
+      padding: var(--mv-space-lg);
+      text-align: center;
+      color: var(--mv-text-muted);
+    }
+
     /* ---------- Mobile ---------- */
     @media (max-width: 860px) {
       .v11-nav__links { display: none; }
@@ -285,6 +325,30 @@
             <span class="mv-status-pill__dot"></span> v11 portal sürümü
           </span>
         </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         DUYURULAR — Hero sonrası kısa şerit
+         Kaynak: shared/config/site.js > MV_SITE.announcements
+         ============================================================ -->
+    <section class="mv-section mv-section--tight" id="duyurular" aria-labelledby="duyurularTitle">
+      <div class="v11-shell">
+        <div class="v11-strip-head">
+          <div>
+            <div class="v11-strip-eyebrow">Akış</div>
+            <h2 id="duyurularTitle" class="v11-strip-title">Son duyurular</h2>
+          </div>
+          <span class="v11-strip-hint mv-text-muted">← Yatay kaydırın →</span>
+        </div>
+
+        <div id="announcementsStrip" class="mv-announcement-strip" aria-live="polite"></div>
+
+        <noscript>
+          <p class="mv-text-muted" style="margin-top: var(--mv-space-md); font-size:0.88rem;">
+            Duyurular için JavaScript'i etkinleştirin.
+          </p>
+        </noscript>
       </div>
     </section>
 
@@ -450,48 +514,32 @@
     </section>
 
     <!-- ============================================================
-         ETKİNLİKLER — yer tutucu
-         (İçerik v11.0.5 fazında shared/config/site.js > events'tan gelecek)
+         ETKİNLİKLER — v11.0.5'te statik feed'e bağlandı
+         Kaynak: shared/config/site.js > MV_SITE.events
          ============================================================ -->
     <section class="mv-section mv-section--surface" id="etkinlikler">
       <div class="v11-shell">
         <div class="mv-section-header mv-section-header--left">
-          <div class="mv-section-header__eyebrow">Yakında</div>
-          <h2 class="mv-section-header__title">Etkinlikler ve duyurular.</h2>
+          <div class="mv-section-header__eyebrow">Yaklaşan</div>
+          <h2 class="mv-section-header__title">Etkinlikler ve buluşmalar.</h2>
           <p class="mv-section-header__lead">
-            Düzenli buluşmaların, yayınların ve duyuruların tek noktada toplandığı alan.
+            Düzenli sohbet geceleri, mini oyun akşamları ve portal geliştirme kontrolleri.
+            Yeni etkinlikler eklendikçe burada listelenir.
           </p>
         </div>
 
-        <div class="mv-preview-shell" style="min-height:180px;">
-          <span class="mv-preview-shell__tag">Yakında</span>
-          <div class="mv-preview-shell__body">
-            <div class="mv-event-row">
-              <div class="mv-event-row__date">
-                <span class="mv-event-row__day">—</span>
-                <span class="mv-event-row__month">—</span>
-              </div>
-              <div class="mv-event-row__body">
-                <div class="mv-event-row__title">Etkinlik akışı hazırlanıyor</div>
-                <div class="mv-event-row__meta">
-                  <span class="mv-event-row__meta-item">⏰ —</span>
-                  <span class="mv-event-row__meta-item">📍 —</span>
-                </div>
-              </div>
-              <span class="mv-status-pill mv-status-pill--pending">
-                <span class="mv-status-pill__dot"></span> Beklemede
-              </span>
+        <div id="eventsList" aria-live="polite"></div>
+
+        <noscript>
+          <div class="mv-card" style="margin-top: var(--mv-space-lg);">
+            <div class="mv-card__header">
+              <div class="mv-card__title">JavaScript devre dışı</div>
+            </div>
+            <div class="mv-card__desc">
+              Etkinlik listesi için JavaScript'i etkinleştirin.
             </div>
           </div>
-          <div class="mv-preview-shell__overlay">
-            <div class="mv-preview-shell__overlay-inner">
-              <div class="mv-preview-shell__overlay-title">Etkinlik feed'i v11.0.5'te</div>
-              <p class="mv-preview-shell__overlay-text">
-                Etkinlik ve duyuru akışı, sonraki fazda statik kaynaktan portal'a bağlanacak.
-              </p>
-            </div>
-          </div>
-        </div>
+        </noscript>
       </div>
     </section>
 
@@ -571,6 +619,7 @@
         <div>
           <div class="mv-footer__col-title">Portal</div>
           <div class="mv-footer__links">
+            <a class="mv-footer__link" href="#duyurular">Duyurular</a>
             <a class="mv-footer__link" href="#ekosistem">Ekosistem</a>
             <a class="mv-footer__link" href="#degerler">Değerler</a>
             <a class="mv-footer__link" href="#vizyon">Vizyon</a>
@@ -722,6 +771,86 @@
       }
 
       renderAppsShowcase();
+
+      // ---------- Announcements (v11.0.5) ----------
+      function renderAnnouncements() {
+        var container = document.getElementById('announcementsStrip');
+        if (!container) return;
+        var items = (window.MV_SITE && Array.isArray(window.MV_SITE.announcements))
+          ? window.MV_SITE.announcements : [];
+
+        if (!items.length) {
+          container.innerHTML =
+            '<article class="mv-announcement-strip__item" style="min-width:280px;">'
+            +   '<div class="mv-announcement-strip__head">'
+            +     '<span class="mv-announcement-strip__date">—</span>'
+            +   '</div>'
+            +   '<div class="mv-announcement-strip__title">Henüz duyuru yok</div>'
+            +   '<div class="mv-announcement-strip__text">Yeni duyurular yayımlandığında burada görünür.</div>'
+            + '</article>';
+          return;
+        }
+
+        container.innerHTML = items.map(function (a) {
+          return ''
+            + '<article class="mv-announcement-strip__item">'
+            +   '<div class="mv-announcement-strip__head">'
+            +     '<span class="mv-announcement-strip__dot"></span>'
+            +     '<span class="mv-announcement-strip__date">' + esc(a.date) + '</span>'
+            +   '</div>'
+            +   '<div class="mv-announcement-strip__title">' + esc(a.title) + '</div>'
+            +   '<div class="mv-announcement-strip__text">' + esc(a.text) + '</div>'
+            + '</article>';
+        }).join('');
+      }
+
+      // ---------- Events (v11.0.5) ----------
+      var EVENT_STATUS_PILL = {
+        'Planlandı': 'mv-status-pill--online mv-status-pill--pulse',
+        'Yakında':   'mv-status-pill--info',
+        'Hazırlık':  'mv-status-pill--pending',
+        'İptal':     'mv-status-pill--offline'
+      };
+
+      function renderEvents() {
+        var container = document.getElementById('eventsList');
+        if (!container) return;
+        var items = (window.MV_SITE && Array.isArray(window.MV_SITE.events))
+          ? window.MV_SITE.events : [];
+
+        if (!items.length) {
+          container.innerHTML =
+            '<div class="mv-card">'
+            +   '<div class="mv-card__header"><div class="mv-card__title">Yaklaşan etkinlik yok</div></div>'
+            +   '<div class="mv-card__desc">Yeni etkinlikler eklendiğinde burada listelenir.</div>'
+            + '</div>';
+          return;
+        }
+
+        container.innerHTML = items.map(function (e) {
+          var pill = EVENT_STATUS_PILL[e.status] || 'mv-status-pill--info';
+          return ''
+            + '<article class="mv-event-row">'
+            +   '<div class="mv-event-row__date">'
+            +     '<span class="mv-event-row__day">' + esc(e.day) + '</span>'
+            +     '<span class="mv-event-row__month">' + esc(e.month) + '</span>'
+            +   '</div>'
+            +   '<div class="mv-event-row__body">'
+            +     '<div class="mv-event-row__title">' + esc(e.title) + '</div>'
+            +     '<div class="mv-event-row__meta">'
+            +       (e.time     ? '<span class="mv-event-row__meta-item">⏰ ' + esc(e.time)     + '</span>' : '')
+            +       (e.location ? '<span class="mv-event-row__meta-item">📍 ' + esc(e.location) + '</span>' : '')
+            +     '</div>'
+            +   '</div>'
+            +   '<span class="mv-status-pill ' + pill + '">'
+            +     '<span class="mv-status-pill__dot"></span> ' + esc(e.status)
+            +   '</span>'
+            + '</article>';
+        }).join('');
+      }
+
+      renderAnnouncements();
+      renderEvents();
 
       // Discord davet bağlantısı — site.js'ten okunur
       var discordUrl = (window.MV_SITE && window.MV_SITE.discordInvite) || '#';
