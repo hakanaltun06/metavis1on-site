@@ -178,8 +178,25 @@
     /* ---------- App preview placeholder ---------- */
     .v11-apps-placeholder {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: var(--mv-space-lg);
+      min-height: 240px;
+    }
+    .v11-apps-placeholder:empty::before {
+      content: 'Uygulama listesi yükleniyor…';
+      grid-column: 1 / -1;
+      align-self: center;
+      justify-self: center;
+      color: var(--mv-text-dim);
+      font-size: 0.92rem;
+    }
+    .v11-apps-footer {
+      margin-top: var(--mv-space-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--mv-space-md);
+      flex-wrap: wrap;
     }
 
     /* ---------- Mobile ---------- */
@@ -311,56 +328,43 @@
     </section>
 
     <!-- ============================================================
-         PROJELER — yer tutucu
-         (İçerik v11.0.3 fazında MV_SITE.apps'ten dinamik olarak doldurulacak)
+         PROJELER — apps showcase (v11.0.3'te dinamikleştirildi)
+         Kaynak: shared/config/site.js > MV_SITE.apps
          ============================================================ -->
     <section class="mv-section" id="projeler">
       <div class="v11-shell">
         <div class="mv-section-header mv-section-header--left">
-          <div class="mv-section-header__eyebrow">Mini Uygulamalar</div>
-          <h2 class="mv-section-header__title">Topluluk için hazırlanan projeler.</h2>
+          <div class="mv-section-header__eyebrow">Portal Modülleri</div>
+          <h2 class="mv-section-header__title">Uygulamalar ve mini projeler.</h2>
           <p class="mv-section-header__lead">
-            Mini oyunlar, UI prototipleri ve yönetim modülleri. Vitrinde tam liste yer alır.
+            metavis1on yalnızca bir topluluk değil; küçük web deneyleri, mini oyunlar
+            ve dahili yönetim araçları için de bir merkez. Her modül kendi başına bağımsız çalışır.
           </p>
         </div>
 
-        <div class="v11-apps-placeholder" id="appsPreview">
-          <!-- v11.0.3 fazında MV.apps.forProjectsPage()'den render edilecek.
-               Şimdilik kısa bir özet ve vitrine yönlendirme. -->
-          <div class="mv-preview-shell" style="min-height:200px;">
-            <span class="mv-preview-shell__tag">Önizleme</span>
-            <div class="mv-preview-shell__body">
-              <div class="mv-feature-grid">
-                <article class="mv-feature">
-                  <div class="mv-feature__icon mv-feature__icon--cool">◈</div>
-                  <div class="mv-feature__title">Visiocial</div>
-                  <div class="mv-feature__desc">Topluluk sosyal ağ prototipi.</div>
-                </article>
-                <article class="mv-feature">
-                  <div class="mv-feature__icon">▦</div>
-                  <div class="mv-feature__title">Tetris</div>
-                  <div class="mv-feature__desc">Neon temalı klasik Tetris.</div>
-                </article>
-                <article class="mv-feature">
-                  <div class="mv-feature__icon mv-feature__icon--warm">▩</div>
-                  <div class="mv-feature__title">GRID</div>
-                  <div class="mv-feature__desc">Sayı birleştirme bulmacası.</div>
-                </article>
-              </div>
+        <!-- Kartlar runtime'da MV.apps.forProjectsPage()'den dolar.
+             JS kapalıysa altındaki noscript bloğu görünür. -->
+        <div class="v11-apps-placeholder" id="appsGrid" aria-live="polite"></div>
+
+        <noscript>
+          <div class="mv-card" style="margin-top: var(--mv-space-lg);">
+            <div class="mv-card__header">
+              <div class="mv-card__title">JavaScript devre dışı</div>
             </div>
-            <div class="mv-preview-shell__overlay">
-              <div class="mv-preview-shell__overlay-inner">
-                <div class="mv-preview-shell__overlay-title">Vitrin bağlantısı hazır</div>
-                <p class="mv-preview-shell__overlay-text">
-                  Tam liste ve canlı kartlar için projeler sayfasını ziyaret edebilirsiniz.
-                  Dinamik vitrin v11.0.3 fazında bu alana yerleşecek.
-                </p>
-                <a class="mv-btn mv-btn--primary mv-btn--sm" href="public/projeler.html">
-                  Projeler Vitrinine Git →
-                </a>
-              </div>
+            <div class="mv-card__desc">
+              Uygulama listesini görüntülemek için JavaScript'i etkinleştirin veya doğrudan
+              <a href="public/projeler.html" style="color:var(--mv-theme-primary);">vitrin sayfasına</a> gidin.
             </div>
           </div>
+        </noscript>
+
+        <div class="v11-apps-footer">
+          <p class="mv-text-muted" style="font-size: 0.92rem; margin: 0;">
+            Daha fazla proje ve deneysel sayfa yakında eklenecek.
+          </p>
+          <a class="mv-btn mv-btn--ghost" href="public/projeler.html">
+            Tüm Projeleri Gör →
+          </a>
         </div>
       </div>
     </section>
@@ -523,6 +527,7 @@
   <script src="shared/config/site.js"></script>
   <script src="shared/js/core.js"></script>
   <script src="shared/js/theme.js"></script>
+  <script src="shared/js/apps.js"></script>
 
   <script>
     (function () {
@@ -532,6 +537,109 @@
       if (window.MV && window.MV.core && window.MV.core.setCurrentYear) {
         window.MV.core.setCurrentYear('[data-mv-year]');
       }
+
+      // ---------- Apps Showcase Renderer (v11.0.3) ----------
+      // Veri kaynağı: MV.apps.forProjectsPage() (fallback: MV_SITE.apps).
+      // site.js'de URL'ler '../' prefix'iyle (public/ perspektifinden) yazıldığı için
+      // kök sayfada çalışırken bu prefix runtime'da sıyrılır. Borç paneli için
+      // sabit 'admin/borc/' kullanılır; bu, kullanıcı korumalı borc.html redirect
+      // dosyasından bağımsızdır.
+      var CATEGORY = {
+        visiocial: 'Sosyal',
+        tetris:    'Mini Oyun',
+        grid:      'Puzzle',
+        borc:      'Yönetim'
+      };
+      var STATUS_TEXT = {
+        prototype:  'Demo',
+        stable:     'Aktif',
+        production: 'Aktif'
+      };
+      var STATUS_PILL = {
+        prototype:  'mv-status-pill--info',
+        stable:     'mv-status-pill--online mv-status-pill--pulse',
+        production: 'mv-status-pill--online mv-status-pill--pulse'
+      };
+      var GLYPH = {
+        visiocial: '◈', // ◈
+        tetris:    '▦', // ▦
+        grid:      '▩', // ▩
+        borc:      '₺'  // ₺
+      };
+      var ACCENT_CLASS = {
+        purple: 'mv-app-card-v2__icon--purple',
+        cyan:   'mv-app-card-v2__icon--cyan',
+        gold:   'mv-app-card-v2__icon--gold',
+        red:    'mv-app-card-v2__icon--red'
+      };
+
+      function resolveUrl(app) {
+        if (app.id === 'borc') return 'admin/borc/';
+        var url = app.legacyUrl || app.targetUrl || '#';
+        return url.replace(/^\.\.\//, '');
+      }
+
+      var esc = (window.MV && window.MV.core && window.MV.core.escapeHtml)
+        || function (s) { return String(s == null ? '' : s); };
+
+      function renderAppsShowcase() {
+        var container = document.getElementById('appsGrid');
+        if (!container) return;
+
+        var apps = [];
+        if (window.MV && window.MV.apps && typeof window.MV.apps.forProjectsPage === 'function') {
+          apps = window.MV.apps.forProjectsPage();
+        } else if (window.MV_SITE && Array.isArray(window.MV_SITE.apps)) {
+          apps = window.MV_SITE.apps.slice();
+        }
+
+        if (!apps.length) {
+          container.innerHTML =
+            '<div class="mv-card" style="grid-column:1 / -1;">'
+            + '<div class="mv-card__header"><div class="mv-card__title">Uygulama listesi yüklenemedi</div></div>'
+            + '<div class="mv-card__desc">Lütfen sayfayı yenileyin veya '
+            + '<a href="public/projeler.html" style="color:var(--mv-theme-primary);">vitrin sayfasına</a> gidin.</div>'
+            + '</div>';
+          return;
+        }
+
+        var html = apps.map(function (app) {
+          var isLocked = app.visibility === 'admin';
+          var category = CATEGORY[app.id] || app.tag || '';
+          var statusKey = app.status || 'stable';
+          var statusText = isLocked ? 'Admin Only' : (STATUS_TEXT[statusKey] || 'Aktif');
+          var statusPillClass = isLocked
+            ? 'mv-status-pill--offline'
+            : (STATUS_PILL[statusKey] || 'mv-status-pill--online mv-status-pill--pulse');
+          var glyph = GLYPH[app.id] || '◇';
+          var accentClass = ACCENT_CLASS[app.accent] || '';
+          var url = resolveUrl(app);
+          var ctaText = isLocked ? 'Yönetici Girişi →' : 'Modülü Aç →';
+          var cardClasses = 'mv-app-card-v2' + (isLocked ? ' mv-app-card-v2--locked' : '');
+
+          return ''
+            + '<a class="' + cardClasses + '" href="' + esc(url) + '">'
+            +   '<div class="mv-app-card-v2__head">'
+            +     '<div class="mv-app-card-v2__icon ' + accentClass + '">' + glyph + '</div>'
+            +     '<div>'
+            +       '<div class="mv-app-card-v2__title">' + esc(app.name) + '</div>'
+            +       '<div class="mv-app-card-v2__sub">' + esc(category) + '</div>'
+            +     '</div>'
+            +   '</div>'
+            +   '<div class="mv-app-card-v2__body">' + esc(app.description) + '</div>'
+            +   '<div class="mv-app-card-v2__meta">'
+            +     '<span class="mv-status-pill ' + statusPillClass + '">'
+            +       '<span class="mv-status-pill__dot"></span> ' + esc(statusText)
+            +     '</span>'
+            +     '<span class="mv-app-card-v2__cta">' + ctaText + '</span>'
+            +   '</div>'
+            + '</a>';
+        }).join('');
+
+        container.innerHTML = html;
+      }
+
+      renderAppsShowcase();
 
       // Discord davet bağlantısı — site.js'ten okunur
       var discordUrl = (window.MV_SITE && window.MV_SITE.discordInvite) || '#';
