@@ -99,7 +99,7 @@
         </a>
 
         <div class="mv-sidebar__section-label">Modüller</div>
-        <a class="mv-sidebar__link" href="../borc.html" id="navBorc">
+        <a class="mv-sidebar__link" href="./borc/" id="navBorc">
           <span>₺</span><span>Borç Paneli</span>
         </a>
         <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
@@ -300,10 +300,10 @@
           '</div>' +
           '<div class="app-card__body">' + MV.core.escapeHtml(app.description) + '</div>' +
           '<div class="app-card__meta">' +
-            '<a class="mv-btn mv-btn--sm" href="' + MV.core.escapeHtml(app.legacyUrl) + '">Modülü Aç</a>' +
+            '<a class="mv-btn mv-btn--sm" href="' + MV.core.escapeHtml(app.id === 'borc' ? './borc/' : app.legacyUrl) + '">Modülü Aç</a>' +
             '<span class="mv-text-muted" style="font-size:0.75rem;">' +
               (app.id === 'borc'
-                ? 'Sonraki fazda <code>admin/borc/</code> altına taşınacak'
+                ? 'admin/borc/ altında, oturum koruması aktif'
                 : 'Eski URL üzerinden erişim') +
             '</span>' +
           '</div>';
@@ -311,7 +311,10 @@
         if (app.id === 'borc') {
           const note = document.createElement('div');
           note.className = 'future-note';
-          note.innerHTML = '⚠️ Bu modül şu an kök dizindeki <code>/borc.html</code> üzerinden çalışıyor. Veriler, Firebase bağlantısı ve özellikler korunuyor. Sonraki fazda <code>admin/borc/</code> altına taşınacak; bu fazda parçalama yapılmayacak.';
+          note.style.background = 'rgba(0, 230, 118, 0.06)';
+          note.style.borderColor = 'rgba(0, 230, 118, 0.25)';
+          note.style.color = 'var(--mv-accent-green)';
+          note.innerHTML = '✓ Modül <code>admin/borc/</code>\'a taşındı. Eski <code>/borc.html</code> URL\'i artık buraya yönlendirir. Firebase bağlantısı, <code>debts</code>/<code>sysLogs</code> koleksiyonları ve tüm özellikler korunuyor.';
           card.appendChild(note);
         }
 
