@@ -1,0 +1,73 @@
+/* ============================================================================
+   metavis1on — Effects (v11.0.6)
+   ----------------------------------------------------------------------------
+   Hafif, premium, performans dostu görsel hareket katmanı.
+   - Reveal animasyonu .mv-effects parent class'ı ile gate'lenir (JS-gated).
+     JS yüklenmezse .mv-effects eklenmez ve içerik default olarak görünür kalır.
+   - prefers-reduced-motion: reduce durumunda tüm autonomous animasyonlar
+     ve reveal geçişleri devre dışı bırakılır.
+   ============================================================================ */
+
+/* ---------- Scroll Reveal (JS-gated) ---------- */
+.mv-effects [data-mv-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity   0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.mv-effects [data-mv-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Opsiyonel kademeli gecikme (gruplar için) */
+.mv-effects [data-mv-reveal-delay="1"] { transition-delay: 0.08s; }
+.mv-effects [data-mv-reveal-delay="2"] { transition-delay: 0.16s; }
+.mv-effects [data-mv-reveal-delay="3"] { transition-delay: 0.24s; }
+
+/* ---------- Hero orb — çok yavaş float ---------- */
+@keyframes mvOrbFloat {
+  0%   { transform: translate(0%,  0%); }
+  50%  { transform: translate(2%, -3%); }
+  100% { transform: translate(0%,  0%); }
+}
+.mv-hero__bg-orb--primary {
+  animation: mvOrbFloat 18s ease-in-out infinite;
+}
+.mv-hero__bg-orb--accent {
+  animation: mvOrbFloat 22s ease-in-out infinite reverse;
+}
+
+/* ---------- App / Command card hover parlaklığı ---------- */
+/* Mevcut shared rule'lar transform + box-shadow + border ile çalışıyor;
+   biz yalnızca filter ekliyoruz. transition var(--mv-transition) shorthand'i
+   "all" geçişini içerdiği için filter de yumuşak değişir.                  */
+.mv-app-card-v2:hover,
+.mv-command-card:hover {
+  filter: brightness(1.04);
+}
+
+/* ---------- Announcement strip & Event row — ek gölge ---------- */
+.mv-announcement-strip__item:hover {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+}
+.mv-event-row:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.30);
+}
+
+/* ---------- Reduced Motion safety net ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .mv-effects [data-mv-reveal],
+  [data-mv-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .mv-hero__bg-orb,
+  .mv-hero__bg-orb--primary,
+  .mv-hero__bg-orb--accent {
+    animation: none !important;
+  }
+}

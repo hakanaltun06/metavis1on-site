@@ -7,6 +7,19 @@
   <meta name="description" content="metavis1on resmi topluluk portalı. Etkinlikler, projeler ve mini uygulamalar; kalite ve saygıya dayalı seçkin bir dijital ekosistem.">
   <meta name="theme-color" content="#030407">
 
+  <!-- Effects gate: reveal animasyonları yalnızca IO destekleniyorsa ve
+       prefers-reduced-motion: reduce yoksa devreye girer. JS yüklenmezse
+       .mv-effects class'ı eklenmez; içerik default olarak görünür kalır. -->
+  <script>
+    (function () {
+      try {
+        var canAnimate = ('IntersectionObserver' in window)
+          && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        if (canAnimate) document.documentElement.classList.add('mv-effects');
+      } catch (e) { /* yut */ }
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -16,6 +29,7 @@
   <link rel="stylesheet" href="shared/css/themes.css">
   <link rel="stylesheet" href="shared/css/components.css">
   <link rel="stylesheet" href="shared/css/layout.css">
+  <link rel="stylesheet" href="shared/css/effects.css">
 
   <style>
     /* ============================================================
@@ -298,7 +312,7 @@
         <div class="mv-hero__bg-grid"></div>
       </div>
 
-      <div class="mv-hero__inner">
+      <div class="mv-hero__inner" data-mv-reveal>
         <div class="mv-hero__eyebrow">Resmi Topluluk Portalı</div>
         <h1 class="mv-hero__title">
           Sadece bir Discord değil.<br>
@@ -332,7 +346,7 @@
          DUYURULAR — Hero sonrası kısa şerit
          Kaynak: shared/config/site.js > MV_SITE.announcements
          ============================================================ -->
-    <section class="mv-section mv-section--tight" id="duyurular" aria-labelledby="duyurularTitle">
+    <section class="mv-section mv-section--tight" id="duyurular" aria-labelledby="duyurularTitle" data-mv-reveal>
       <div class="v11-shell">
         <div class="v11-strip-head">
           <div>
@@ -355,7 +369,7 @@
     <!-- ============================================================
          EKOSİSTEM — kısa özet
          ============================================================ -->
-    <section class="mv-section mv-section--bordered" id="ekosistem">
+    <section class="mv-section mv-section--bordered" id="ekosistem" data-mv-reveal>
       <div class="v11-shell">
         <div class="mv-section-header">
           <div class="mv-section-header__eyebrow">Portal Hakkında</div>
@@ -394,7 +408,7 @@
     <!-- ============================================================
          DEĞERLER — Topluluk değerleri (4 içerik bloğu)
          ============================================================ -->
-    <section class="mv-section mv-section--surface" id="degerler">
+    <section class="mv-section mv-section--surface" id="degerler" data-mv-reveal>
       <div class="v11-shell">
         <div class="mv-section-header">
           <div class="mv-section-header__eyebrow">Felsefe</div>
@@ -457,7 +471,7 @@
     <!-- ============================================================
          VİZYON — tek paragraflık geçiş bloğu
          ============================================================ -->
-    <section class="mv-section mv-section--tight" id="vizyon">
+    <section class="mv-section mv-section--tight" id="vizyon" data-mv-reveal>
       <div class="v11-shell">
         <div class="mv-section-header">
           <div class="mv-section-header__eyebrow">Vizyon</div>
@@ -475,7 +489,7 @@
          PROJELER — apps showcase (v11.0.3'te dinamikleştirildi)
          Kaynak: shared/config/site.js > MV_SITE.apps
          ============================================================ -->
-    <section class="mv-section" id="projeler">
+    <section class="mv-section" id="projeler" data-mv-reveal>
       <div class="v11-shell">
         <div class="mv-section-header mv-section-header--left">
           <div class="mv-section-header__eyebrow">Portal Modülleri</div>
@@ -517,7 +531,7 @@
          ETKİNLİKLER — v11.0.5'te statik feed'e bağlandı
          Kaynak: shared/config/site.js > MV_SITE.events
          ============================================================ -->
-    <section class="mv-section mv-section--surface" id="etkinlikler">
+    <section class="mv-section mv-section--surface" id="etkinlikler" data-mv-reveal>
       <div class="v11-shell">
         <div class="mv-section-header mv-section-header--left">
           <div class="mv-section-header__eyebrow">Yaklaşan</div>
@@ -546,7 +560,7 @@
     <!-- ============================================================
          KATIL — birinci sınıf CTA
          ============================================================ -->
-    <section class="mv-section">
+    <section class="mv-section" id="katil" data-mv-reveal>
       <div class="v11-shell">
         <div class="mv-grid mv-grid--2">
           <div class="mv-command-card mv-command-card--accent">
@@ -659,6 +673,7 @@
   <script src="shared/js/core.js"></script>
   <script src="shared/js/theme.js"></script>
   <script src="shared/js/apps.js"></script>
+  <script src="shared/js/effects.js" defer></script>
 
   <script>
     (function () {
