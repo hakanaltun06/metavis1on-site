@@ -37,11 +37,13 @@ zemin hazırlayan referans dokümanlardır.
   dokümana yazılmaz.
 - **[Firebase Local Setup & Auth Wrapper Guide](./firebase-local-setup.md)**
   Firebase local setup, Auth wrapper capability matrix, DevTools
-  testing guide. v12.0.0-alpha.6 → beta.2 phase log, local config
+  testing guide. v12.0.0-alpha.6 → beta.3 phase log, local config
   policy, activation paths, manuel signIn / signOut / onChange test
   zincirleri, admin login/logout trial walkthrough, trial flag
-  persistence + production devLogin guard scaffold, troubleshooting
-  ve next roadmap içerir. Gerçek credential içermez.
+  persistence + production devLogin guard scaffold, trial status
+  UX (operatör görünürlüğü) + production enforce checklist,
+  troubleshooting ve next roadmap içerir. Gerçek credential
+  içermez.
 
 ## Planned Documents
 

@@ -82,6 +82,17 @@
           <span class="admin-auth-badge__dot"></span>
           Yetkili Yönetim Alanı
         </span>
+        <!-- beta.3: opt-in trial visibility — operator-only hint.
+             Display toggled by updateFirebaseTrialIndicator() based on
+             isFirebaseLoginTrialEnabled(); stays hidden whenever the
+             default devLogin path is in effect. Not a security boundary —
+             purely a "you are in trial mode" cue. -->
+        <span id="firebaseTrialIndicator" class="admin-auth-badge"
+              style="display:none; margin-left:8px; background:rgba(176, 38, 255, 0.10); border-color:rgba(176, 38, 255, 0.35); color:#c084fc;"
+              role="status" aria-live="polite">
+          <span class="admin-auth-badge__dot"></span>
+          Firebase Trial Aktif
+        </span>
       </div>
 
       <div class="mv-auth-card__logo">
@@ -282,6 +293,22 @@
         return isFirebaseLoginTrialPersisted();
       }
 
+      /* beta.3: operator-visible trial mode hint.
+         Renders the #firebaseTrialIndicator badge only when
+         isFirebaseLoginTrialEnabled() is true. Hidden by default
+         (the element ships with inline display:none so it never
+         flashes during a flag-off page load). This is NOT a
+         security boundary — the actual submit handler decides
+         which path runs. The indicator only mirrors that decision
+         so the operator knows what mode they are in. */
+      function updateFirebaseTrialIndicator() {
+        try {
+          const el = document.getElementById('firebaseTrialIndicator');
+          if (!el) return;
+          el.style.display = isFirebaseLoginTrialEnabled() ? 'inline-flex' : 'none';
+        } catch (e) { /* swallow */ }
+      }
+
       function hasFirebaseLoginWrapper() {
         return !!(window.MV && window.MV.auth && window.MV.auth.firebase &&
                   typeof window.MV.auth.firebase.signIn === 'function' &&
@@ -400,6 +427,9 @@
 
       // İlk input'a fokus
       setTimeout(function () { userInput.focus(); }, 100);
+
+      // beta.3: reflect current trial state in the indicator badge.
+      updateFirebaseTrialIndicator();
     })();
   </script>
 </body>

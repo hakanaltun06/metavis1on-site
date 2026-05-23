@@ -7,6 +7,138 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-beta.3] — Firebase Auth Trial Status UX and Enforcement Checklist
+
+- **Trial status göstergesi eklendi.** `admin/index.html` ve
+  `admin/dashboard.html` üzerinde küçük "Firebase Trial Aktif"
+  rozet/pill'i artık `isFirebaseLoginTrialEnabled()` true ise
+  görünür, aksi durumda görünmez. Operatör hangi modda olduğunu
+  bir bakışta görebilir (beta.2 persistence ile birlikte
+  oturum-içi gezinmede de açık kalır).
+- **HTML element kararı:**
+  - Login: `admin-auth-card-wrap` içinde "Yetkili Yönetim Alanı"
+    badge'inin yanına eklenen `<span id="firebaseTrialIndicator"
+    class="admin-auth-badge" style="display:none; ...">`. Mor
+    accent renkleri inline style ile verildi; mevcut
+    `.admin-auth-badge` shape'i yeniden kullanıldı.
+  - Dashboard: `adm-top__actions` içinde "Ana Siteye Dön" /
+    "Çıkış Yap" butonlarından önce eklenen `<span
+    id="firebaseTrialIndicator" class="adm-pill"
+    style="display:none; ...">`. Mevcut `.adm-pill` shape'i ve
+    mor accent renkleri inline.
+- **Default modda flash yok.** Element HTML'de inline
+  `style="display:none"` ile gelir. `updateFirebaseTrialIndicator()`
+  IIFE sonunda `isFirebaseLoginTrialEnabled()` durumuna göre
+  `inline-flex` veya `none` set eder. Try/catch sarmalı sayesinde
+  DOM yokken veya sessionStorage erişimi başarısızken sayfa
+  bozulmaz.
+- **`role="status" aria-live="polite"`** ile screen reader'lar
+  durum değişimini sessizce bildirir.
+- **Güvenlik sınırı değildir.** Submit handler / logout button
+  click handler kararı bağımsız `isFirebaseLoginTrialEnabled()` ile
+  alır. Indicator yalnız o kararın aynasıdır; operatör DevTools'tan
+  indicator'ı gizlese bile trial davranışı değişmez. Indicator
+  CSS'i de bir yetki katmanı değildir.
+- **Yeni CSS class eklenmedi.** Mevcut `.admin-auth-badge` ve
+  `.adm-pill` shape'leri yeniden kullanıldı; mor accent (background
+  `rgba(176, 38, 255, 0.10)`, border `rgba(176, 38, 255, 0.35)`,
+  text `#c084fc`) yalnız ilgili element üzerinde inline. Page CSS,
+  layout, header/hero/timeline/stat cards, borç paneli vurgu kartı
+  davranışı **bit-identical**.
+- **Yeni helper:** `updateFirebaseTrialIndicator()` — her iki
+  HTML IIFE'sinde aynı imza, try/catch sarmalı, hata fırlatmaz,
+  DOM yokken sessizce çıkar. Yeni event listener / interval / fetch
+  eklenmedi; indicator yalnız page load anındaki state'i yansıtır.
+- **Karar matrisi (indicator görünürlüğü, her sayfada):**
+  | Koşul | `#firebaseTrialIndicator` |
+  |---|---|
+  | Default (hiçbir flag yok, sessionStorage boş) | `display:none` (hidden) |
+  | Dev host + `?mvFirebaseLogin=1`/`true` | `display:inline-flex` (visible) |
+  | sessionStorage `mv_firebase_login_trial === '1'` | `display:inline-flex` (visible) |
+  | `window.MV_ADMIN_FIREBASE_LOGIN === true` | `display:inline-flex` (visible) |
+  | Dev host + `?mvFirebaseLogin=0`/`false` | `display:none` (persistence temizlenir, indicator gizlenir) |
+  | Production host + `?mvFirebaseLogin=1` | `display:none` (production'da query param no-op) |
+- **Production enforce checklist dokümante edildi.** beta.2
+  scaffold'unu canlı moda almadan önce yapılması gereken 7 adımlı
+  sıralı doğrulama bloğu `docs/firebase-local-setup.md §12.4`'e
+  eklendi:
+  1. Local config ready (Path A/B üzerinden gerçek production
+     config yüklenebiliyor)
+  2. `MV_FIREBASE.getStatus() === 'ready'`
+  3. `MV.auth.firebase.inspect()` capabilities (`signIn` /
+     `signOut` / `currentUser` / `onChange` / bridges) hepsi
+     `'live'` / `'live-read'` / `'live-listener'` / `'available'`
+  4. Login trial production hostta gerçek admin hesabıyla success;
+     friendly error'lar SILENT downgrade YOK
+  5. Dashboard logout trial production hostta success; indicator
+     görünür (beta.3 ile gözle teyit)
+  6. devLogin fallback gerçekten gereksiz mi doğrulandı; backup
+     admin erişim kanalı hazır mı
+  7. `MV_ENFORCE_FIREBASE_AUTH = true` test'i DevTools'tan
+     yapıldı; devLogin kapalı + Firebase Auth login zinciri
+     açık doğrulandı
+  Bu checklist tek başına flag'i flip etmez; yalnız enforce'a
+  geçmek için gereken ön doğrulamayı listeler. Tamamlanmadan
+  enforce edilirse operatör admin paneline giremez hale gelir
+  (erken enforce riski).
+- **Production enforce yapılmadı, default davranış korundu:**
+  - `shared/js/auth.js` **değişmedi** — guard scaffold beta.2
+    baseline'ında, `MV_ENFORCE_FIREBASE_AUTH` default OFF.
+  - `MV.auth.devLogin` format-only davranışı production hostta
+    hâlâ açık.
+  - Login submit / dashboard logout zinciri **bit-identical**
+    beta.2 davranışında.
+- **Dokümantasyon güncellendi:**
+  - `docs/firebase-local-setup.md`:
+    - Belge sürümü beta.2 → beta.3; hedef faz beta.4+.
+    - Phase Log'a beta.3 satırı eklendi; beta.2 hash'i
+      `2711ce9` olarak doğrulandı; başlık "alpha.6 → beta.3".
+    - Current Scope `Trial status UX available` bullet'ı
+      eklendi.
+    - Capability Matrix'e "Trial status UX — available"
+      satırı eklendi.
+    - §12 yeniden yapılandırıldı: §12.3 "Operator Visibility
+      (Trial Status UX)" (HTML element konumları, davranış
+      garantileri, DevTools doğrulama), §12.4 "Production
+      Enforce Checklist" (7 adımlı sıralı doğrulama bloğu +
+      erken enforce risk notu).
+    - §11 walkthrough'a indicator referansı eklendi.
+    - Troubleshooting tablosu 3 yeni satırla genişletildi
+      (indicator default modda görünüyor, indicator trial
+      aktifken görünmüyor, indicator CSS ile gizleme).
+    - Next Roadmap beta.4 enforce hedefiyle yenilendi.
+    - Sürüm Notu satırı beta.3 ile genişletildi.
+  - `docs/v12-readiness.md`:
+    - Auth Wrapper Layer Status'a "Trial status UX:
+      available (beta.3)" ve "Production enforce checklist:
+      documented (beta.3)" bullet'ları eklendi.
+    - beta.2 hash'i `2711ce9` olarak doğrulandı.
+    - Sürüm tablosuna beta.3 satırı eklendi.
+  - `docs/README.md`:
+    - Firebase Local Setup açıklaması "alpha.6 → **beta.2**"
+      → "alpha.6 → **beta.3**" güncellendi; "trial status UX
+      (operatör görünürlüğü) + production enforce checklist"
+      ifadeleri eklendi.
+- **Dokunulmayan dosyalar / kapsam dışı:**
+  - `shared/js/auth.js` **değişmedi** — `MV.auth` ve
+    `MV.auth.firebase` API yüzeyi ile davranışı **bit-identical**.
+  - `shared/config/firebase.js`,
+    `shared/config/firebase.local.example.js`,
+    `shared/config/site.js` değişmedi.
+  - `admin/announcements.html`, `admin/events.html`,
+    `admin/apps.html`, `admin/logs.html` değişmedi.
+  - `admin/borc/index.html`, `borc.html`, `index.html` değişmedi.
+  - `shared/js/core.js`, `theme.js`, `apps.js`, `shared/css/*`,
+    `assets/*`, `firebase.json`, `.firebaserc`,
+    `firestore.rules`, `firestore.indexes.json`, `.gitignore`
+    değişmedi.
+  - `SESSION_KEY` (`'mv_admin_session'`), `SESSION_TTL_MS`
+    (8 saat), `mv_admin_session` payload, `mv_firebase_login_trial`
+    sessionStorage davranışı **bit-identical**.
+  - Trial flag persistence behavior (beta.2) **değişmedi**.
+  - Firestore SDK eklenmedi; CRUD yok; gerçek Firebase config /
+    apiKey / projectId / appId / UID / email repo'ya girmedi.
+
 ## [v12.0.0-beta.2] — Firebase Auth Trial Persistence and Production Guard Scaffold
 
 - **Trial flag persistence eklendi.** Dev hostta

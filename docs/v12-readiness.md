@@ -263,14 +263,28 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
   (yazılmaz, okunmaz). Detay:
   [`firebase-local-setup.md`](./firebase-local-setup.md) §12.1.
 - **Production devLogin guard: available, enforce pending**
-  (beta.2, _bu commit_). `shared/js/auth.js` içine kontrollü guard
+  (beta.2, `2711ce9`). `shared/js/auth.js` içine kontrollü guard
   scaffold eklendi: `window.MV_ENFORCE_FIREBASE_AUTH === true` set
   edildiğinde **ve** host dev host değilse `MV.auth.devLogin`
   kapanır ve `{ ok:false, error:'Geliştirme girişi üretim ortamında devre dışı.' }`
-  döner. **Default enforce OFF** — Firebase production config +
-  admin allowlist production smoke test'i tamamlanmadan true'ya
-  alınmamalı. Enforce beta.3+ fazına bırakıldı. Detay:
+  döner. **Default enforce OFF** — beta.4 enforce eşik checklist'i
+  tamamlanmadan true'ya alınmamalı. Detay:
   [`firebase-local-setup.md`](./firebase-local-setup.md) §12.2.
+- **Trial status UX: available** (beta.3, _bu commit_).
+  `admin/index.html` ve `admin/dashboard.html` üzerinde
+  `#firebaseTrialIndicator` elementi `isFirebaseLoginTrialEnabled()`
+  true ise "Firebase Trial Aktif" rozeti gösterir; default modda
+  hiç görünmez. Inline `style="display:none"` ile yüklenir, IIFE
+  sonunda `updateFirebaseTrialIndicator()` toggle eder. Yeni CSS
+  class eklenmedi; mevcut `.admin-auth-badge` / `.adm-pill`
+  shape'leri yeniden kullanıldı. Operatör görünürlüğüdür, güvenlik
+  sınırı değildir. Detay:
+  [`firebase-local-setup.md`](./firebase-local-setup.md) §12.3.
+- **Production enforce checklist: documented** (beta.3, _bu commit_).
+  beta.4 enforce öncesi 7 adımlı sıralı doğrulama bloğu
+  [`firebase-local-setup.md`](./firebase-local-setup.md) §12.4'te.
+  Checklist tek başına flag'i flip etmez; yalnız enforce'a geçmek
+  için gereken ön doğrulamayı listeler.
 - **Firestore: pending.** Firestore SDK admin sayfalarına
   eklenmedi; read / write / CRUD yok. v12.1.0 Firestore Rules
   foundation fazından sonra açılır.
@@ -290,6 +304,7 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
 | v12.0.0-alpha.18 | 2026-05-23 | Auth Wrapper Layer Status alpha.16 (currentUser live-read) ve alpha.17 (onChange live-listener) sonrası tazelendi. Wrapper artık dört yüzeyiyle (signIn, signOut, currentUser, onChange) ready behind guard; "Auth wrapper layer is complete behind readiness guards; HTML wiring is the next controlled phase" beyanı eklendi. HTML wiring alpha.19/alpha.20 trial fazlarına bırakıldı. |
 | v12.0.0-beta.1 | 2026-05-23 | Admin auth trial bundle tamamlandı. Admin login opt-in trial (alpha.19, `8b58ad6`) ve dashboard logout opt-in trial (beta.1) bullet'ları "available" olarak işaretlendi; aynı paylaşılan flag pattern. Production devLogin guard beta.2 fazına yönlendirildi. Detay: [`firebase-local-setup.md`](./firebase-local-setup.md) §11 Trial Walkthrough. |
 | v12.0.0-beta.2 | 2026-05-23 | Trial flag persistence + production devLogin guard scaffold available olarak işaretlendi. Login → dashboard navigasyonu query string'i kaybetse bile dev hostta `sessionStorage` key (`mv_firebase_login_trial`) ile trial aktif kalır; production'da query param no-op. `shared/js/auth.js` içine `MV_ENFORCE_FIREBASE_AUTH`-gated devLogin guard scaffold eklendi, default enforce OFF; beta.3+ enforce eşiği için ön koşullar (Firebase production config + allowlist + smoke test) belgelendi. beta.1 hash'i `b0cb84b` olarak doğrulandı. Detay: [`firebase-local-setup.md`](./firebase-local-setup.md) §12. |
+| v12.0.0-beta.3 | 2026-05-23 | Trial status UX + production enforce checklist available olarak işaretlendi. `admin/index.html` ve `admin/dashboard.html` üzerinde `#firebaseTrialIndicator` elementi `isFirebaseLoginTrialEnabled()` true ise "Firebase Trial Aktif" gösterir; default modda görünmez. beta.4 enforce öncesi 7 adımlı sıralı checklist [`firebase-local-setup.md`](./firebase-local-setup.md) §12.4'te dokümante edildi. beta.2 hash'i `2711ce9` olarak doğrulandı. `shared/js/auth.js` ve Firebase config dosyalarına dokunulmadı; runtime auth davranışı değişmedi. |
 
 Bu doküman v12.0.0-alpha PR açılana kadar canlı bir referanstır;
 PR description'ı için doğrudan referans olarak kullanılabilir. v12.0.0-alpha

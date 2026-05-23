@@ -507,6 +507,17 @@
       </a>
 
       <div class="adm-top__actions">
+        <!-- beta.3: opt-in trial visibility — operator-only hint.
+             Display toggled by updateFirebaseTrialIndicator() based on
+             isFirebaseLoginTrialEnabled(); stays hidden whenever the
+             default MV.auth.logout path is in effect. Not a security
+             boundary — purely a "you are in trial mode" cue. -->
+        <span id="firebaseTrialIndicator" class="adm-pill"
+              style="display:none; background:rgba(176, 38, 255, 0.10); border-color:rgba(176, 38, 255, 0.35); color:#c084fc;"
+              role="status" aria-live="polite">
+          <span class="adm-pill__dot"></span>
+          Firebase Trial Aktif
+        </span>
         <a class="mv-btn mv-btn--ghost mv-btn--sm" href="../index.html">← Ana Siteye Dön</a>
         <button class="mv-btn mv-btn--sm" type="button" id="logoutBtn">Çıkış Yap</button>
       </div>
@@ -956,6 +967,22 @@
         return isFirebaseLoginTrialPersisted();
       }
 
+      /* beta.3: operator-visible trial mode hint.
+         Renders the #firebaseTrialIndicator pill only when
+         isFirebaseLoginTrialEnabled() is true. Hidden by default
+         (the element ships with inline display:none so it never
+         flashes during a flag-off page load). This is NOT a
+         security boundary — the logout button handler decides
+         which path runs. The indicator only mirrors that decision
+         so the operator knows what mode they are in. */
+      function updateFirebaseTrialIndicator() {
+        try {
+          var el = document.getElementById('firebaseTrialIndicator');
+          if (!el) return;
+          el.style.display = isFirebaseLoginTrialEnabled() ? 'inline-flex' : 'none';
+        } catch (e) { /* swallow */ }
+      }
+
       function hasFirebaseLogoutWrapper() {
         return !!(window.MV && window.MV.auth && window.MV.auth.firebase &&
                   typeof window.MV.auth.firebase.signOut === 'function' &&
@@ -1050,6 +1077,9 @@
           }
         });
       }
+
+      // beta.3: reflect current trial state in the indicator pill.
+      updateFirebaseTrialIndicator();
     })();
   </script>
 </body>

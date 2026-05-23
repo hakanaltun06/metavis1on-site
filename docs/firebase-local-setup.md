@@ -4,7 +4,7 @@
 > doğrulama rehberidir.** Aktif kod değildir; admin Auth altyapısının
 > güvenli geçişi için referans dokümandır.
 >
-> Belge sürümü: v12.0.0-beta.2 · Hedef faz: v12.0.0-beta.3+
+> Belge sürümü: v12.0.0-beta.3 · Hedef faz: v12.0.0-beta.4+
 >
 > Bağlantılı dokümanlar:
 > - [`firebase-transition-plan.md`](./firebase-transition-plan.md) — Genel mimari ve faz roadmap'i.
@@ -18,7 +18,7 @@
 
 1. [Purpose](#1-purpose)
 2. [Current Scope](#2-current-scope)
-3. [Phase Log: alpha.6 → beta.2](#3-phase-log-alpha6--beta2)
+3. [Phase Log: alpha.6 → beta.3](#3-phase-log-alpha6--beta3)
 4. [Local Config File](#4-local-config-file)
 5. [Activation Paths](#5-activation-paths)
 6. [DevTools Inspection](#6-devtools-inspection)
@@ -55,7 +55,7 @@ Bu doküman **yalnızca** v12 admin Auth foundation geçişini kapsar:
 
 ## 2. Current Scope
 
-v12.0.0-beta.2 itibarıyla durum:
+v12.0.0-beta.3 itibarıyla durum:
 
 - **Firebase App SDK** admin sayfalarında **pasif şekilde yüklü**
   (alpha.5). Public site etkilenmez.
@@ -102,13 +102,17 @@ v12.0.0-beta.2 itibarıyla durum:
   Yalnız `window.MV_ENFORCE_FIREBASE_AUTH === true` set edildiğinde
   **ve** host bir dev host değilse devLogin kapatılır ve
   `{ ok:false, error:'Geliştirme girişi üretim ortamında devre dışı.' }`
-  döner. Default enforce **OFF** — kapsamlı kapatma beta.3+ fazına
-  bırakıldı.
+  döner. Default enforce **OFF**; enforce eşik koşulları §12.4'te.
+- **Trial status UX available** (beta.3). `admin/index.html` ve
+  `admin/dashboard.html` üzerinde `isFirebaseLoginTrialEnabled()`
+  true ise küçük "Firebase Trial Aktif" göstergesi çıkar; default
+  modda görünmez. Salt operatör görünürlüğüdür — güvenlik sınırı
+  değildir.
 - **Firestore SDK / read / write / CRUD** başlamadı.
 
 ---
 
-## 3. Phase Log: alpha.6 → beta.2
+## 3. Phase Log: alpha.6 → beta.3
 
 | Faz | Commit | Özet |
 |---|---|---|
@@ -127,7 +131,8 @@ v12.0.0-beta.2 itibarıyla durum:
 | v12.0.0-alpha.18 | `876b7ac` | Auth wrapper cleanup (`dryRunResult` removed) + capability docs refresh. |
 | v12.0.0-alpha.19 | `8b58ad6` | Opt-in Firebase admin login trial on `admin/index.html`; default `devLogin` bit-identical. |
 | v12.0.0-beta.1 | `b0cb84b` | Opt-in Firebase admin logout trial on `admin/dashboard.html`; trial bundle tamamlandı, docs senkronize edildi. |
-| v12.0.0-beta.2 | _bu commit_ | Trial flag `sessionStorage` persistence (login + dashboard) + production `devLogin` guard scaffold (`MV_ENFORCE_FIREBASE_AUTH`, default OFF). |
+| v12.0.0-beta.2 | `2711ce9` | Trial flag `sessionStorage` persistence (login + dashboard) + production `devLogin` guard scaffold (`MV_ENFORCE_FIREBASE_AUTH`, default OFF). |
+| v12.0.0-beta.3 | _bu commit_ | Trial status UX (operator-visible "Firebase Trial Aktif" göstergesi) + production enforce checklist dokümante edildi. Runtime auth davranışı değişmedi. |
 
 > Notlar:
 > - alpha.6 / alpha.7 / alpha.8 hash'leri local git log'dan
@@ -138,10 +143,12 @@ v12.0.0-beta.2 itibarıyla durum:
 >   ve beta.1 admin HTML wiring'ini opt-in flag arkasında bağladı.
 >   beta.2 bu wiring'i kullanılabilir hale getirdi (persistence) ve
 >   production devLogin'i ileride enforce edebilmek için scaffold
->   ekledi. Default davranış her zaman bit-identical kalır — trial
->   flag olmadan devLogin/logout yolu eski sonuçları üretir,
->   `MV_ENFORCE_FIREBASE_AUTH` set edilmedikçe production devLogin
->   açık kalır.
+>   ekledi. beta.3 operatör görünürlüğü ve enforce checklist'ini
+>   ekledi; auth runtime davranışı değişmedi. Default davranış her
+>   zaman bit-identical kalır — trial flag olmadan devLogin/logout
+>   yolu eski sonuçları üretir, `MV_ENFORCE_FIREBASE_AUTH` set
+>   edilmedikçe production devLogin açık kalır, indicator yalnız
+>   trial aktifken görünür.
 
 ---
 
@@ -316,7 +323,8 @@ gösterir (form/handler hâlâ devLogin/logout zincirinde).
 | Admin login form Firebase mode | opt-in trial available | `admin/index.html` flag arkasında `signIn` + `createSessionFromResult`. Default hâlâ `devLogin` (alpha.19). |
 | Dashboard logout Firebase mode | opt-in trial available | `admin/dashboard.html` flag arkasında `signOut` + `clearSessionAfterSignOut`. Default hâlâ `MV.auth.logout` (beta.1). |
 | Trial flag persistence | available | Dev hostta `?mvFirebaseLogin=1/true` → `sessionStorage 'mv_firebase_login_trial'='1'`; `?mvFirebaseLogin=0/false` temizler. Login → dashboard navigasyonu boyunca trial korunur. Production'da query param no-op (beta.2). |
-| Production devLogin guard scaffold | available, enforce pending | `shared/js/auth.js` içinde scaffold mevcut; `MV_ENFORCE_FIREBASE_AUTH === true` set edilmedikçe production'da `MV.auth.devLogin` hâlâ format-only davranışıyla açık. Enforce beta.3+ fazına bırakıldı (beta.2). |
+| Production devLogin guard scaffold | available, enforce pending | `shared/js/auth.js` içinde scaffold mevcut; `MV_ENFORCE_FIREBASE_AUTH === true` set edilmedikçe production'da `MV.auth.devLogin` hâlâ format-only davranışıyla açık. Enforce eşik koşulları §12.4'te (beta.2 scaffold, beta.3 checklist). |
+| Trial status UX | available | `admin/index.html` ve `admin/dashboard.html` üzerinde `#firebaseTrialIndicator` elementi `isFirebaseLoginTrialEnabled()` true ise "Firebase Trial Aktif" gösterir; default modda hiç görünmez. Operatör görünürlüğüdür, güvenlik sınırı değil (beta.3). |
 | Firestore | not started | Firestore SDK admin sayfalarına eklenmedi. |
 | CRUD | not started | announcements / events / apps modülleri read-only. |
 | Debt panel migration | out of scope | `admin/borc/index.html` v12.0 – v12.5 boyunca dokunulmaz. |
@@ -529,6 +537,10 @@ sessionStorage.getItem('mv_admin_session') === null
 `[alpha.19 login]` ve `[beta.1 logout]` prefixli console log'lar
 (signIn/signOut result, bridge result, fallback nedeni) yazılır.
 
+beta.3 ile her iki sayfada "Firebase Trial Aktif" rozet/pill
+görünür hale gelir (login üstünde `.admin-auth-badge`, dashboard
+üst barında `.adm-pill`); detay §12.3'te.
+
 ### Default davranış (flag yok)
 
 - Login form: `MV.auth.devLogin` → 350ms→500ms zinciri → `dashboard.html`.
@@ -689,24 +701,136 @@ window.MV_ENFORCE_FIREBASE_AUTH = true; // dev host'ta etkisiz
 MV.auth.devLogin('admin', 'PLACEHOLDER').ok; // → true (dev hostta her zaman açık)
 ```
 
-### 12.3 Beta.3 enforce eşiği
+### 12.3 Operator Visibility (Trial Status UX)
 
-`MV_ENFORCE_FIREBASE_AUTH` flag'i bilinçli olarak default
-**kapatıldı**. Aşağıdaki ön koşullar tamamlanmadan production'a
-true olarak gönderilmemeli:
+**Sorun.** beta.2 ile trial bir sayfada aktive edildiğinde tüm
+oturum boyunca persistent olarak kalıyor. Operatör hangi modda
+olduğunu unutabilir; "Firebase mi devLogin mi çalışıyor?" sorusu
+sessizce kalıyor.
 
-- Production Firebase config gerçek değerlerle yüklenebiliyor
-  (Path A veya Path B üzerinden).
-- `MV_FIREBASE.getStatus() === 'ready'` ve
-  `MV.auth.firebase.inspect().mode === 'partial-live'` production'da
-  doğrulandı.
-- Admin allowlist (en az 1 owner UID) Firebase Console'da kayıtlı.
-- Smoke test: login → dashboard → logout chain Firebase moduyla
-  production'da en az bir kez başarıyla koşturuldu.
+**Çözüm.** beta.3 her iki admin sayfasına küçük bir
+`#firebaseTrialIndicator` elementi ekledi:
 
-Bu koşullar sağlanmadan enforce edilirse operatör admin paneline
-girilemez hale gelir. Guard scaffold tek başına bu durumu çözmez —
-yalnız kapatma mekanizması sağlar.
+- `admin/index.html` üzerinde "Yetkili Yönetim Alanı" badge'inin
+  yanında "Firebase Trial Aktif" rozeti (`.admin-auth-badge`
+  shape, mor accent).
+- `admin/dashboard.html` üzerinde üst bar action'larında, "Ana
+  Siteye Dön" / "Çıkış Yap" butonlarından önce "Firebase Trial
+  Aktif" pill'i (`.adm-pill` shape, mor accent).
+
+**Davranış garantileri:**
+
+- Element HTML'de inline `style="display:none"` ile gelir —
+  default sayfa yüklemesinde **kesinlikle flash etmez**.
+- `updateFirebaseTrialIndicator()` IIFE sonunda çağrılır;
+  `isFirebaseLoginTrialEnabled()` true ise `display:inline-flex`,
+  değilse `display:none`.
+- Try/catch sarmalı sayesinde DOM yokken veya sessionStorage
+  erişimi başarısızken sayfa bozulmaz.
+- **Güvenlik mekanizması değildir.** Submit handler / logout
+  handler hangi yolu seçeceğine bağımsız olarak karar verir;
+  indicator yalnız o kararın aynasıdır. Operatör indicator'ı
+  CSS ile gizlese bile trial davranışı değişmez.
+- Yeni CSS class eklenmedi; mevcut `.admin-auth-badge` /
+  `.adm-pill` shape'i kullanıldı + inline style ile mor accent.
+- Yeni event listener / interval eklenmedi; indicator dinamik
+  olarak güncellenmez (page load anındaki state'i yansıtır).
+
+**DevTools doğrulaması:**
+
+```js
+// Default (flag yok) — indicator hidden
+document.getElementById('firebaseTrialIndicator').style.display;
+// → 'none'
+
+// Trial aktive et (dev host)
+sessionStorage.setItem('mv_firebase_login_trial', '1');
+// Sayfayı yeniden yükle. Indicator artık görünür:
+document.getElementById('firebaseTrialIndicator').style.display;
+// → 'inline-flex'
+// Visible text: "Firebase Trial Aktif"
+
+// Trial deaktive et
+sessionStorage.removeItem('mv_firebase_login_trial');
+// Sayfayı yeniden yükle. Indicator gizlenir.
+```
+
+### 12.4 Production Enforce Checklist
+
+beta.2 `MV_ENFORCE_FIREBASE_AUTH` guard'ını ekledi ama
+**default'u OFF** tuttu. Production enforce'a geçmeden önce
+aşağıdaki yedi adımın her biri canlı production hostta sırayla
+doğrulanmalı. Bir adımın bile başarısız olması enforce'u
+durdurma sebebidir.
+
+```
+[1] Local config ready
+    - shared/config/firebase.local.js gerçek production
+      project değerleriyle yüklü (Path A manuel script tag
+      veya Path B opt-in loader).
+    - looksReal() placeholder testini geçiyor.
+
+[2] MV_FIREBASE.getStatus() === 'ready'
+    - DevTools console üzerinden doğrula.
+    - 'placeholder' / 'disabled' / 'error' durumunda DURDUR.
+
+[3] MV.auth.firebase.inspect() capabilities ready
+    - mode === 'partial-live'
+    - capabilities.signIn === 'live'
+    - capabilities.signOut === 'live'
+    - capabilities.currentUser === 'live-read'
+    - capabilities.onChange === 'live-listener'
+    - sessionBridge === 'available'
+    - logoutBridge === 'available'
+    - Yukarıdakilerin herhangi biri 'no-op' ise DURDUR.
+
+[4] Login trial success
+    - window.MV_ADMIN_FIREBASE_LOGIN = true (veya dev host'ta
+      ?mvFirebaseLogin=1) ile production login form'undan
+      gerçek admin hesabıyla giriş yapılıyor.
+    - Beklenen: friendly success feedback +
+      mv_admin_session.provider === 'firebase-auth'.
+    - Wrong-password / network failure friendly Türkçe mesaj
+      gösteriyor, devLogin'e SİLENT DOWNGRADE YOK.
+
+[5] Dashboard logout trial success
+    - Aynı oturum içinde logout butonu Firebase yolunu
+      kullanıyor (beta.1 + beta.2 persistence ile).
+    - sessionStorage 'mv_admin_session' temizleniyor;
+      './index.html' redirect çalışıyor.
+    - "Firebase Trial Aktif" indicator login ve dashboard
+      üzerinde görünüyor (beta.3).
+
+[6] devLogin fallback artık gereksiz mi doğrulandı
+    - Production Firebase ready iken devLogin'e düşmek
+      gereksiz mi? Bilinen admin'lerin tümü Firebase
+      Auth + admin allowlist üzerinden giriş yapabiliyor mu?
+    - Backup admin erişim kanalı (örn. owner UID Firebase
+      Console'da) hazır mı?
+    - HAYIR ise enforce'u erteleyin.
+
+[7] MV_ENFORCE_FIREBASE_AUTH true test
+    - Yukarıdaki 6 adım PASS olduktan SONRA:
+    - DevTools'tan window.MV_ENFORCE_FIREBASE_AUTH = true set
+      et, MV.auth.devLogin('test', '...') çağrısı
+      { ok:false, error:'Geliştirme girişi üretim ortamında
+      devre dışı.' } döndüğünü doğrula.
+    - Firebase Auth login zinciri yine çalışıyor mu doğrula.
+    - HAYIR ise scaffold koşul mantığını gözden geçir, DURDUR.
+```
+
+Bu checklist tamamlandıktan sonra `MV_ENFORCE_FIREBASE_AUTH`
+true olarak production loader path'ine bilinçli olarak alınabilir
+(ayrı paket faz, beta.4+). Checklist tek başına flag'i flip
+etmez — yalnız enforce'a geçmek için gereken ön doğrulamayı
+listeler.
+
+**Erken enforce riski.** Bu checklist tamamlanmadan enforce
+edilirse operatör admin paneline giremez hale gelir. Guard
+scaffold tek başına bu durumu çözmez — yalnız kapatma
+mekanizması sağlar. devLogin format-only olduğu için bugünkü
+operasyonel anahtardır; Firebase tarafı tam ready olmadan
+kapatılırsa kayıt yok.
 
 ---
 
@@ -739,6 +863,9 @@ Aşağıdaki tablo wrapper'dan dönen anormal durumların yorumudur.
 | Dev hostta `?mvFirebaseLogin=0` çalışmadı, trial hâlâ aktif | URL'i ziyaret ederken `MV_ADMIN_FIREBASE_LOGIN` global flag set edilmiş olabilir — bu flag sessionStorage'dan bağımsız öncelik kazanır. | `window.MV_ADMIN_FIREBASE_LOGIN` değerini DevTools'tan oku; `false`/`undefined` olduğunu doğrula. |
 | Production'da `MV_ENFORCE_FIREBASE_AUTH = true` set ettim, devLogin hâlâ çalışıyor | Host gerçekten dev olabilir (örn. local proxy `localhost` adıyla çalışıyor); veya flag set edilmeden önce devLogin çağrıldı. | `isDevHost()` mantığını (`localhost` / `127.0.0.1` / `0.0.0.0` / `file:`) doğrula; flag set'inin ilk submit'ten önce çalıştığını kontrol et. |
 | Dev hostta `MV_ENFORCE_FIREBASE_AUTH = true` ama devLogin hâlâ açık | beta.2 davranışı: dev hostta enforce flag **etkisizdir** (operatörü local geliştirmede kilitlememek için). | Bu beklenen davranıştır; production guard'i test etmek için gerçek production hostuna gerek var veya host hostname'ini geçici olarak değiştir (yalnız test için). |
+| "Firebase Trial Aktif" indicator default modda görünüyor | Bu görünmemeli; `window.MV_ADMIN_FIREBASE_LOGIN`, sessionStorage `mv_firebase_login_trial` ve `?mvFirebaseLogin=` query'sini doğrula. Üç kanaldan biri true ise indicator beklenen şekilde görünür. | DevTools console: `window.MV_ADMIN_FIREBASE_LOGIN`, `sessionStorage.getItem('mv_firebase_login_trial')`, `new URLSearchParams(location.search).get('mvFirebaseLogin')` ile state'i doğrula. Beklenmedik true varsa kaynağı temizle. |
+| Trial aktif ama indicator görünmüyor | `updateFirebaseTrialIndicator()` IIFE sonunda çağrılır; DOM yokken sessizce çıkar. Element ID değişmiş olabilir veya inline style override edilmiş olabilir. | DevTools: `document.getElementById('firebaseTrialIndicator')` ile element'in varlığını kontrol et; `style.display` değerini incele. Sayfayı reload et. |
+| Indicator'ı CSS ile gizledim, trial hâlâ aktif gibi davranıyor | Beklenen davranış. Indicator yalnız operatör görünürlüğüdür; submit handler / logout handler kararı bağımsız `isFirebaseLoginTrialEnabled()` ile alır. Gizleme güvenlik etkisi yapmaz. | Trial'ı gerçekten kapatmak için `?mvFirebaseLogin=0` veya sessionStorage key'i temizle. |
 
 ---
 
@@ -795,13 +922,14 @@ Tamamlanan adımlar (referans):
 | Auth wrapper cleanup + docs refresh | v12.0.0-alpha.18 | ✅ Tamamlandı (`876b7ac`). |
 | Admin login opt-in Firebase trial | v12.0.0-alpha.19 | ✅ Tamamlandı (`8b58ad6`). |
 | Admin logout opt-in trial + docs sync | v12.0.0-beta.1 | ✅ Tamamlandı (`b0cb84b`). |
-| Trial persistence + production devLogin guard scaffold | v12.0.0-beta.2 | ✅ Mevcut faz. |
+| Trial persistence + production devLogin guard scaffold | v12.0.0-beta.2 | ✅ Tamamlandı (`2711ce9`). |
+| Trial status UX + production enforce checklist | v12.0.0-beta.3 | ✅ Mevcut faz. |
 
 Önerilen sonraki sıra (her adım atomik commit):
 
 | Adım | Hedef faz | Açıklama |
 |---|---|---|
-| Production devLogin guard enforce | v12.0.0-beta.3 | Production Firebase config + admin allowlist production smoke test'i tamamlandıktan sonra `MV_ENFORCE_FIREBASE_AUTH` default'u flip edilir veya operasyonel olarak set edilir. beta.2 scaffold'unu canlı moda alır. |
+| Production devLogin guard enforce | v12.0.0-beta.4 | §12.4 checklist'i tamamlandıktan sonra `MV_ENFORCE_FIREBASE_AUTH` operasyonel olarak true'ya alınır. beta.2 scaffold'unu canlı moda alır; HTML touch yok (sadece deployment/config tarafı). |
 | Firestore rules foundation | v12.1.0 | Firestore SDK admin sayfalarına eklenir, rules emulator testleri koşulur, deploy gate açılır. Hâlâ write yok. |
 | Read-only admin modules Firebase read | v12.2.0 | announcements / events / apps modülleri Firestore'dan read yapar (write hâlâ yok). |
 | CRUD | v12.3.0+ | Modül başına create/update/delete; paired `adminLogs` write desenleri. |
@@ -820,3 +948,4 @@ yürütülür.
 | v12.0.0-alpha.18 | 2026-05-23 | Auth wrapper katmanı `signIn` / `signOut` / `currentUser` / `onChange` dört yüzeyiyle ready behind guard durumuna geldikten sonra doküman tazelendi. Phase log alpha.15/16/17 satırlarıyla genişletildi; Current Scope alpha.17 state'ini yansıtır; DevTools ready tablosu `currentUser:'live-read'` + `onChange:'live-listener'` + bridge satırları ile güncellendi; Capability Matrix `live-read`/`live-listener` durumlarını gösterir; yeni §10 "Manual onChange Listener Example" eklendi; Troubleshooting tablosu `currentUser` / `onChange` / `unsubscribe` belirtileriyle genişletildi; Next Roadmap tamamlanan/önümüzdeki adımlar olarak iki tabloya bölündü; alpha.19 (admin login trial), alpha.20 (logout trial), alpha.21 (devLogin guard) sıraları güncellendi. Runtime davranışı değişmedi. |
 | v12.0.0-beta.1 | 2026-05-23 | Admin auth trial bundle tamamlandı: dashboard logout opt-in trial (`admin/dashboard.html`) eklendi; alpha.19 login trial ile aynı flag/host pattern paylaşılır. Phase log alpha.18 + alpha.19 + beta.1 satırlarıyla genişletildi; başlık `alpha.6 → beta.1`. Current Scope login/logout trial bullet'larıyla güncellendi. Capability Matrix iki satır "opt-in trial available" + production devLogin guard "pending" satırı ile yenilendi. Yeni §11 "Admin Login/Logout Trial Walkthrough" eklendi (TOC: §11/§12/§13 → §12/§13/§14). Troubleshooting tablosu 4 yeni satırla genişletildi (trial flag debug, session payload, signOut failure). Next Roadmap beta.2 devLogin guard + Firestore foundation sırasına güncellendi. Runtime davranışı değişmedi; default flag-off path bit-identical kaldı. |
 | v12.0.0-beta.2 | 2026-05-23 | Trial flag persistence + production devLogin guard scaffold ile doküman tazelendi. Belge sürümü v12.0.0-beta.1 → beta.2, hedef faz beta.3+. Phase log beta.1 hash'i `b0cb84b` olarak doğrulandı ve beta.2 satırı eklendi; başlık `alpha.6 → beta.2`. Current Scope `Trial flag persistence available` + `Production devLogin guard scaffold available` bullet'ları eklendi. Capability Matrix iki yeni satırla genişletildi (trial flag persistence available; production devLogin guard scaffold available, enforce pending). Yeni §12 "Trial Persistence and Production devLogin Guard" bölümü eklendi (§12.1 persistence rules + helpers + devtools doğrulama, §12.2 enforce koşulları + dönüş matrisi + helper garantileri, §12.3 beta.3 enforce eşik koşulları). Troubleshooting tablosu 4 yeni satırla genişletildi (persistence kayıp, `=0` çalışmadı, production enforce çalışmadı, dev hostta enforce etkisiz). Security Notes maddesi enforce flag policy'siyle güncellendi. Next Roadmap beta.3 enforce hedefiyle yenilendi. Runtime davranışı değişmedi; default flag-off path + default enforce-off path bit-identical kaldı. |
+| v12.0.0-beta.3 | 2026-05-23 | Trial status UX + production enforce checklist ile doküman tazelendi. Belge sürümü beta.2 → beta.3, hedef faz beta.4+. Phase Log beta.2 hash'i `2711ce9` olarak doğrulandı ve beta.3 satırı eklendi; başlık `alpha.6 → beta.3`. Current Scope `Trial status UX available` bullet'ı eklendi. Capability Matrix'e "Trial status UX — available" satırı eklendi. §12 yeniden yapılandırıldı: yeni §12.3 "Operator Visibility (Trial Status UX)" (HTML element konumları, davranış garantileri, DevTools doğrulama) + §12.4 "Production Enforce Checklist" (7 adımlı sıralı doğrulama bloğu) + erken enforce risk notu. §11 walkthrough'a indicator referansı eklendi. Troubleshooting tablosu 3 yeni satırla genişletildi (indicator default modda görünüyor, indicator trial aktifken görünmüyor, indicator CSS ile gizleme). Next Roadmap beta.4 enforce hedefiyle yenilendi; beta.2 hash'i `2711ce9` olarak doğrulandı. Runtime auth davranışı değişmedi; yeni şey yalnız iki sayfaya inline-styled, default-hidden indicator + bir `updateFirebaseTrialIndicator()` helper. |
