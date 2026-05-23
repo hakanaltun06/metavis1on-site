@@ -217,33 +217,43 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
 
 ## Auth Wrapper Layer Status
 
-> Bu bölüm v12.0.0-alpha.15 dokümantasyon fazında eklendi. v12.0.0-alpha.6
-> → alpha.14 fazlarında inşa edilen `MV.auth.firebase` katmanının
-> mevcut durumunu özetler. Detaylı rehber:
-> [`firebase-local-setup.md`](./firebase-local-setup.md).
+> Bu bölüm v12.0.0-alpha.15'te eklendi ve v12.0.0-alpha.18'de
+> tazelendi. v12.0.0-alpha.6 → alpha.17 fazlarında inşa edilen
+> `MV.auth.firebase` katmanının mevcut durumunu özetler. Detaylı
+> rehber: [`firebase-local-setup.md`](./firebase-local-setup.md).
 
-- **Wrapper layer `signIn` / `signOut` seviyesinde hazır.**
-  `MV.auth.firebase.signIn()` ve `MV.auth.firebase.signOut()` ready
-  olduğunda live çalışır; default repo placeholder config ile no-op
-  davranır.
-- **Session bridge ve logout bridge mevcut.**
+- **`signIn`: ready behind guard.** `MV.auth.firebase.signIn()`
+  ready iken `signInWithEmailAndPassword` çağrılır; placeholder'da
+  no-op (alpha.12).
+- **`signOut`: ready behind guard.** `MV.auth.firebase.signOut()`
+  ready iken `auth.signOut()` çağrılır; placeholder'da no-op
+  (alpha.14).
+- **`currentUser`: live-read behind guard.**
+  `MV.auth.firebase.currentUser()` ready iken `auth.currentUser`
+  property'sini okur ve sanitized 5-field snapshot veya `null`
+  döner; SDK method invoke etmez (alpha.16).
+- **`onChange`: live-listener behind guard.**
+  `MV.auth.firebase.onChange(cb)` ready iken gerçek
+  `onAuthStateChanged` listener kurar; callback sanitized
+  snapshot/null alır; `unsubscribe` safe-wrapped (alpha.17).
+- **`sessionBridge` / `logoutBridge`: available.**
   `createSessionFromResult()` ve `clearSessionAfterSignOut()`
-  strict validation ile manuel çağrılır; `signIn` / `signOut` bunları
-  otomatik tetiklemez (deliberate decoupling).
-- **Admin HTML wiring pending.** `admin/index.html` login formu hâlâ
-  `MV.auth.devLogin` üzerinden çalışır; `admin/dashboard.html` logout
-  hâlâ `MV.auth.logout` üzerinden çalışır. Wrapper aktivasyonu
-  alpha.17 / alpha.18 opt-in trial fazlarına bırakıldı.
-- **`onChange` / `currentUser` pending.** Ready iken bile
-  `onAuthStateChanged` çağrılmaz, `auth.currentUser` okunmaz; her
-  ikisi de dry-run. Activation alpha.16+'da değerlendirilecek.
-- **Firestore pending.** Firestore SDK admin sayfalarına eklenmedi;
-  read / write / CRUD yok. v12.1.0 Firestore Rules foundation
-  fazından sonra açılır.
-- **Debt panel out of scope.** Borç paneli (`admin/borc/index.html`)
-  kendi inline `firebaseConfig`'i ile izole çalışır; v12 Auth
-  wrapper'ı ile karışmaz. v12.0 – v12.5 boyunca kod düzeyinde
-  dokunulmaz.
+  strict validation ile manuel çağrılır; `signIn` / `signOut`
+  bunları otomatik tetiklemez (deliberate decoupling).
+- **Sonuç:** *Auth wrapper layer is complete behind readiness
+  guards; HTML wiring is the next controlled phase.*
+- **Admin HTML wiring: pending.** `admin/index.html` login formu
+  hâlâ `MV.auth.devLogin` üzerinden çalışır; `admin/dashboard.html`
+  logout hâlâ `MV.auth.logout` üzerinden çalışır. Wrapper
+  aktivasyonu alpha.19 (login trial) ve alpha.20 (logout trial)
+  opt-in fazlarına bırakıldı.
+- **Firestore: pending.** Firestore SDK admin sayfalarına
+  eklenmedi; read / write / CRUD yok. v12.1.0 Firestore Rules
+  foundation fazından sonra açılır.
+- **Debt panel: out of scope.** Borç paneli
+  (`admin/borc/index.html`) kendi inline `firebaseConfig`'i ile
+  izole çalışır; v12 Auth wrapper'ı ile karışmaz. v12.0 – v12.5
+  boyunca kod düzeyinde dokunulmaz.
 
 ---
 
@@ -253,6 +263,7 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
 |---|---|---|
 | v11.6.0 | 2026-05-23 | İlk v12 readiness özet dokümanı. v11 tamamlanan işler, mevcut dokümanlar tablosu, v12.0.0-alpha scope + out-of-scope, runtime dokunma matrisi, entry criteria, önerilen commit planı, kalan riskler ve Go/Hold karar matrisi belgelendi. |
 | v12.0.0-alpha.15 | 2026-05-23 | Auth Wrapper Layer Status bölümü eklendi. alpha.6 → alpha.14 sonrası `MV.auth.firebase` katmanının mevcut durumu, pending wiring ve out-of-scope kalemleri özetlendi. Detay: [`firebase-local-setup.md`](./firebase-local-setup.md). |
+| v12.0.0-alpha.18 | 2026-05-23 | Auth Wrapper Layer Status alpha.16 (currentUser live-read) ve alpha.17 (onChange live-listener) sonrası tazelendi. Wrapper artık dört yüzeyiyle (signIn, signOut, currentUser, onChange) ready behind guard; "Auth wrapper layer is complete behind readiness guards; HTML wiring is the next controlled phase" beyanı eklendi. HTML wiring alpha.19/alpha.20 trial fazlarına bırakıldı. |
 
 Bu doküman v12.0.0-alpha PR açılana kadar canlı bir referanstır;
 PR description'ı için doğrudan referans olarak kullanılabilir. v12.0.0-alpha

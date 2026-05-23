@@ -4,7 +4,7 @@
 > doğrulama rehberidir.** Aktif kod değildir; admin Auth altyapısının
 > güvenli geçişi için referans dokümandır.
 >
-> Belge sürümü: v12.0.0-alpha.15 · Hedef faz: v12.0.0-alpha.16+
+> Belge sürümü: v12.0.0-alpha.18 · Hedef faz: v12.0.0-alpha.19+
 >
 > Bağlantılı dokümanlar:
 > - [`firebase-transition-plan.md`](./firebase-transition-plan.md) — Genel mimari ve faz roadmap'i.
@@ -18,16 +18,17 @@
 
 1. [Purpose](#1-purpose)
 2. [Current Scope](#2-current-scope)
-3. [Phase Log: alpha.6 → alpha.14](#3-phase-log-alpha6--alpha14)
+3. [Phase Log: alpha.6 → alpha.17](#3-phase-log-alpha6--alpha17)
 4. [Local Config File](#4-local-config-file)
 5. [Activation Paths](#5-activation-paths)
 6. [DevTools Inspection](#6-devtools-inspection)
 7. [Capability Matrix](#7-capability-matrix)
 8. [Manual Sign-in Test Chain](#8-manual-sign-in-test-chain)
 9. [Manual Sign-out Test Chain](#9-manual-sign-out-test-chain)
-10. [Troubleshooting](#10-troubleshooting)
-11. [Security Notes](#11-security-notes)
-12. [Next Roadmap](#12-next-roadmap)
+10. [Manual onChange Listener Example](#10-manual-onchange-listener-example)
+11. [Troubleshooting](#11-troubleshooting)
+12. [Security Notes](#12-security-notes)
+13. [Next Roadmap](#13-next-roadmap)
 
 ---
 
@@ -52,7 +53,7 @@ Bu doküman **yalnızca** v12 admin Auth foundation geçişini kapsar:
 
 ## 2. Current Scope
 
-v12.0.0-alpha.14 itibarıyla durum (alpha.15 dokümantasyon fazı kod
+v12.0.0-alpha.17 itibarıyla durum (alpha.18 housekeeping fazı kod
 davranışını değiştirmez):
 
 - **Firebase App SDK** admin sayfalarında **pasif şekilde yüklü**
@@ -69,22 +70,29 @@ davranışını değiştirmez):
   placeholder config ile no-op.
 - **`signOut()`** ready olduğunda **live** çalışır (alpha.14);
   placeholder config ile no-op.
+- **`currentUser()`** ready olduğunda **live-read** çalışır
+  (alpha.16); sanitized 5-field snapshot veya `null`; placeholder
+  config ile `null`.
+- **`onChange()`** ready olduğunda **live-listener** çalışır
+  (alpha.17); gerçek `onAuthStateChanged` listener kurar, callback
+  sanitized snapshot/null alır; placeholder config ile no-op.
 - **Session bridge** (`createSessionFromResult`) ve **logout bridge**
   (`clearSessionAfterSignOut`) **available** (alpha.13 + alpha.14).
   Caller bunları manuel çağırmak zorunda; `signIn` / `signOut`
   otomatik bridge çağırmaz.
+- **Auth wrapper layer artık readiness guard arkasında tam hazır;**
+  signIn / signOut / currentUser / onChange dört yüzeyi de ready
+  iken live, placeholder'da no-op.
 - **Admin login formu** (`admin/index.html`) **henüz Firebase'e
   bağlanmadı**. Hâlâ `MV.auth.devLogin` / sessionStorage gate'ini
   kullanıyor.
 - **Dashboard logout** (`admin/dashboard.html`) **henüz Firebase'e
   bağlanmadı**. Hâlâ `MV.auth.logout` üzerinden çalışıyor.
 - **Firestore SDK / read / write / CRUD** başlamadı.
-- **`onChange` (onAuthStateChanged)** ve **`currentUser`** hâlâ
-  dry-run (ready iken bile gerçek SDK'yı çağırmaz).
 
 ---
 
-## 3. Phase Log: alpha.6 → alpha.14
+## 3. Phase Log: alpha.6 → alpha.17
 
 | Faz | Commit | Özet |
 |---|---|---|
@@ -97,15 +105,20 @@ davranışını değiştirmez):
 | v12.0.0-alpha.12 | `15e3e97` | Guarded Firebase `signIn` wrapper live; double-guard + Firebase error code forward. |
 | v12.0.0-alpha.13 | `87afe9c` | Firebase signIn result → `mv_admin_session` bridge (`createSessionFromResult`). |
 | v12.0.0-alpha.14 | `f37345b` | Guarded Firebase `signOut` + logout bridge (`clearSessionAfterSignOut`). |
+| v12.0.0-alpha.15 | `9845eea` | Firebase local setup + Auth wrapper guide dokümante edildi (bu doküman ilk sürümü). |
+| v12.0.0-alpha.16 | `4243ceb` | Guarded Firebase `currentUser` live read; sanitized 5-field snapshot veya null. |
+| v12.0.0-alpha.17 | `9d19299` | Guarded Firebase `onChange` listener; sanitized callback, safe unsubscribe. |
 
 > Notlar:
 > - alpha.6 / alpha.7 / alpha.8 hash'leri local git log'dan
 >   doğrulandı.
-> - alpha.9 → alpha.14 hash'leri faz brief'inde sabit verildi ve
+> - alpha.9 → alpha.17 hash'leri faz brief'lerinde sabit verildi ve
 >   git log ile uyumlu.
 > - Tüm fazlar **runtime davranış değiştirmeden** ya katman ekledi
 >   ya da var olan katmanın guard'ını derinleştirdi. Hiçbir HTML
->   form rewire'ı yapılmadı.
+>   form rewire'ı yapılmadı. alpha.18 (bu sürüm) housekeeping
+>   fazıdır: unused `dryRunResult()` helper'ı kaldırıldı, doküman
+>   capability matrix'i yenilendi.
 
 ---
 
@@ -249,12 +262,15 @@ MV.auth.firebase.inspect();          // wrapper snapshot (mode, capabilities, lo
 | `MV.auth.firebase.inspect().mode` | `'partial-live'` |
 | `MV.auth.firebase.inspect().capabilities.signIn` | `'live'` |
 | `MV.auth.firebase.inspect().capabilities.signOut` | `'live'` |
-| `MV.auth.firebase.inspect().capabilities.onChange` | `'dry-run'` |
-| `MV.auth.firebase.inspect().capabilities.currentUser` | `'dry-run'` |
+| `MV.auth.firebase.inspect().capabilities.currentUser` | `'live-read'` |
+| `MV.auth.firebase.inspect().capabilities.onChange` | `'live-listener'` |
+| `MV.auth.firebase.inspect().capabilities.sessionBridge` | `'available'` |
+| `MV.auth.firebase.inspect().capabilities.logoutBridge` | `'available'` |
 
-Ready state'te bile `onChange` ve `currentUser` hâlâ dry-run;
-gerçek `onAuthStateChanged` ve `auth.currentUser` okuması ileride
-ayrı fazlarda açılır.
+Ready state'te wrapper'ın dört ana yüzeyi (signIn, signOut,
+currentUser, onChange) hepsi guard arkasında live çalışır. Mode
+`'partial-live'` kalır — bu admin HTML rewire'ın yapılmadığını
+gösterir (form/handler hâlâ devLogin/logout zincirinde).
 
 ---
 
@@ -271,8 +287,9 @@ ayrı fazlarda açılır.
 | `createSessionFromResult()` | available | Strict validation; başarılı result → `mv_admin_session` (alpha.13). |
 | `signOut()` | live when ready | `isAuthReady=true` iken gerçek SDK çağrısı; aksi `placeholder` no-op (alpha.14). |
 | `clearSessionAfterSignOut()` | available | Strict validation; başarılı result → session clear (alpha.14). |
-| `onChange()` | dry-run | Ready iken bile `onAuthStateChanged` çağrılmaz; callback tetiklenmez. |
-| `currentUser()` | dry-run / null | Her durumda `null` döner; `auth.currentUser` okunmaz. |
+| `currentUser()` | live-read when ready | `isAuthReady=true` iken `auth.currentUser` property'si okunur; sanitized 5-field snapshot veya `null`. Hiçbir SDK method invoke etmez (alpha.16). |
+| `onChange()` | live-listener when ready | `isAuthReady=true` iken gerçek `onAuthStateChanged` listener kurar; callback sanitized snapshot/null alır; safe unsubscribe (alpha.17). |
+| Auth wrapper layer | ready behind guard | signIn / signOut / currentUser / onChange dört yüzeyi de ready iken live, placeholder'da no-op (alpha.6 → alpha.17). |
 | Admin login form Firebase mode | pending | `admin/index.html` hâlâ `MV.auth.devLogin` / sessionStorage. |
 | Dashboard logout Firebase mode | pending | `admin/dashboard.html` hâlâ `MV.auth.logout`. |
 | Firestore | not started | Firestore SDK admin sayfalarına eklenmedi. |
@@ -345,7 +362,50 @@ MV.auth.isAuthed();    // false (mv_admin_session temizlendiyse)
 
 ---
 
-## 10. Troubleshooting
+## 10. Manual onChange Listener Example
+
+DevTools console'undan Firebase Auth state değişimlerini gözlemlemek
+için kullanılabilecek zincir (alpha.17 ile live hale geldi):
+
+```js
+// Listener kur (sanitized callback)
+const sub = MV.auth.firebase.onChange(function (user) {
+  console.log('auth state:', user);
+});
+
+sub;
+// Beklenen ready: { enabled:true, ok:true, provider:'firebase-auth', unsubscribe:fn }
+// Beklenen placeholder: { enabled:false, ok:false, reason:'placeholder', unsubscribe:fn }
+
+// Listener'ı kapat (her durumda çağrılabilir — placeholder'da no-op)
+sub.unsubscribe();
+```
+
+**Davranış garantileri:**
+
+- Callback yalnız iki şeyden birini alır:
+  - Sanitized 5-field snapshot — `{ uid, email, emailVerified,
+    displayName, provider:'firebase-auth' }`
+  - `null` (signed out)
+- Raw Firebase user objesi callback'e **hiçbir koşulda** verilmez.
+  `refreshToken`, `accessToken`, `getIdToken`, `providerData`,
+  `metadata`, `phoneNumber`, `photoURL`, `tenantId`, `stsTokenManager`
+  alanları **filtrelenir**.
+- `onChange()` `sessionStorage`'a **yazmaz / silmez**.
+- `onChange()` `createSessionFromResult` veya
+  `clearSessionAfterSignOut` bridge'lerini **çağırmaz**.
+- `onChange()` `requireAdmin` veya `redirect` **tetiklemez**.
+- `sub.unsubscribe()` her durumda çağrılabilir bir function'dır
+  ve `try/catch` ile sarılmıştır — SDK'dan dönen unsubscribe
+  patlasa bile sayfayı bozmaz.
+
+> **Uyarı:** Listener gerçek local/staging config ready ise Firebase
+> Auth SDK arka planda token refresh için ağ kullanabilir. Bu
+> davranış SDK'ya aittir; wrapper ekstra fetch başlatmaz.
+
+---
+
+## 11. Troubleshooting
 
 Aşağıdaki tablo wrapper'dan dönen anormal durumların yorumudur.
 
@@ -363,10 +423,14 @@ Aşağıdaki tablo wrapper'dan dönen anormal durumların yorumudur.
 | `requireAdmin()` geçmiyor | `mv_admin_session` oluşmamış veya 8 saatlik TTL geçmiş. | Login zincirini tekrar et; bridge'in çağrıldığını doğrula. |
 | `signOut(...)` ok ama hâlâ logged-in görünüyor | `clearSessionAfterSignOut` çağrılmadı. | Bridge'i manuel çağır — `signOut` otomatik session clear yapmaz. |
 | `signOut(...)` → `{ ok:false, reason:'auth/network-request-failed' }` | Firebase Auth network hatası. | Bağlantıyı kontrol et; SDK error code'u olduğu gibi forward edilir. |
+| `currentUser()` → `null` ama logged-in olduğun belli | Auth state listener henüz tetiklenmemiş olabilir veya provider acquisition başarısız. | `inspect()` çağırarak `hasProvider` / `isAuthReady` durumunu doğrula; gerekirse `onChange` ile state değişimini gözlemle. |
+| `onChange(...)` → `{ enabled:false, ok:false, reason:'invalid-callback' }` | Verilen değer function değil. | Callback'i function olarak ver. |
+| `onChange(...)` → `{ enabled:true, ok:false, reason:'no-auth-state-listener' }` | Auth instance `onAuthStateChanged` method'una sahip değil — SDK versiyonu uyumsuz olabilir. | Firebase Auth SDK script tag'ini ve versiyonunu doğrula. |
+| `sub.unsubscribe()` çağrısı sessizce geçti ama callback hâlâ tetikleniyor | Aynı callback için birden fazla `onChange` çağrısı yapılmış olabilir; her biri kendi `sub` objesini döner. | Her `onChange` çağrısı için dönen `sub.unsubscribe()`'i ayrı ayrı çağır. |
 
 ---
 
-## 11. Security Notes
+## 12. Security Notes
 
 - **Client Firebase config secret değildir** ama yine de repo'ya
   gerçek değer commitlenmez. Bu policy iki nedenden değerli:
@@ -403,16 +467,23 @@ Aşağıdaki tablo wrapper'dan dönen anormal durumların yorumudur.
 
 ---
 
-## 12. Next Roadmap
+## 13. Next Roadmap
 
-Önerilen sıra (her adım kendi alpha sürümünde, atomik commit):
+Tamamlanan adımlar (referans):
+
+| Adım | Faz | Durum |
+|---|---|---|
+| `currentUser` live read | v12.0.0-alpha.16 | ✅ Tamamlandı (`4243ceb`). |
+| `onChange` live listener | v12.0.0-alpha.17 | ✅ Tamamlandı (`9d19299`). |
+| Auth wrapper cleanup + docs refresh | v12.0.0-alpha.18 | ✅ Mevcut faz. |
+
+Önerilen sonraki sıra (her adım kendi alpha sürümünde, atomik commit):
 
 | Adım | Hedef faz | Açıklama |
 |---|---|---|
-| `currentUser` activation veya login trial karar noktası | v12.0.0-alpha.16 | `MV.auth.firebase.currentUser()` gerçek `auth.currentUser` okumasına geçer **veya** admin login form opt-in trial'ı başlatılır; ikisinden hangisinin önce geleceği bu fazda kararlaştırılır. |
-| Admin login opt-in Firebase trial | v12.0.0-alpha.17 | `admin/index.html` form submit handler'ı `MV.auth.firebase.signIn` + `createSessionFromResult` zincirine **opt-in flag arkasında** bağlanır. Default davranış hâlâ devLogin. |
-| Dashboard logout opt-in Firebase trial | v12.0.0-alpha.18 | `admin/dashboard.html` logout handler'ı `MV.auth.firebase.signOut` + `clearSessionAfterSignOut` zincirine **opt-in flag arkasında** bağlanır. |
-| Production devLogin guard | v12.0.0-alpha.19 | `MV.auth.devLogin` format-only davranışı production host'ta kapatılır; emulator/staging flag'i altına alınır. |
+| Admin login opt-in Firebase trial | v12.0.0-alpha.19 | `admin/index.html` form submit handler'ı `MV.auth.firebase.signIn` + `createSessionFromResult` zincirine **opt-in flag arkasında** bağlanır. Default davranış hâlâ devLogin. |
+| Dashboard logout opt-in Firebase trial | v12.0.0-alpha.20 | `admin/dashboard.html` logout handler'ı `MV.auth.firebase.signOut` + `clearSessionAfterSignOut` zincirine **opt-in flag arkasında** bağlanır. |
+| Production devLogin guard | v12.0.0-alpha.21 | `MV.auth.devLogin` format-only davranışı production host'ta kapatılır; emulator/staging flag'i altına alınır. |
 | Firestore rules foundation | v12.1.0 | Firestore SDK admin sayfalarına eklenir, rules emulator testleri koşulur, deploy gate açılır. Hâlâ write yok. |
 | Read-only admin modules Firebase read | v12.2.0 | announcements / events / apps modülleri Firestore'dan read yapar (write hâlâ yok). |
 | CRUD | v12.3.0+ | Modül başına create/update/delete; paired `adminLogs` write desenleri. |
@@ -428,3 +499,4 @@ yürütülür.
 | Sürüm | Tarih | Açıklama |
 |---|---|---|
 | v12.0.0-alpha.15 | 2026-05-23 | İlk Firebase local setup + Auth wrapper guide dokümanı. Phase log (alpha.6 → alpha.14), local config policy, activation paths, DevTools inspection, capability matrix, manuel signIn/signOut test zincirleri, troubleshooting, security notes ve next roadmap belgelendi. Runtime davranışı değişmedi. |
+| v12.0.0-alpha.18 | 2026-05-23 | Auth wrapper katmanı `signIn` / `signOut` / `currentUser` / `onChange` dört yüzeyiyle ready behind guard durumuna geldikten sonra doküman tazelendi. Phase log alpha.15/16/17 satırlarıyla genişletildi; Current Scope alpha.17 state'ini yansıtır; DevTools ready tablosu `currentUser:'live-read'` + `onChange:'live-listener'` + bridge satırları ile güncellendi; Capability Matrix `live-read`/`live-listener` durumlarını gösterir; yeni §10 "Manual onChange Listener Example" eklendi; Troubleshooting tablosu `currentUser` / `onChange` / `unsubscribe` belirtileriyle genişletildi; Next Roadmap tamamlanan/önümüzdeki adımlar olarak iki tabloya bölündü; alpha.19 (admin login trial), alpha.20 (logout trial), alpha.21 (devLogin guard) sıraları güncellendi. Runtime davranışı değişmedi. |

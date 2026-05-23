@@ -7,6 +7,77 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.18] — Auth Wrapper Cleanup and Capability Docs Refresh
+
+- Kullanılmayan `dryRunResult()` helper'ı `shared/js/auth.js`'ten
+  kaldırıldı. Helper alpha.11'de eklenip alpha.17'de son tüketicisi
+  (eski `onChange` no-op) `firebaseOnChange` ile değiştirildikten
+  sonra orphan kalmıştı. Grep doğrulaması: `dryRunResult` artık
+  kod içinde sıfır mention (CHANGELOG'daki historical mention
+  alpha.11 satırı içinde; o referans değiştirilmedi).
+- `MV.auth.firebase` API yüzeyi bit-identical kaldı: `inspect`,
+  `signIn`, `createSessionFromResult`, `signOut`,
+  `clearSessionAfterSignOut`, `currentUser`, `onChange`. Hiçbir
+  metod imzası veya dönüş şekli değişmedi.
+- `docs/firebase-local-setup.md` alpha.16 / alpha.17 sonrası
+  tazelendi:
+  - Belge sürümü v12.0.0-alpha.15 → alpha.18; hedef faz alpha.19+.
+  - **Current Scope** alpha.17 state'ini yansıtacak şekilde
+    yeniden yazıldı. `currentUser` (live-read) ve `onChange`
+    (live-listener) durumları eklendi; eski "dry-run" satırı
+    kaldırıldı; "Auth wrapper layer artık readiness guard
+    arkasında tam hazır" beyanı eklendi.
+  - **Phase Log** tablosuna alpha.15 (`9845eea`), alpha.16
+    (`4243ceb`), alpha.17 (`9d19299`) satırları eklendi. Başlık
+    "alpha.6 → alpha.14" → "alpha.6 → alpha.17". TOC anchor'u
+    da güncellendi.
+  - **DevTools Inspection** ready durumu tablosu:
+    `currentUser:'live-read'`, `onChange:'live-listener'`,
+    `sessionBridge:'available'`, `logoutBridge:'available'`
+    satırları eklendi; eski "ready iken bile dry-run" paragrafı
+    güncellendi.
+  - **Capability Matrix** satırları güncellendi: `currentUser()`
+    → "live-read when ready", `onChange()` → "live-listener
+    when ready", yeni "Auth wrapper layer" satırı (ready behind
+    guard).
+  - Yeni **§10 Manual onChange Listener Example** bölümü eklendi:
+    `MV.auth.firebase.onChange(cb)` zinciri, sanitized callback
+    payload garantileri ve safe `unsubscribe` notları. Önceki
+    §10/§11/§12 → §11/§12/§13'e shift edildi; TOC güncellendi.
+  - **Troubleshooting** tablosuna 4 yeni satır: `currentUser` null
+    edge case, `onChange invalid-callback`, `no-auth-state-listener`,
+    `unsubscribe` çoklu-listener davranışı.
+  - **Next Roadmap** tamamlanan adımlar (alpha.16/17/18) ve
+    önümüzdeki adımlar (alpha.19 login trial, alpha.20 logout
+    trial, alpha.21 devLogin guard) olarak iki tabloya bölündü.
+  - Sürüm Notu satırı v12.0.0-alpha.18 ile genişletildi.
+- `docs/v12-readiness.md` Auth Wrapper Layer Status bölümü tazelendi:
+  `currentUser` ve `onChange` artık "live behind guard" olarak
+  listelendi; "*Auth wrapper layer is complete behind readiness
+  guards; HTML wiring is the next controlled phase.*" sonuç cümlesi
+  eklendi; HTML wiring alpha.19/alpha.20 trial fazlarına yönlendirildi.
+  Sürüm tablosuna alpha.18 satırı eklendi.
+- `docs/README.md` Firebase Local Setup doküman açıklaması
+  alpha.14 → alpha.17 phase log kapsamı ve "signIn / signOut /
+  onChange test zincirleri" referansıyla genişletildi.
+- **Runtime davranışı değişmedi.** Bu faz tamamen housekeeping +
+  dokümantasyon fazıdır. `MV.auth.firebase.*` metodlarının davranışı
+  bit-identical: signIn/signOut ready iken live + auto-bridge yok;
+  currentUser ready iken sanitized live-read; onChange ready iken
+  sanitized live-listener; placeholder'da hepsi no-op. Mevcut
+  `MV.auth` API (`isAuthed`, `getUser`, `devLogin`, `requireAdmin`,
+  `logout`, `SESSION_KEY`, `SESSION_TTL_MS`, redirect path,
+  sessionStorage payload) tek bir bit dahi değişmedi.
+- Admin login formu, dashboard logout, requireAdmin, sessionStorage
+  gate **dokunulmadı**. `admin/*.html`, `admin/borc/index.html`,
+  `borc.html`, `index.html`, `shared/config/firebase.js`,
+  `shared/config/firebase.local.example.js`, `shared/config/site.js`,
+  `shared/js/core.js`, `shared/js/theme.js`, `shared/js/apps.js`,
+  `.gitignore`, `firebase.json`, `.firebaserc`, `firestore.rules`,
+  `firestore.indexes.json` ve `assets/*` **değişmedi**. Firestore
+  SDK eklenmedi; CRUD yok; gerçek Firebase config / apiKey /
+  projectId / appId / UID / email repo'ya girmedi.
+
 ## [v12.0.0-alpha.17] — Guarded Firebase onChange Listener
 
 - `MV.auth.firebase.onChange(callback)` readiness guard arkasında

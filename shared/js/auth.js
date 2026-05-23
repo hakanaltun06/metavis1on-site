@@ -86,14 +86,6 @@
     return { enabled: true, reason: 'ready' };
   }
 
-  function dryRunResult() {
-    const r = getFirebaseAuthReadiness();
-    if (r.enabled) {
-      return { enabled: true, simulated: true, reason: 'ready-no-execute' };
-    }
-    return { enabled: false, reason: r.reason };
-  }
-
   function inspectFirebaseAuth() {
     const mvfb = (typeof window !== 'undefined') ? window.MV_FIREBASE : null;
     const r = getFirebaseAuthReadiness();
