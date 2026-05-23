@@ -7,6 +7,94 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.16] — Guarded Firebase currentUser Live Read
+
+- `MV.auth.firebase.currentUser()` readiness guard arkasında Firebase
+  Auth `currentUser` bilgisini **read-only** okuyabilecek hale getirildi.
+  Default repo ve placeholder config altında `currentUser()` hâlâ
+  `null` döner (davranış değişmedi).
+- **Guard sırası** (sıralı, ilk reddeden `null` döner):
+  1. `window` veya `window.MV_FIREBASE` yoksa → `null`.
+  2. `getFirebaseAuthReadiness().enabled === false` → `null`.
+     Reason değerleri: `'missing-loader'` | `'disabled'` | `'placeholder'`
+     | `'error'`.
+  3. `getAuthProvider()` null veya `.auth` function değil → `null`.
+  4. `provider.auth()` throw → `null` (catch + sessiz yutma).
+  5. `authInstance` falsy → `null`.
+  6. `authInstance.currentUser` falsy → `null`.
+- **Ready + active session** durumunda yalnız güvenli / sanitized /
+  serializable alanlar döner:
+  ```
+  {
+    uid: user.uid || null,
+    email: user.email || null,
+    emailVerified: !!user.emailVerified,
+    displayName: user.displayName || null,
+    provider: 'firebase-auth'
+  }
+  ```
+  `phoneNumber`, `photoURL`, `providerData`, `metadata`, `tenantId`,
+  `refreshToken`, `getIdToken` gibi diğer alanlar / metodlar **döndürülmez**.
+- **Read-only kontrat (her durumda):**
+  - `sessionStorage`'a **yazmaz**.
+  - `sessionStorage`'dan **silmez**.
+  - **Hiçbir** backend / network çağrısı başlatmaz.
+  - `onAuthStateChanged` veya başka **listener kurmaz**.
+  - DOM'a **dokunmaz**.
+  - Sadece `authInstance.currentUser` property'sini okur — method
+    çağırmaz.
+- **`inspect()` capability güncellemesi:** `capabilities.currentUser`
+  artık ready durumuna göre değer alır:
+  - `'no-op'` (isAuthReady false) — eskiden `'dry-run'` idi.
+  - `'live-read'` (isAuthReady true) — yeni değer.
+  Diğer capability alanları (`signIn`, `signOut`, `onChange`,
+  `sessionBridge`, `logoutBridge`) değişmedi.
+- **`onChange()` hâlâ dry-run.** Bu fazda kesinlikle
+  `onAuthStateChanged` listener kurulmadı. Ready iken bile
+  `{ enabled:true, simulated:true, reason:'ready-no-execute',
+  unsubscribe:no-op }` döner, callback tetiklenmez.
+- **Mevcut Firebase wrapper davranışları korundu (regression):**
+  - `signIn`: ready iken live, otomatik session yazmaz.
+  - `createSessionFromResult`: valid result ile session yazar, invalid
+    inputlarda yazmaz.
+  - `signOut`: ready iken live, otomatik session temizlemez.
+  - `clearSessionAfterSignOut`: valid result ile session temizler,
+    invalid inputlarda temizlemez.
+  - `inspect`: side-effect-free, sadece okuma.
+- **Mevcut `MV.auth` API bit-identical:** `isAuthed`, `getUser`,
+  `devLogin`, `requireAdmin`, `logout` davranışı, `SESSION_KEY`
+  (`'mv_admin_session'`), `SESSION_TTL_MS` (8 saat), redirect path,
+  sessionStorage payload şekli değişmedi. Mock harness'ta devLogin
+  → isAuthed → logout zinciri eski sonuçları üretti.
+- **Davranış matrisi (currentUser):**
+  | Faz | `isAuthReady` | `auth.currentUser` | `currentUser()` |
+  |---|---|---|---|
+  | Default repo (placeholder) | false | n/a (provider yok) | `null` |
+  | Ready + no signed-in user | true | `null` | `null` |
+  | Ready + active session | true | user object | sanitized object |
+  | Ready + provider throw | true | n/a | `null` (caught) |
+- **Side-effect kontrolü:** mock harness Phase A (placeholder), Phase
+  B (ready + currentUser null), Phase C (ready + mock user) boyunca
+  `currentUser()` çağrıldı. Sayaçlar:
+  - `firebase.auth()`: yalnız ready phase'lerde provider acquire için
+    (her çağrıda 1, signIn/signOut için olanlar hariç).
+  - `signInWithEmailAndPassword`: 0 (currentUser SDK method çağırmaz).
+  - `signOut`: 0.
+  - `onAuthStateChanged`: 0.
+  - `sessionStorage.setItem` / `removeItem`: 0 (currentUser
+    sessionStorage'a hiç dokunmaz).
+- Admin login formu ve dashboard logout akışı **henüz Firebase'e
+  bağlanmadı**. Hiçbir HTML değişmedi. `admin/index.html` hâlâ
+  `MV.auth.devLogin` üzerinden çalışıyor; `admin/dashboard.html` hâlâ
+  `MV.auth.logout` üzerinden çalışıyor.
+- `shared/config/firebase.js`, `shared/config/site.js`,
+  `shared/config/firebase.local.example.js`, `.gitignore`, admin HTML
+  dosyaları, `admin/borc/index.html`, `borc.html`, `index.html`,
+  `docs/*` ve diğer `shared/js/*` dosyaları **değişmedi**. Firestore
+  SDK, CRUD, `onAuthStateChanged`, gerçek Firebase config commit
+  edilmedi. Gerçek apiKey / projectId / appId / UID / email repo'ya
+  girmedi.
+
 ## [v12.0.0-alpha.15] — Firebase Local Setup Documentation
 
 - `docs/firebase-local-setup.md` eklendi. Firebase Auth wrapper

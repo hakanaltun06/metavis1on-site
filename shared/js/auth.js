@@ -41,7 +41,7 @@
   /* ----------------------------------------------------------------------
      MV.auth.firebase — partially-live Firebase Auth wrapper.
      ----------------------------------------------------------------------
-     Per-method execution mode (alpha.14):
+     Per-method execution mode (alpha.16):
        signIn      → LIVE when MV_FIREBASE.isAuthReady() is true; otherwise
                      no-op. Calls firebase.auth().signInWithEmailAndPassword
                      ONLY after readiness + credential validation pass.
@@ -49,7 +49,11 @@
                      no-op. Calls firebase.auth().signOut ONLY after the
                      readiness + provider acquisition guards pass.
        onChange    → dry-run; never calls onAuthStateChanged.
-       currentUser → dry-run; never reads firebase.auth().currentUser.
+       currentUser → LIVE READ when MV_FIREBASE.isAuthReady() is true;
+                     otherwise null. Reads the firebase.auth().currentUser
+                     property only; no listener, no network, no
+                     sessionStorage access, no DOM access. Returns a
+                     sanitized, serializable snapshot or null.
      Neither signIn nor signOut writes/clears the sessionStorage admin
      gate by itself. createSessionFromResult and clearSessionAfterSignOut
      are explicit bridges the caller invokes after a successful SDK call.
@@ -57,8 +61,9 @@
      requireAdmin / 8h TTL) is unchanged. No admin page calls these
      wrappers automatically — activation comes from devtools or a future
      commit. Repo default leaves MV_FIREBASE in placeholder state, so
-     signIn/signOut stay no-ops until real config is supplied via the
-     alpha.9/10 channels. inspect() reports the per-method capability map.
+     signIn/signOut/currentUser stay no-ops until real config is supplied
+     via the alpha.9/10 channels. inspect() reports the per-method
+     capability map.
      ---------------------------------------------------------------------- */
   function getFirebaseAuthReadiness() {
     const mvfb = (typeof window !== 'undefined') ? window.MV_FIREBASE : null;
@@ -109,7 +114,7 @@
         signIn: isAuthReady ? 'live' : 'no-op',
         signOut: isAuthReady ? 'live' : 'no-op',
         onChange: 'dry-run',
-        currentUser: 'dry-run',
+        currentUser: isAuthReady ? 'live-read' : 'no-op',
         sessionBridge: 'available',
         logoutBridge: 'available'
       }
@@ -270,6 +275,51 @@
       });
   }
 
+  /* Read-only snapshot of firebase.auth().currentUser. Mirrors the
+     readiness + provider acquisition guards used by firebaseSignIn /
+     firebaseSignOut, but never invokes a method on the auth instance:
+     it only reads the .currentUser property and returns a sanitized,
+     serializable subset. No sessionStorage access, no network call, no
+     listener registration, no DOM access. Repo default (placeholder
+     config) keeps this returning null; only Path A/B activation with
+     a real Firebase project + active session lets this return data. */
+  function firebaseCurrentUser() {
+    if (typeof window === 'undefined' || !window.MV_FIREBASE) {
+      return null;
+    }
+    const r = getFirebaseAuthReadiness();
+    if (!r.enabled) {
+      return null;
+    }
+    const mvfb = window.MV_FIREBASE;
+    const provider = (typeof mvfb.getAuthProvider === 'function')
+      ? mvfb.getAuthProvider()
+      : null;
+    if (!provider || typeof provider.auth !== 'function') {
+      return null;
+    }
+    let authInstance;
+    try {
+      authInstance = provider.auth();
+    } catch (e) {
+      return null;
+    }
+    if (!authInstance) {
+      return null;
+    }
+    const user = authInstance.currentUser;
+    if (!user) {
+      return null;
+    }
+    return {
+      uid: user.uid || null,
+      email: user.email || null,
+      emailVerified: !!user.emailVerified,
+      displayName: user.displayName || null,
+      provider: 'firebase-auth'
+    };
+  }
+
   /* Bridge from a successful firebaseSignOut() result to the existing
      sessionStorage admin gate. Strictly validated; clears nothing on
      malformed input. Inlines the same removeItem/try-catch pattern as
@@ -394,7 +444,7 @@
       },
 
       currentUser: function () {
-        return null;
+        return firebaseCurrentUser();
       }
     }
   };
