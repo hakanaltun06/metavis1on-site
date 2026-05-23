@@ -192,6 +192,105 @@
       border-radius: var(--mv-radius-md);
       cursor: pointer;
       font-size: 1.1rem;
+      align-items: center;
+      justify-content: center;
+    }
+    .v11-nav__burger[aria-expanded="true"] {
+      background: rgba(14, 165, 233, 0.10);
+      border-color: rgba(14, 165, 233, 0.35);
+      color: var(--mv-theme-primary);
+    }
+
+    /* ---------- Skip-to-content (a11y) ---------- */
+    .mv-skip-link {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 200;
+      padding: 10px 14px;
+      background: var(--mv-theme-primary);
+      color: #000;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: var(--mv-radius-md);
+      text-decoration: none;
+      transform: translateY(-160%);
+      transition: transform 160ms ease;
+    }
+    .mv-skip-link:focus,
+    .mv-skip-link:focus-visible {
+      transform: translateY(0);
+      outline: 2px solid var(--mv-text-main);
+      outline-offset: 2px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .mv-skip-link { transition: none; }
+    }
+
+    /* ---------- Mobil Menü Panel ---------- */
+    .v11-mobile-menu {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(320px, 86vw);
+      z-index: 80;
+      background: rgba(8, 9, 14, 0.96);
+      backdrop-filter: var(--mv-glass-blur);
+      -webkit-backdrop-filter: var(--mv-glass-blur);
+      border-left: 1px solid var(--mv-border);
+      padding: 80px var(--mv-space-lg) var(--mv-space-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transform: translateX(100%);
+      transition: transform 220ms ease;
+      visibility: hidden;
+      overflow-y: auto;
+    }
+    .v11-mobile-menu.is-open {
+      transform: translateX(0);
+      visibility: visible;
+    }
+    .v11-mobile-menu__link {
+      padding: 12px 14px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--mv-text-soft);
+      text-decoration: none;
+      border-radius: var(--mv-radius-md);
+      border: 1px solid transparent;
+      transition: var(--mv-transition-fast);
+    }
+    .v11-mobile-menu__link:hover,
+    .v11-mobile-menu__link:focus-visible {
+      color: var(--mv-text-main);
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--mv-border);
+    }
+    .v11-mobile-menu__cta {
+      margin-top: var(--mv-space-md);
+    }
+    .v11-mobile-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      background: rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 200ms ease;
+    }
+    .v11-mobile-backdrop.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .v11-mobile-menu,
+      .v11-mobile-backdrop { transition: none; }
+    }
+    @media (min-width: 861px) {
+      .v11-mobile-menu,
+      .v11-mobile-backdrop { display: none !important; }
     }
 
     /* ---------- Preview Strip (geçici durum şeridi) ---------- */
@@ -282,7 +381,7 @@
     /* ---------- Mobile ---------- */
     @media (max-width: 860px) {
       .v11-nav__links { display: none; }
-      .v11-nav__burger { display: inline-flex; align-items: center; justify-content: center; }
+      .v11-nav__burger { display: inline-flex; }
     }
     @media (max-width: 540px) {
       .v11-nav__brand-tag { display: none; }
@@ -291,6 +390,9 @@
 </head>
 
 <body>
+
+  <!-- Skip-to-content (klavye kullanıcıları için) -->
+  <a class="mv-skip-link" href="#mainContent">İçeriğe atla</a>
 
   <!-- ============================================================
        NAV — sticky üst bar
@@ -303,7 +405,7 @@
         <span class="v11-nav__brand-tag">v11 · Portal</span>
       </a>
 
-      <nav class="v11-nav__links" aria-label="Ana Menü">
+      <nav class="v11-nav__links" aria-label="Ana navigasyon">
         <a class="v11-nav__link" href="#ekosistem">Ekosistem</a>
         <a class="v11-nav__link" href="#projeler">Projeler</a>
         <a class="v11-nav__link" href="#etkinlikler">Etkinlikler</a>
@@ -312,26 +414,45 @@
 
       <div class="v11-nav__actions">
         <div class="v11-nav__theme" role="group" aria-label="Tema seçici">
-          <button class="v11-theme-btn is-active" data-mv-set-theme="obsidian-cyan"   aria-label="Elektrik Mavisi"></button>
-          <button class="v11-theme-btn"           data-mv-set-theme="obsidian-gold"   aria-label="Obsidyen Altın"></button>
-          <button class="v11-theme-btn"           data-mv-set-theme="obsidian-purple" aria-label="Neon Mor"></button>
+          <button class="v11-theme-btn is-active" data-mv-set-theme="obsidian-cyan"   type="button" aria-label="Elektrik Mavisi teması" aria-pressed="true"></button>
+          <button class="v11-theme-btn"           data-mv-set-theme="obsidian-gold"   type="button" aria-label="Obsidyen Altın teması"   aria-pressed="false"></button>
+          <button class="v11-theme-btn"           data-mv-set-theme="obsidian-purple" type="button" aria-label="Neon Mor teması"        aria-pressed="false"></button>
         </div>
 
-        <a id="discordCta" class="mv-btn mv-btn--primary mv-btn--sm" href="#" rel="noopener" target="_blank">
+        <a id="discordCta" class="mv-btn mv-btn--primary mv-btn--sm" href="#" rel="noopener noreferrer" target="_blank">
           Discord'a Katıl
         </a>
 
-        <button class="v11-nav__burger" type="button" aria-label="Menü">≡</button>
+        <button id="navBurger" class="v11-nav__burger" type="button"
+                aria-label="Menüyü aç"
+                aria-expanded="false"
+                aria-controls="mobileMenu"
+                aria-haspopup="true">≡</button>
       </div>
     </div>
   </header>
 
-  <main>
+  <!-- Mobil menü backdrop ve panel (desktop'ta CSS ile gizli) -->
+  <div id="mobileBackdrop" class="v11-mobile-backdrop" hidden></div>
+  <nav id="mobileMenu" class="v11-mobile-menu" aria-label="Mobil menü" aria-hidden="true">
+    <a class="v11-mobile-menu__link" href="#duyurular"   data-mv-mobile-link>Duyurular</a>
+    <a class="v11-mobile-menu__link" href="#ekosistem"   data-mv-mobile-link>Ekosistem</a>
+    <a class="v11-mobile-menu__link" href="#degerler"    data-mv-mobile-link>Değerler</a>
+    <a class="v11-mobile-menu__link" href="#vizyon"      data-mv-mobile-link>Vizyon</a>
+    <a class="v11-mobile-menu__link" href="#projeler"    data-mv-mobile-link>Projeler</a>
+    <a class="v11-mobile-menu__link" href="#etkinlikler" data-mv-mobile-link>Etkinlikler</a>
+    <a id="discordMobile" class="mv-btn mv-btn--primary v11-mobile-menu__cta" href="#"
+       rel="noopener noreferrer" target="_blank" data-mv-mobile-link>
+      Discord'a Katıl
+    </a>
+  </nav>
+
+  <main id="mainContent">
 
     <!-- ============================================================
          HERO
          ============================================================ -->
-    <section class="mv-hero" id="hero">
+    <section class="mv-hero" id="hero" aria-labelledby="heroTitle">
       <div class="mv-hero__bg" aria-hidden="true">
         <div class="mv-hero__bg-orb mv-hero__bg-orb--primary"></div>
         <div class="mv-hero__bg-orb mv-hero__bg-orb--accent"></div>
@@ -340,7 +461,7 @@
 
       <div class="mv-hero__inner" data-mv-reveal>
         <div class="mv-hero__eyebrow">Resmi Topluluk Portalı</div>
-        <h1 class="mv-hero__title">
+        <h1 id="heroTitle" class="mv-hero__title">
           Sadece bir Discord değil.<br>
           <span class="mv-hero__title-grad">Bir topluluk portalı.</span>
         </h1>
@@ -349,7 +470,7 @@
           büyüyen, kalite ve saygıya dayalı bir dijital ekosistem.
         </p>
         <div class="mv-hero__actions">
-          <a id="discordHero" class="mv-btn mv-btn--primary mv-btn--lg" href="#" rel="noopener" target="_blank">
+          <a id="discordHero" class="mv-btn mv-btn--primary mv-btn--lg" href="#" rel="noopener noreferrer" target="_blank">
             Topluluğa Katıl
           </a>
           <a class="mv-btn mv-btn--ghost mv-btn--lg" href="#projeler">
@@ -605,7 +726,7 @@
               <span class="mv-status-pill mv-status-pill--online mv-status-pill--pulse">
                 <span class="mv-status-pill__dot"></span> Davet aktif
               </span>
-              <a id="discordCommand" class="mv-btn mv-btn--primary" href="#" rel="noopener" target="_blank">
+              <a id="discordCommand" class="mv-btn mv-btn--primary" href="#" rel="noopener noreferrer" target="_blank">
                 Discord'a Katıl →
               </a>
             </div>
@@ -672,7 +793,7 @@
         <div>
           <div class="mv-footer__col-title">Bağlantı</div>
           <div class="mv-footer__links">
-            <a id="discordFooter" class="mv-footer__link" href="#" rel="noopener" target="_blank">Discord</a>
+            <a id="discordFooter" class="mv-footer__link" href="#" rel="noopener noreferrer" target="_blank">Discord</a>
             <a class="mv-footer__link" href="public/projeler.html">Projeler</a>
           </div>
         </div>
@@ -895,19 +1016,21 @@
 
       // Discord davet bağlantısı — site.js'ten okunur
       var discordUrl = (window.MV_SITE && window.MV_SITE.discordInvite) || '#';
-      ['discordCta', 'discordHero', 'discordCommand', 'discordFooter'].forEach(function (id) {
+      ['discordCta', 'discordHero', 'discordCommand', 'discordFooter', 'discordMobile'].forEach(function (id) {
         var el = document.getElementById(id);
         if (el && discordUrl && discordUrl !== '#') {
           el.setAttribute('href', discordUrl);
         }
       });
 
-      // Tema seçici aktif durum senkronizasyonu
+      // Tema seçici aktif durum senkronizasyonu (aria-pressed dahil)
       var themeButtons = document.querySelectorAll('[data-mv-set-theme]');
       function syncActiveTheme() {
         var current = (window.MV && window.MV.theme && window.MV.theme.get && window.MV.theme.get()) || 'obsidian-cyan';
         themeButtons.forEach(function (b) {
-          b.classList.toggle('is-active', b.getAttribute('data-mv-set-theme') === current);
+          var isActive = b.getAttribute('data-mv-set-theme') === current;
+          b.classList.toggle('is-active', isActive);
+          b.setAttribute('aria-pressed', String(isActive));
         });
       }
       themeButtons.forEach(function (b) {
@@ -920,6 +1043,46 @@
         });
       });
       syncActiveTheme();
+
+      // ---------- Mobil Menü (v11.1.3) ----------
+      var burger   = document.getElementById('navBurger');
+      var menu     = document.getElementById('mobileMenu');
+      var backdrop = document.getElementById('mobileBackdrop');
+
+      function setMenu(open) {
+        if (!burger || !menu || !backdrop) return;
+        burger.setAttribute('aria-expanded', String(open));
+        burger.setAttribute('aria-label', open ? 'Menüyü kapat' : 'Menüyü aç');
+        burger.textContent = open ? '✕' : '≡';
+        menu.classList.toggle('is-open', open);
+        menu.setAttribute('aria-hidden', String(!open));
+        backdrop.classList.toggle('is-open', open);
+        if (open) backdrop.removeAttribute('hidden');
+      }
+
+      if (burger && menu && backdrop) {
+        burger.addEventListener('click', function () {
+          var willOpen = burger.getAttribute('aria-expanded') !== 'true';
+          if (willOpen) backdrop.removeAttribute('hidden');
+          setMenu(willOpen);
+        });
+
+        // Menü linkine tıklayınca kapan
+        menu.querySelectorAll('[data-mv-mobile-link]').forEach(function (a) {
+          a.addEventListener('click', function () { setMenu(false); });
+        });
+
+        // Backdrop'a tıklayınca kapan
+        backdrop.addEventListener('click', function () { setMenu(false); });
+
+        // Escape ile kapan
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && burger.getAttribute('aria-expanded') === 'true') {
+            setMenu(false);
+            burger.focus();
+          }
+        });
+      }
     })();
   </script>
 </body>
