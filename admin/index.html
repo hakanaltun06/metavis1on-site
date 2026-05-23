@@ -196,18 +196,82 @@
         feedback.classList.remove('is-info');
       }
 
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        clearFeedback();
+      /* alpha.19: Opt-in Firebase login trial.
+         Trial is OFF by default. The submit handler keeps the existing
+         MV.auth.devLogin / sessionStorage path bit-identical unless an
+         explicit opt-in tells us to use Firebase. Two opt-in channels:
+           1) window.MV_ADMIN_FIREBASE_LOGIN === true (explicit, any host)
+           2) URL query ?mvFirebaseLogin=1 (or =true) on dev hosts only
+              (localhost / 127.0.0.1 / 0.0.0.0 / file:)
+         When the trial is on AND the wrapper is present AND Firebase is
+         ready, signIn + createSessionFromResult drive the redirect.
+         When Firebase is not ready (placeholder, missing-loader, etc.)
+         we fall back to devLogin so the form still works. When Firebase
+         IS ready but signIn fails (wrong credentials, network error),
+         we do NOT fall back to devLogin — that would mask a real
+         credential check. We show a user-friendly error instead. */
 
-        const u = userInput.value.trim();
-        const p = passInput.value;
+      function isDevHost() {
+        if (typeof window === 'undefined' || !window.location) return false;
+        if (window.location.protocol === 'file:') return true;
+        const h = window.location.hostname || '';
+        return h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0';
+      }
 
-        btn.disabled = true;
-        btn.textContent = 'Doğrulanıyor...';
+      function isFirebaseLoginTrialEnabled() {
+        if (typeof window === 'undefined') return false;
+        if (window.MV_ADMIN_FIREBASE_LOGIN === true) return true;
+        try {
+          const q = new URLSearchParams(window.location.search || '');
+          const v = q.get('mvFirebaseLogin');
+          if (v === '1' || v === 'true') return isDevHost();
+        } catch (e) { /* swallow */ }
+        return false;
+      }
 
-        // Production auth Firebase ile bağlanacak.
-        // Şimdilik MV.auth.devLogin geçici oturum üretir.
+      function hasFirebaseLoginWrapper() {
+        return !!(window.MV && window.MV.auth && window.MV.auth.firebase &&
+                  typeof window.MV.auth.firebase.signIn === 'function' &&
+                  typeof window.MV.auth.firebase.createSessionFromResult === 'function');
+      }
+
+      function firebaseErrorMessage(reason) {
+        switch (reason) {
+          case 'auth/wrong-password':
+          case 'auth/user-not-found':
+          case 'auth/invalid-credential':
+          case 'auth/invalid-login-credentials':
+            return 'E-posta veya şifre hatalı.';
+          case 'auth/invalid-email':
+          case 'invalid-email':
+            return 'Geçerli bir e-posta gir.';
+          case 'invalid-password':
+            return 'Parola en az 6 karakter olmalı.';
+          case 'missing-credentials':
+            return 'E-posta ve şifre zorunludur.';
+          case 'auth/too-many-requests':
+            return 'Çok fazla deneme yapıldı. Bir süre sonra tekrar dene.';
+          case 'auth/network-request-failed':
+            return 'Bağlantı hatası. İnternet veya Firebase bağlantısını kontrol et.';
+          case 'auth/user-disabled':
+            return 'Bu hesap devre dışı bırakılmış.';
+          case 'no-provider':
+          case 'no-sign-in-method':
+          case 'auth-init-error':
+            return 'Firebase giriş altyapısı hazır değil.';
+          default:
+            return 'Firebase giriş denemesi başarısız oldu.';
+        }
+      }
+
+      function debugLog() {
+        if (window.MV_DEBUG_AUTH === true && window.console && typeof console.log === 'function') {
+          const args = ['[alpha.19 login]'].concat([].slice.call(arguments));
+          console.log.apply(console, args);
+        }
+      }
+
+      function runDevLogin(u, p) {
         setTimeout(function () {
           const result = MV.auth.devLogin(u, p);
           if (result.ok) {
@@ -221,6 +285,64 @@
             btn.textContent = 'Yönetim Paneline Gir';
           }
         }, 350);
+      }
+
+      function runFirebaseLogin(u, p) {
+        Promise.resolve()
+          .then(function () { return MV.auth.firebase.signIn(u, p); })
+          .then(function (result) {
+            debugLog('signIn result:', result);
+            if (!result || result.enabled === false) {
+              // Firebase not ready → safe fallback to devLogin.
+              debugLog('Firebase not ready (reason=' + (result && result.reason) + '), falling back to devLogin');
+              runDevLogin(u, p);
+              return;
+            }
+            if (result.ok === true) {
+              const bridge = MV.auth.firebase.createSessionFromResult(result);
+              debugLog('bridge result:', bridge);
+              if (bridge && bridge.ok === true) {
+                showInfo('Giriş başarılı, panel yükleniyor...');
+                setTimeout(function () {
+                  window.location.replace('./dashboard.html');
+                }, 500);
+                return;
+              }
+              showError(firebaseErrorMessage(bridge && bridge.reason));
+              btn.disabled = false;
+              btn.textContent = 'Yönetim Paneline Gir';
+              return;
+            }
+            // enabled:true, ok:false → Firebase reachable but signIn failed.
+            // NO devLogin fallback here — a credential check must not be
+            // silently downgraded.
+            showError(firebaseErrorMessage(result.reason));
+            btn.disabled = false;
+            btn.textContent = 'Yönetim Paneline Gir';
+          })
+          .catch(function (err) {
+            debugLog('unexpected throw:', err);
+            showError('Firebase giriş denemesi başarısız oldu.');
+            btn.disabled = false;
+            btn.textContent = 'Yönetim Paneline Gir';
+          });
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearFeedback();
+
+        const u = userInput.value.trim();
+        const p = passInput.value;
+
+        btn.disabled = true;
+        btn.textContent = 'Doğrulanıyor...';
+
+        if (isFirebaseLoginTrialEnabled() && hasFirebaseLoginWrapper()) {
+          runFirebaseLogin(u, p);
+        } else {
+          runDevLogin(u, p);
+        }
       });
 
       // İlk input'a fokus

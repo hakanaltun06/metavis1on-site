@@ -7,6 +7,92 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.19] — Opt-in Firebase Admin Login Trial
+
+- `admin/index.html` login formu Firebase Auth trial modunu destekleyecek
+  şekilde güncellendi. Bu, alpha.6 → alpha.18 boyunca inşa edilen
+  `MV.auth.firebase` wrapper katmanının **ilk HTML wiring noktası**.
+- **Trial OFF by default.** Hiçbir bayrak yokken submit handler eski
+  `MV.auth.devLogin` → `sessionStorage` → 350ms→500ms redirect
+  zincirini **bit-identical** çalıştırır. Mevcut layout, CSS, form
+  field isimleri, butonlar, hata/success mesajları, focus davranışı
+  ve `MV.auth.isAuthed()` redirect kısayolu değişmedi.
+- **Opt-in kanalları** (ikisinden biri yeterli):
+  1. `window.MV_ADMIN_FIREBASE_LOGIN === true` — explicit global flag,
+     her host'ta çalışır (bilinçli kod-içi override).
+  2. URL query `?mvFirebaseLogin=1` veya `?mvFirebaseLogin=true` —
+     yalnız dev host'lar (`localhost` / `127.0.0.1` / `0.0.0.0` /
+     `file:`); production host'ta sessiz şekilde ignore edilir.
+- **Karar matrisi (her submit'te):**
+  | Koşul | Yol |
+  |---|---|
+  | Trial flag yok | `runDevLogin` (bit-identical default) |
+  | Trial flag var, wrapper yok | `runDevLogin` (defensive fallback) |
+  | Trial flag var, wrapper var, `signIn` `enabled:false` | `runDevLogin` (Firebase not ready → fallback) |
+  | Trial flag var, wrapper var, `signIn` `ok:true` | `createSessionFromResult` → mevcut 500ms redirect |
+  | Trial flag var, wrapper var, `signIn` `enabled:true, ok:false` | Friendly error mesajı, **devLogin fallback YOK** |
+- **Güvenlik kararı:** Firebase ready + credential failure (örn.
+  `auth/wrong-password`) durumunda **kesinlikle devLogin fallback
+  yapılmaz**. Bir credential kontrolünün sessiz şekilde dev-session
+  oluşturmaya düşmesi güvenlik açığı olur. Bu nedenle `enabled:true,
+  ok:false` her zaman görünür hata + butonu reset şeklinde sonuçlanır.
+- **Firebase not-ready fallback:** placeholder / disabled / missing-loader
+  / error gibi readiness reason'larında (`enabled:false`) form
+  sessizce eski devLogin yoluna döner. Default repo (placeholder
+  config) bu yolu kullanır — yani trial flag set edilse bile gerçek
+  Firebase config yüklü değilse davranış default'ı koruyacaktır.
+- **Başarılı login zinciri:**
+  ```
+  MV.auth.firebase.signIn(u, p)
+    → { enabled:true, ok:true, uid, email, provider:'firebase-auth' }
+  MV.auth.firebase.createSessionFromResult(result)
+    → { ok:true } → sessionStorage 'mv_admin_session' yazılır
+  showInfo('Giriş başarılı, panel yükleniyor...')
+  setTimeout(redirect, 500) → ./dashboard.html
+  ```
+  Mevcut `MV.auth.requireAdmin` gate'i değişmeden çalışır; dashboard
+  oturumu Firebase-bridged session ile gate'i geçer.
+- **Hata mesajı mapping** (kullanıcı dostu Türkçe; raw Firebase
+  error code'ları console'a `MV_DEBUG_AUTH === true` iken loglanır):
+  - `auth/wrong-password` / `auth/user-not-found` /
+    `auth/invalid-credential` / `auth/invalid-login-credentials` →
+    "E-posta veya şifre hatalı."
+  - `auth/invalid-email` / `invalid-email` → "Geçerli bir e-posta gir."
+  - `invalid-password` → "Parola en az 6 karakter olmalı."
+  - `missing-credentials` → "E-posta ve şifre zorunludur."
+  - `auth/too-many-requests` → "Çok fazla deneme yapıldı. Bir süre
+    sonra tekrar dene."
+  - `auth/network-request-failed` → "Bağlantı hatası. İnternet veya
+    Firebase bağlantısını kontrol et."
+  - `auth/user-disabled` → "Bu hesap devre dışı bırakılmış."
+  - `no-provider` / `no-sign-in-method` / `auth-init-error` →
+    "Firebase giriş altyapısı hazır değil."
+  - Bilinmeyen → "Firebase giriş denemesi başarısız oldu."
+- **Debug log:** `window.MV_DEBUG_AUTH === true` set edildiğinde
+  `[alpha.19 login]` prefixli console log'lar (signIn result, bridge
+  result, fallback nedeni, unexpected throw). Default davranış sıfır
+  console spam.
+- **Promise.catch güvenliği:** `signIn` Promise'i beklenmedik bir
+  throw atarsa form donmaz; generic hata gösterilir, buton reset
+  edilir.
+- **Dokunulmayan dosyalar / kapsam dışı:**
+  - `shared/js/auth.js` değişmedi — `MV.auth.firebase` API yüzeyi
+    ve davranışı bit-identical (alpha.18 baseline).
+  - `shared/config/firebase.js`, `shared/config/firebase.local.example.js`,
+    `shared/config/site.js` değişmedi.
+  - `admin/dashboard.html` (logout), `admin/announcements.html`,
+    `admin/events.html`, `admin/apps.html`, `admin/logs.html`
+    değişmedi.
+  - `admin/borc/index.html`, `borc.html`, `index.html` değişmedi.
+  - `shared/js/core.js`, `theme.js`, `apps.js`, `shared/css/*`,
+    `assets/*`, `firebase.json`, `.firebaserc`, `firestore.rules`,
+    `firestore.indexes.json`, `.gitignore`, `docs/*` değişmedi.
+  - `requireAdmin`, `logout`, `SESSION_KEY` (`'mv_admin_session'`),
+    `SESSION_TTL_MS` (8 saat), redirect path, sessionStorage payload
+    şekli **bit-identical**.
+  - Firestore SDK eklenmedi; CRUD yok; gerçek Firebase config /
+    apiKey / projectId / appId / UID / email repo'ya girmedi.
+
 ## [v12.0.0-alpha.18] — Auth Wrapper Cleanup and Capability Docs Refresh
 
 - Kullanılmayan `dryRunResult()` helper'ı `shared/js/auth.js`'ten
