@@ -7,6 +7,50 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.8] — Passive Firebase Auth Wrapper
+
+- `shared/js/auth.js` içine pasif `MV.auth.firebase` alt-namespace'i
+  eklendi. Wrapper'lar **double guard** arkasında çalışır:
+  `window.MV_FIREBASE` yok veya `isAuthReady() === false` ise her metod
+  no-op döner. Bu fazda config placeholder olduğu için her çağrı
+  no-op'tur.
+- Yeni metodlar:
+  - `MV.auth.firebase.isReady()` — `{ enabled, reason }` döner.
+    Reason değerleri: `'missing-loader'` | `'disabled'` |
+    `'placeholder'` | `'error'` | `'ready'`. Side-effect yok.
+  - `MV.auth.firebase.signIn(email, password)` —
+    `Promise<{ enabled:false, reason }>` döner.
+    `signInWithEmailAndPassword` **çağrılmaz**.
+  - `MV.auth.firebase.signOut()` —
+    `Promise<{ enabled:false, reason }>` döner.
+    `firebase.auth().signOut()` **çağrılmaz**, sessionStorage'a
+    dokunulmaz.
+  - `MV.auth.firebase.onChange(callback)` —
+    `{ enabled:false, reason, unsubscribe: fn }` döner.
+    `onAuthStateChanged` **çağrılmaz**, callback tetiklenmez,
+    unsubscribe no-op.
+  - `MV.auth.firebase.currentUser()` — `null` döner.
+    `firebase.auth().currentUser` okunmaz.
+- Internal helper'lar (IIFE-scoped, dışa açılmadı):
+  `getFirebaseAuthReadiness()`, `dormantResult()`.
+- **Geriye uyumluluk:** mevcut `MV.auth.isAuthed`, `MV.auth.getUser`,
+  `MV.auth.devLogin`, `MV.auth.logout`, `MV.auth.requireAdmin` davranışı
+  bit-identical. `SESSION_KEY` (`'mv_admin_session'`), 8 saat TTL,
+  redirect path, login form akışı değişmedi. Mock harness'ta dev login
+  → isAuthed → logout zinciri aynı sonucu üretti.
+- **Side-effect kontrolü:** mock Firebase namespace enjekte edilip
+  `MV_FIREBASE.init()` çağrıldıktan sonra bile her wrapper çağrısı
+  sonrası sayaçlar: `initializeApp=0`, mock `auth()=0`,
+  `signInWithEmailAndPassword=0`, `signOut=0`, `onAuthStateChanged=0`.
+  Wrapper'lar Auth instance oluşturmadı, network/DOM/storage'a
+  dokunmadı, callback tetiklemedi.
+- Hiçbir admin sayfası bu wrapper'ları çağırmıyor; yalnızca scaffold
+  olarak yer alıyor. Gerçek sign-in akışı gelecek fazda, aynı readiness
+  guard arkasında wrapper gövdeleri değiştirilerek aktive edilecek.
+- `admin/*.html`, `admin/borc/index.html`, `borc.html`, `index.html`,
+  `shared/config/firebase.js`, `shared/config/site.js` değişmedi.
+  Firestore SDK, CRUD, deploy, gerçek Firebase config eklenmedi.
+
 ## [v12.0.0-alpha.7] — Firebase Auth Readiness Helpers
 
 - `shared/config/firebase.js` safe loader'a beş yeni **pasif** helper
