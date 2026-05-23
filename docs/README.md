@@ -35,6 +35,12 @@ zemin hazırlayan referans dokümanlardır.
   ve borç paneli özel notlarını içerir. Firebase Console tarafındaki
   manuel kontrol listesidir; gerçek project ID/API key/UID/e-mail
   dokümana yazılmaz.
+- **[Firebase Local Setup & Auth Wrapper Guide](./firebase-local-setup.md)**
+  Firebase local setup, Auth wrapper capability matrix, DevTools
+  testing guide. v12.0.0-alpha.6 → alpha.14 phase log, local config
+  policy, activation paths, manuel signIn/signOut test zincirleri,
+  troubleshooting ve next roadmap içerir. Gerçek credential
+  içermez.
 
 ## Planned Documents
 

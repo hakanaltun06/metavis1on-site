@@ -215,11 +215,44 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
 
 ---
 
+## Auth Wrapper Layer Status
+
+> Bu bölüm v12.0.0-alpha.15 dokümantasyon fazında eklendi. v12.0.0-alpha.6
+> → alpha.14 fazlarında inşa edilen `MV.auth.firebase` katmanının
+> mevcut durumunu özetler. Detaylı rehber:
+> [`firebase-local-setup.md`](./firebase-local-setup.md).
+
+- **Wrapper layer `signIn` / `signOut` seviyesinde hazır.**
+  `MV.auth.firebase.signIn()` ve `MV.auth.firebase.signOut()` ready
+  olduğunda live çalışır; default repo placeholder config ile no-op
+  davranır.
+- **Session bridge ve logout bridge mevcut.**
+  `createSessionFromResult()` ve `clearSessionAfterSignOut()`
+  strict validation ile manuel çağrılır; `signIn` / `signOut` bunları
+  otomatik tetiklemez (deliberate decoupling).
+- **Admin HTML wiring pending.** `admin/index.html` login formu hâlâ
+  `MV.auth.devLogin` üzerinden çalışır; `admin/dashboard.html` logout
+  hâlâ `MV.auth.logout` üzerinden çalışır. Wrapper aktivasyonu
+  alpha.17 / alpha.18 opt-in trial fazlarına bırakıldı.
+- **`onChange` / `currentUser` pending.** Ready iken bile
+  `onAuthStateChanged` çağrılmaz, `auth.currentUser` okunmaz; her
+  ikisi de dry-run. Activation alpha.16+'da değerlendirilecek.
+- **Firestore pending.** Firestore SDK admin sayfalarına eklenmedi;
+  read / write / CRUD yok. v12.1.0 Firestore Rules foundation
+  fazından sonra açılır.
+- **Debt panel out of scope.** Borç paneli (`admin/borc/index.html`)
+  kendi inline `firebaseConfig`'i ile izole çalışır; v12 Auth
+  wrapper'ı ile karışmaz. v12.0 – v12.5 boyunca kod düzeyinde
+  dokunulmaz.
+
+---
+
 ## 10. Sürüm Notu
 
 | Sürüm | Tarih | Açıklama |
 |---|---|---|
 | v11.6.0 | 2026-05-23 | İlk v12 readiness özet dokümanı. v11 tamamlanan işler, mevcut dokümanlar tablosu, v12.0.0-alpha scope + out-of-scope, runtime dokunma matrisi, entry criteria, önerilen commit planı, kalan riskler ve Go/Hold karar matrisi belgelendi. |
+| v12.0.0-alpha.15 | 2026-05-23 | Auth Wrapper Layer Status bölümü eklendi. alpha.6 → alpha.14 sonrası `MV.auth.firebase` katmanının mevcut durumu, pending wiring ve out-of-scope kalemleri özetlendi. Detay: [`firebase-local-setup.md`](./firebase-local-setup.md). |
 
 Bu doküman v12.0.0-alpha PR açılana kadar canlı bir referanstır;
 PR description'ı için doğrudan referans olarak kullanılabilir. v12.0.0-alpha

@@ -7,6 +7,69 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.15] — Firebase Local Setup Documentation
+
+- `docs/firebase-local-setup.md` eklendi. Firebase Auth wrapper
+  katmanı için alpha.6 → alpha.14 phase log, capability matrix ve
+  local/staging doğrulama rehberi tek dokümanda toplandı.
+- Phase log her fazı commit hash + tek cümle açıklama ile içerir:
+  alpha.6 (`892ec7a`), alpha.7 (`cba5e41`), alpha.8 (`3881523`),
+  alpha.9 (`b7065e4`), alpha.10 (`60d6193`), alpha.11 (`d6f58b1`),
+  alpha.12 (`15e3e97`), alpha.13 (`87afe9c`), alpha.14 (`f37345b`).
+- Local config policy belgelendi: `shared/config/firebase.local.js`
+  `.gitignore` altında, `firebase.local.example.js` placeholder
+  template olarak repo'da. Gerçek `apiKey` / `projectId` / `appId`
+  example dosyasına veya docs / CHANGELOG'a yazılmaz.
+- İki activation path açıklandı: Path A (manuel script tag — şu an
+  admin HTML'e eklenmemiş) ve Path B (opt-in auto-loader — query
+  param `?mvFirebaseLocal=1` yalnız localhost / 127.0.0.1 /
+  0.0.0.0 / file:; explicit `window.MV_FIREBASE_AUTO_LOAD_LOCAL =
+  true` her host'ta bilinçli override).
+- DevTools inspection komutları (`MV_FIREBASE.getStatus()`,
+  `isAvailable()`, `isAuthReady()`, `getLocalConfigStatus()`,
+  `MV.auth.firebase.inspect()`) ve default-repo / local-config-ready
+  beklenen durum tabloları eklendi.
+- Capability matrix: App SDK / Auth SDK loaded, external config
+  injection / local opt-in loader / `inspect` / session+logout
+  bridges available, `signIn` / `signOut` live when ready,
+  `onChange` / `currentUser` dry-run, admin login + dashboard
+  logout pending, Firestore / CRUD not started, debt panel out
+  of scope.
+- Manuel signIn / signOut test zincirleri placeholder credential'larla
+  (`admin@example.com`, `PLACEHOLDER_PASSWORD`) belgelendi.
+  `createSessionFromResult` / `clearSessionAfterSignOut`
+  bridge'lerinin manuel çağrı zorunluluğu vurgulandı.
+- Troubleshooting bölümü loader status'leri, wrapper hata kodları
+  ve session bridge edge case'lerini kapsar.
+- Security notes: client config secret değil ama yine de commit
+  yok; gerçek yetki ileride Firestore Rules + Auth + custom claims;
+  `sessionStorage` bridge geçici; production devLogin guard ayrı
+  faz; borç paneli izole; doküman gerçek credential içermez.
+- Next roadmap: alpha.16 (currentUser activation veya login trial
+  karar noktası), alpha.17 (admin login opt-in trial), alpha.18
+  (dashboard logout opt-in trial), alpha.19 (production devLogin
+  guard), v12.1.0 (Firestore rules foundation), v12.2.0
+  (read-only Firebase read), v12.3.0+ (CRUD).
+- `docs/v12-readiness.md` "Auth Wrapper Layer Status" bölümü ile
+  güncellendi: wrapper signIn/signOut seviyesinde hazır, session +
+  logout bridge mevcut, admin HTML wiring pending, onChange /
+  currentUser pending, Firestore pending, debt panel out of scope.
+- `docs/README.md` Current Documents listesine yeni doküman eklendi.
+- **Runtime davranışı değişmedi.** Bu faz tamamen dokümantasyon
+  fazıdır. `shared/js/auth.js`, `shared/config/firebase.js`,
+  `shared/config/firebase.local.example.js`, admin HTML dosyaları
+  (`admin/index.html`, `admin/dashboard.html`,
+  `admin/announcements.html`, `admin/events.html`, `admin/apps.html`,
+  `admin/logs.html`), `admin/borc/index.html`, `borc.html`,
+  `index.html`, `shared/config/site.js`, `.gitignore`, `firebase.json`,
+  `.firebaserc`, `firestore.rules`, `firestore.indexes.json`
+  dosyalarına **dokunulmadı**. Firestore SDK, CRUD,
+  `onAuthStateChanged`, gerçek Firebase config commit edilmedi.
+  Gerçek apiKey / projectId / appId / measurementId / UID / email
+  repo'ya girmedi.
+
+---
+
 ## [v12.0.0-alpha.14] — Guarded Firebase signOut and Logout Bridge
 
 - `MV.auth.firebase.signOut()` **LIVE** moduna geçirildi ama
