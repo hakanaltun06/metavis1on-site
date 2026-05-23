@@ -389,25 +389,40 @@
     }
     .adm-timeline__item--current .adm-timeline__ver { color: var(--mv-accent-green); }
 
-    /* ---------- Yakında modülleri ---------- */
+    /* ---------- Read-only modül kartları ---------- */
     .adm-soon-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: var(--mv-space-md);
     }
     .adm-soon {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
       padding: var(--mv-space-md);
       background: rgba(255,255,255,0.02);
       border: 1px dashed var(--mv-border-strong);
       border-radius: var(--mv-radius-md);
-      opacity: 0.72;
+      text-decoration: none;
+      color: inherit;
+      transition: var(--mv-transition-fast);
+    }
+    .adm-soon:hover {
+      border-style: solid;
+      border-color: rgba(14, 165, 233, 0.35);
+      background: rgba(14, 165, 233, 0.04);
+      transform: translateY(-2px);
+    }
+    .adm-soon:focus-visible {
+      outline: 2px solid var(--mv-theme-primary);
+      outline-offset: 2px;
     }
     .adm-soon__head {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      margin-bottom: 6px;
+      margin-bottom: 2px;
     }
     .adm-soon__title {
       font-weight: 700;
@@ -429,6 +444,16 @@
       font-size: 0.82rem;
       color: var(--mv-text-muted);
       line-height: 1.5;
+    }
+    .adm-soon__cta {
+      margin-top: auto;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--mv-theme-primary);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .adm-soon { transition: none; }
+      .adm-soon:hover { transform: none; }
     }
 
     /* ---------- Footer ---------- */
@@ -745,45 +770,49 @@
     </ol>
 
     <!-- ============================================================
-         YAKINDA MODÜLLERİ
+         READ-ONLY MODÜLLER (Firebase öncesi hazırlık)
          ============================================================ -->
     <div class="adm-section-head">
       <div>
-        <div class="adm-section-eyebrow">Yol Haritası</div>
-        <h2 class="adm-section-title">Yakında — hazırlık aşaması</h2>
+        <div class="adm-section-eyebrow">Modüller</div>
+        <h2 class="adm-section-title">Read-only modül sayfaları</h2>
       </div>
-      <div class="adm-section-hint">Bu fazda etkileşim yok</div>
+      <div class="adm-section-hint">Firebase öncesi · CRUD yok</div>
     </div>
 
     <div class="adm-soon-grid">
-      <div class="adm-soon" aria-disabled="true">
+      <a class="adm-soon" href="./announcements.html">
         <div class="adm-soon__head">
           <div class="adm-soon__title">Duyuru Yönetimi</div>
-          <span class="adm-soon__badge">Hazırlık</span>
+          <span class="adm-soon__badge">Read-only</span>
         </div>
-        <div class="adm-soon__desc">Ana sitedeki duyuru şeridine yönetim arayüzü.</div>
-      </div>
-      <div class="adm-soon" aria-disabled="true">
+        <div class="adm-soon__desc">Ana sitedeki duyuru şeridi içeriklerinin görüntüleme sayfası.</div>
+        <div class="adm-soon__cta">Modülü aç →</div>
+      </a>
+      <a class="adm-soon" href="./events.html">
         <div class="adm-soon__head">
           <div class="adm-soon__title">Etkinlik Yönetimi</div>
-          <span class="adm-soon__badge">Hazırlık</span>
+          <span class="adm-soon__badge">Read-only</span>
         </div>
-        <div class="adm-soon__desc">Yaklaşan etkinlikler listesinin merkezi düzenleme alanı.</div>
-      </div>
-      <div class="adm-soon" aria-disabled="true">
+        <div class="adm-soon__desc">Yaklaşan etkinlik kayıtlarının listesi (düzenleme Firebase fazında).</div>
+        <div class="adm-soon__cta">Modülü aç →</div>
+      </a>
+      <a class="adm-soon" href="./apps.html">
         <div class="adm-soon__head">
           <div class="adm-soon__title">Uygulama Bağlantıları</div>
-          <span class="adm-soon__badge">Hazırlık</span>
+          <span class="adm-soon__badge">Read-only</span>
         </div>
-        <div class="adm-soon__desc">Vitrindeki uygulama kartlarının görünürlük ve sıra kontrolü.</div>
-      </div>
-      <div class="adm-soon" aria-disabled="true">
+        <div class="adm-soon__desc">Vitrindeki uygulama ve modüllerin merkezi listesi.</div>
+        <div class="adm-soon__cta">Modülü aç →</div>
+      </a>
+      <a class="adm-soon" href="./logs.html">
         <div class="adm-soon__head">
           <div class="adm-soon__title">Sistem Logları</div>
           <span class="adm-soon__badge">Hazırlık</span>
         </div>
-        <div class="adm-soon__desc">Yönetici aksiyonlarının kronolojik kaydı için ileride bağlanacak.</div>
-      </div>
+        <div class="adm-soon__desc">Portal sürüm geçmişi · gerçek log akışı v12 fazında.</div>
+        <div class="adm-soon__cta">Modülü aç →</div>
+      </a>
     </div>
 
     <div class="adm-foot">

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr" data-mv-theme="obsidian-cyan">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>metavis1on Admin | Etkinlikler</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#030407">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="../shared/css/reset.css">
+  <link rel="stylesheet" href="../shared/css/themes.css">
+  <link rel="stylesheet" href="../shared/css/components.css">
+  <link rel="stylesheet" href="../shared/css/layout.css">
+  <link rel="stylesheet" href="./admin-modules.css">
+</head>
+<body class="adm-body">
+
+  <header class="adm-top" role="banner">
+    <div class="adm-top__inner">
+      <a class="adm-top__brand" href="./dashboard.html" aria-label="metavis1on Admin Anasayfası">
+        <img src="../assets/logo-mark-64.png"
+             srcset="../assets/logo-mark-64.png 1x, ../assets/logo-mark-128.png 2x"
+             alt="metavis1on" width="32" height="32" decoding="async"
+             onerror="this.style.display='none'">
+        <span class="adm-top__brand-text">metavis1on Admin</span>
+        <span class="adm-pill"><span class="adm-pill__dot"></span>Etkinlikler</span>
+      </a>
+
+      <div class="adm-top__actions">
+        <a class="mv-btn mv-btn--ghost mv-btn--sm" href="./dashboard.html">← Dashboard</a>
+        <a class="mv-btn mv-btn--ghost mv-btn--sm" href="../index.html">Ana Site</a>
+        <button class="mv-btn mv-btn--sm" type="button" id="logoutBtn">Çıkış Yap</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="adm-shell" id="mainContent">
+
+    <section class="adm-hero" aria-labelledby="modTitle">
+      <div>
+        <div class="adm-hero__eyebrow">Modül · Read-only</div>
+        <h1 id="modTitle" class="adm-hero__title">Etkinlik Yönetimi</h1>
+        <p class="adm-hero__lead">
+          Ana sitedeki etkinlik listesi. Düzenleme, ekleme ve silme işlemleri
+          Firebase fazında aktif olacaktır; bu sayfa yalnızca mevcut kayıtları gösterir.
+        </p>
+      </div>
+    </section>
+
+    <div class="adm-note" role="note">
+      <span class="adm-note__icon" aria-hidden="true">i</span>
+      <div class="adm-note__body">
+        <strong>Read-only · Firebase öncesi hazırlık.</strong>
+        Etkinlik CRUD işlemleri Firebase fazında aktif edilecektir. Veri kaynağı:
+        <code>shared/config/site.js</code> > <code>MV_SITE.events</code>.
+      </div>
+    </div>
+
+    <div class="adm-section-head">
+      <div>
+        <div class="adm-section-eyebrow">Listeleme</div>
+        <h2 class="adm-section-title">Mevcut etkinlikler</h2>
+      </div>
+      <div class="adm-section-hint" id="evCount">—</div>
+    </div>
+
+    <div class="adm-list" id="evList" aria-live="polite"></div>
+
+    <div class="adm-foot">
+      <span>metavis1on Admin · v11.3.0</span>
+      <span>© <span data-mv-year>2026</span> metavis1on</span>
+    </div>
+  </main>
+
+  <script src="../shared/config/site.js"></script>
+  <script src="../shared/js/core.js"></script>
+  <script src="../shared/js/theme.js"></script>
+  <script src="../shared/js/auth.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      if (!MV.auth.requireAdmin('./index.html')) return;
+
+      if (MV.core && MV.core.setCurrentYear) MV.core.setCurrentYear('[data-mv-year]');
+
+      var esc = (MV.core && MV.core.escapeHtml) || function (s) { return String(s == null ? '' : s); };
+
+      var STATUS_PILL = {
+        'Planlandı': 'adm-pill',
+        'Yakında':   'adm-pill',
+        'Hazırlık':  'adm-pill adm-pill--warn',
+        'İptal':     'adm-pill adm-pill--mute'
+      };
+
+      var list  = document.getElementById('evList');
+      var count = document.getElementById('evCount');
+      var items = (window.MV_SITE && Array.isArray(MV_SITE.events)) ? MV_SITE.events : [];
+
+      if (count) count.textContent = items.length + ' kayıt';
+
+      if (!items.length) {
+        list.innerHTML =
+          '<div class="adm-empty">' +
+          '  <div class="adm-empty__title">Henüz etkinlik yok</div>' +
+          '  <div class="adm-empty__desc">Statik veri kaynağında kayıt bulunamadı.</div>' +
+          '</div>';
+      } else {
+        list.innerHTML = items.map(function (e) {
+          var pillCls = STATUS_PILL[e.status] || 'adm-pill adm-pill--mute';
+          return ''
+            + '<article class="adm-card">'
+            +   '<div class="adm-event">'
+            +     '<div class="adm-event__date">'
+            +       '<span class="adm-event__day">' + esc(e.day) + '</span>'
+            +       '<span class="adm-event__month">' + esc(e.month) + '</span>'
+            +     '</div>'
+            +     '<div class="adm-event__body">'
+            +       '<div class="adm-event__title">' + esc(e.title) + '</div>'
+            +       '<div class="adm-event__meta">'
+            +         (e.time     ? '<span>⏰ ' + esc(e.time)     + '</span>' : '')
+            +         (e.location ? '<span>📍 ' + esc(e.location) + '</span>' : '')
+            +         '<span>id: <code>' + esc(e.id) + '</code></span>'
+            +       '</div>'
+            +     '</div>'
+            +     '<span class="' + pillCls + ' adm-event__status">'
+            +       '<span class="adm-pill__dot"></span> ' + esc(e.status)
+            +     '</span>'
+            +   '</div>'
+            + '</article>';
+        }).join('');
+      }
+
+      var logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          MV.auth.logout();
+          if (MV.core && MV.core.toast) MV.core.toast('Oturum kapatıldı.', 'info', 1500);
+          setTimeout(function () { window.location.replace('./index.html'); }, 700);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

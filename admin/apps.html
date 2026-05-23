@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="tr" data-mv-theme="obsidian-cyan">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>metavis1on Admin | Uygulama Bağlantıları</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#030407">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../shared/css/tokens.css">
+  <link rel="stylesheet" href="../shared/css/reset.css">
+  <link rel="stylesheet" href="../shared/css/themes.css">
+  <link rel="stylesheet" href="../shared/css/components.css">
+  <link rel="stylesheet" href="../shared/css/layout.css">
+  <link rel="stylesheet" href="./admin-modules.css">
+</head>
+<body class="adm-body">
+
+  <header class="adm-top" role="banner">
+    <div class="adm-top__inner">
+      <a class="adm-top__brand" href="./dashboard.html" aria-label="metavis1on Admin Anasayfası">
+        <img src="../assets/logo-mark-64.png"
+             srcset="../assets/logo-mark-64.png 1x, ../assets/logo-mark-128.png 2x"
+             alt="metavis1on" width="32" height="32" decoding="async"
+             onerror="this.style.display='none'">
+        <span class="adm-top__brand-text">metavis1on Admin</span>
+        <span class="adm-pill"><span class="adm-pill__dot"></span>Uygulamalar</span>
+      </a>
+
+      <div class="adm-top__actions">
+        <a class="mv-btn mv-btn--ghost mv-btn--sm" href="./dashboard.html">← Dashboard</a>
+        <a class="mv-btn mv-btn--ghost mv-btn--sm" href="../index.html">Ana Site</a>
+        <button class="mv-btn mv-btn--sm" type="button" id="logoutBtn">Çıkış Yap</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="adm-shell" id="mainContent">
+
+    <section class="adm-hero" aria-labelledby="modTitle">
+      <div>
+        <div class="adm-hero__eyebrow">Modül · Read-only</div>
+        <h1 id="modTitle" class="adm-hero__title">Uygulama Bağlantıları</h1>
+        <p class="adm-hero__lead">
+          Portala bağlı tüm uygulama ve modüllerin merkezi listesi. Visiocial, Tetris, GRID
+          ve yetkili Borç Paneli görünürlüğü bu sayfadan izlenir. Düzenleme Firebase fazında.
+        </p>
+      </div>
+    </section>
+
+    <div class="adm-note" role="note">
+      <span class="adm-note__icon" aria-hidden="true">i</span>
+      <div class="adm-note__body">
+        <strong>Read-only · Firebase öncesi hazırlık.</strong>
+        Görünürlük (public/admin) toggle'ları, sıralama ve içerik düzenleme Firebase fazında
+        aktif edilecektir. Veri kaynağı: <code>MV.apps.forProjectsPage()</code> ·
+        fallback <code>MV_SITE.apps</code>.
+      </div>
+    </div>
+
+    <div class="adm-section-head">
+      <div>
+        <div class="adm-section-eyebrow">Bağlı Uygulamalar</div>
+        <h2 class="adm-section-title">Kayıtlı modüller</h2>
+      </div>
+      <div class="adm-section-hint" id="appsCount">—</div>
+    </div>
+
+    <div class="adm-grid" id="appsList" aria-live="polite"></div>
+
+    <div class="adm-foot">
+      <span>metavis1on Admin · v11.3.0</span>
+      <span>© <span data-mv-year>2026</span> metavis1on</span>
+    </div>
+  </main>
+
+  <script src="../shared/config/site.js"></script>
+  <script src="../shared/js/core.js"></script>
+  <script src="../shared/js/theme.js"></script>
+  <script src="../shared/js/auth.js"></script>
+  <script src="../shared/js/apps.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      if (!MV.auth.requireAdmin('./index.html')) return;
+
+      if (MV.core && MV.core.setCurrentYear) MV.core.setCurrentYear('[data-mv-year]');
+
+      var esc = (MV.core && MV.core.escapeHtml) || function (s) { return String(s == null ? '' : s); };
+
+      var GLYPH  = { visiocial: '◈', tetris: '▦', grid: '▩', borc: '₺' };
+      var CATEGORY = { visiocial: 'Sosyal', tetris: 'Mini Oyun', grid: 'Puzzle', borc: 'Yönetim' };
+      var STATUS_LABEL = { prototype: 'Prototip', stable: 'Stabil', production: 'Production' };
+
+      // Admin/* dizininden çağrıldığı için legacyUrl '../' prefix'iyle hala geçerli.
+      function resolveUrl(app) {
+        if (app.id === 'borc') return './borc/';
+        return app.legacyUrl || app.targetUrl || '#';
+      }
+
+      var list  = document.getElementById('appsList');
+      var count = document.getElementById('appsCount');
+
+      var items = [];
+      if (window.MV && MV.apps && typeof MV.apps.forProjectsPage === 'function') {
+        items = MV.apps.forProjectsPage();
+      } else if (window.MV_SITE && Array.isArray(MV_SITE.apps)) {
+        items = MV_SITE.apps.slice();
+      }
+
+      if (count) count.textContent = items.length + ' kayıt';
+
+      if (!items.length) {
+        list.innerHTML =
+          '<div class="adm-empty" style="grid-column:1 / -1;">' +
+          '  <div class="adm-empty__title">Kayıtlı uygulama yok</div>' +
+          '  <div class="adm-empty__desc">Statik veri kaynağı boş döndü.</div>' +
+          '</div>';
+      } else {
+        list.innerHTML = items.map(function (app) {
+          var isAdmin = app.visibility === 'admin';
+          var visPill = isAdmin
+            ? '<span class="adm-pill adm-pill--admin"><span class="adm-pill__dot"></span>Admin</span>'
+            : '<span class="adm-pill"><span class="adm-pill__dot"></span>Public</span>';
+          var statusText = STATUS_LABEL[app.status] || (app.status || '—');
+          var category = CATEGORY[app.id] || app.tag || '';
+          var glyph = GLYPH[app.id] || '◇';
+          var url = resolveUrl(app);
+          var safeUrl = esc(url);
+          var ctaLabel = isAdmin ? 'Yetkili panele git →' : 'Modülü aç →';
+
+          return ''
+            + '<article class="adm-card">'
+            +   '<div class="adm-card__head">'
+            +     '<div>'
+            +       '<div class="adm-card__title">'
+            +         '<span style="font-family:var(--mv-font-mono); margin-right:8px; color:var(--mv-theme-primary);">' + glyph + '</span>'
+            +         esc(app.name)
+            +       '</div>'
+            +       '<div class="adm-card__sub">' + esc(category) + ' · id: <code>' + esc(app.id) + '</code></div>'
+            +     '</div>'
+            +     visPill
+            +   '</div>'
+            +   '<div class="adm-card__body">' + esc(app.description) + '</div>'
+            +   '<div class="adm-card__meta">'
+            +     '<span class="adm-card__meta-item">Durum: ' + esc(statusText) + '</span>'
+            +     (app.accent ? '<span class="adm-card__meta-item">Aksent: ' + esc(app.accent) + '</span>' : '')
+            +     (isAdmin ? '<span class="adm-card__meta-item">Yetkili panel</span>' : '')
+            +   '</div>'
+            +   '<a class="adm-card__link" href="' + safeUrl + '" rel="noopener">' + ctaLabel + '</a>'
+            + '</article>';
+        }).join('');
+      }
+
+      var logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          MV.auth.logout();
+          if (MV.core && MV.core.toast) MV.core.toast('Oturum kapatıldı.', 'info', 1500);
+          setTimeout(function () { window.location.replace('./index.html'); }, 700);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
