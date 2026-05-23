@@ -7,6 +7,24 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v11.6.0] — v12 Readiness Summary
+
+- `docs/v12-readiness.md` eklendi.
+- v11 boyunca tamamlanan işler (public portal, admin dashboard,
+  read-only modüller, documentation, Firebase planning, debt panel
+  protection) özetlendi.
+- Mevcut dokümanlar tablosu, v12.0.0-alpha scope + out-of-scope listesi
+  ve runtime dokunma matrisi belgelendi.
+- Önerilen v12.0.0-alpha commit planı (Firebase config placeholder,
+  auth wrapper, dev gate guard, no Firestore write, smoke test) yazıldı.
+- v12 entry criteria, kalan riskler ve Go/Hold karar matrisi eklendi.
+- `docs/README.md` güncellendi: yeni readiness dokümanı Current Documents
+  altına eklendi.
+- Runtime dosyalara dokunulmadı.
+- Firebase SDK / config / kod eklenmedi.
+- `firebase.json`, `.firebaserc`, `firestore.rules`,
+  `firestore.indexes.json` oluşturulmadı; deploy komutu çalıştırılmadı.
+
 ## [v11.5.4] — Deployment Checklist
 
 - `docs/deployment-checklist.md` eklendi.
