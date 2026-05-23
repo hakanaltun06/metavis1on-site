@@ -7,6 +7,56 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.9] — Gated Firebase Config Injection
+
+- `shared/config/firebase.js` safe loader'a **opt-in** config injection
+  desteği eklendi: `window.MV_FIREBASE_CONFIG` global'i tanımlı ve
+  `looksReal()` denetiminden geçen bir objeyse, `init()` placeholder
+  config yerine bunu kullanır ve `firebase.initializeApp(...)` ile
+  uygulamayı başlatır. Aksi halde mevcut placeholder davranış aynen
+  sürer; loader yine `'placeholder'` durumunda kalır ve
+  `initializeApp` çağrılmaz.
+- Yeni inspection helper'ları (hepsi side-effect-free):
+  - `hasExternalConfig()` — `window.MV_FIREBASE_CONFIG` bir object ise
+    `true`. Object-değil tipler (string, sayı vs.) `false`.
+  - `getExternalConfig()` — ham external config objesi veya `null`.
+    Validation yapmaz.
+  - `resolveConfig()` — `looksReal(external)` ise external'i,
+    değilse built-in `placeholderConfig`'i döner. Loader içinde
+    `init()` de aynı kararı uygular.
+- Internal `readExternalConfig()` helper: `window.MV_FIREBASE_CONFIG`'i
+  güvenli şekilde okur (try/catch), object değilse `null` döner.
+  Erişim hataları yutulur.
+- **`init()` akışı:** namespace sanity check → namespace yakalanır →
+  external config okunur ve `looksReal()` geçerse `state.config`'e
+  yazılır → `looksReal(state.config)` placeholder gate'i → gerçek ise
+  `firebase.initializeApp(state.config)` çağrılır. Mevcut sıralama,
+  hata yönetimi ve geriye uyumlu API yüzeyi korunur.
+- Yeni dosya: `shared/config/firebase.local.example.js` — yalnızca
+  placeholder değerlerle (`'YOUR_API_KEY'` vb.) bir şablon. Üst kısımda
+  "DO NOT commit real values" uyarıları ve nasıl bağlanacağına dair
+  notlar var. Bu dosya commitleniyor ama loader'a referansı yok;
+  manuel olarak `firebase.local.js`'e kopyalanıp HTML'den yüklenir.
+- `.gitignore` güncellendi: `shared/config/firebase.local.js` ignore
+  edildi. Örnek dosya (`firebase.local.example.js`) commit'lenebilir
+  kalır; gerçek local config (`firebase.local.js`) git'e **giremez**.
+- **Geriye uyumluluk:** mevcut tüm API yüzeyi
+  (`configured`, `status`, `config`, `note`, `getConfig`,
+  `isConfigured`, `isAvailable`, `isEnabled`, `hasAuthSdk`,
+  `isAuthReady`, `getFirebaseNamespace`, `getAuthProvider`, `init`,
+  `getApp`, `getStatus`, `getLastError`) bit-identical davranıyor.
+  Default repo'da `window.MV_FIREBASE_CONFIG` tanımlı olmadığı için
+  placeholder yol seçilir ve hiçbir admin sayfası davranışı değişmez.
+- **No-side-effect kuralı:** helper'lar veya `init()` placeholder branch'i
+  network isteği, DOM mutation, storage erişimi veya Auth listener
+  oluşturmaz. Mock harness'ta config-real başarı yolu bile `auth()`
+  call sayacını 0'da bıraktı.
+- `shared/js/auth.js` (alpha.8 wrapper'ı dahil), admin HTML, borç
+  paneli ve public site **değişmedi**. Firestore SDK, CRUD, Auth
+  sign-in, gerçek Firebase config değerleri eklenmedi. Gerçek
+  apiKey/projectId/appId/measurementId, UID, email, parola repo'ya
+  girmedi.
+
 ## [v12.0.0-alpha.8] — Passive Firebase Auth Wrapper
 
 - `shared/js/auth.js` içine pasif `MV.auth.firebase` alt-namespace'i

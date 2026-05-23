@@ -15,3 +15,8 @@ yarn-error.log
 # Yedek dosyaları
 *.bak
 *.tmp
+
+# Local Firebase config — never commit real project credentials.
+# (The example template lives at shared/config/firebase.local.example.js
+#  and IS committed; only the real local copy is ignored.)
+shared/config/firebase.local.js

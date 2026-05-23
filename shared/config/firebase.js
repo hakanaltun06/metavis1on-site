@@ -37,6 +37,19 @@
      getAuthProvider()      → namespace when isAuthReady() is true, else null;
                               callers must invoke `.auth()` themselves later
 
+   Gated config injection (opt-in, repo stays placeholder by default):
+     A real per-environment config may be supplied through the global
+     `window.MV_FIREBASE_CONFIG`. If that global is absent OR fails the
+     placeholder check, the loader keeps its built-in placeholderConfig
+     and init() refuses to call firebase.initializeApp(). The repo never
+     ships real credentials; consumers create `shared/config/firebase.local.js`
+     locally (gitignored) and load it before `MV_FIREBASE.init()`. An
+     example shape lives at `shared/config/firebase.local.example.js`.
+     Inspection helpers (all side-effect-free):
+       hasExternalConfig() → true if window.MV_FIREBASE_CONFIG is an object
+       getExternalConfig() → the raw external config object or null
+       resolveConfig()     → external when looksReal(), else placeholder
+
    Debug logging is opt-in via window.MV_DEBUG_FIREBASE = true (no console
    spam by default).
    ============================================================================ */
@@ -72,6 +85,17 @@
     if (isPlaceholderValue(config.apiKey)) return false;
     if (isPlaceholderValue(config.projectId)) return false;
     return true;
+  }
+
+  function readExternalConfig() {
+    try {
+      if (typeof window === 'undefined') return null;
+      var ext = window.MV_FIREBASE_CONFIG;
+      if (!ext || typeof ext !== 'object') return null;
+      return ext;
+    } catch (_) {
+      return null;
+    }
   }
 
   var state = {
@@ -138,6 +162,19 @@
       return api.isAuthReady() ? state.firebaseNamespace : null;
     },
 
+    hasExternalConfig: function () {
+      return readExternalConfig() !== null;
+    },
+
+    getExternalConfig: function () {
+      return readExternalConfig();
+    },
+
+    resolveConfig: function () {
+      var ext = readExternalConfig();
+      return looksReal(ext) ? ext : placeholderConfig;
+    },
+
     getStatus: function () {
       return state.status;
     },
@@ -161,6 +198,10 @@
         return false;
       }
       state.firebaseNamespace = firebaseNamespace;
+      var ext = readExternalConfig();
+      if (looksReal(ext)) {
+        state.config = ext;
+      }
       if (!looksReal(state.config)) {
         state.status = 'placeholder';
         api.status = 'placeholder';
