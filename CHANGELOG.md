@@ -7,6 +7,122 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-beta.1] — Firebase Admin Auth Trial Bundle
+
+- `admin/dashboard.html` logout butonu opt-in Firebase trial moduna
+  alındı. alpha.19'da admin login formuna eklenen opt-in pattern'in
+  simetriği — login + logout trial zinciri artık tek paylaşılan flag
+  ile aktive edilebilir.
+- **Trial OFF by default.** Hiçbir bayrak yokken logout butonu eski
+  `MV.auth.logout` → `MV.core.toast('Oturum kapatıldı.', 'info', 1500)`
+  → `setTimeout(700)` → `./index.html` redirect zincirini
+  **bit-identical** çalıştırır. Buton text, layout, CSS,
+  `requireAdmin`, clock tick, user label, year updater
+  davranışları **değişmedi**.
+- **Opt-in kanalları** (alpha.19 ile aynı, paylaşılan flag):
+  1. `window.MV_ADMIN_FIREBASE_LOGIN === true` — explicit global flag.
+  2. URL query `?mvFirebaseLogin=1` veya `?mvFirebaseLogin=true` —
+     yalnız dev host'lar (`localhost` / `127.0.0.1` / `0.0.0.0` /
+     `file:`). Production host'ta sessizce ignore edilir.
+  Operatör tek bir aktivasyonla `admin/index.html` login formunu
+  ve `admin/dashboard.html` logout butonunu Firebase moduna alabilir.
+- **Karar matrisi (logout button click anında):**
+  | Koşul | Yol |
+  |---|---|
+  | Trial flag yok | `runDefaultLogout` (bit-identical default) |
+  | Trial flag var, wrapper yok | `runDefaultLogout` (defensive fallback) |
+  | Trial flag var, `signOut` `enabled:false` | `runDefaultLogout` (Firebase not ready → fallback) |
+  | Trial flag var, `signOut` `ok:true` | `clearSessionAfterSignOut` → mevcut 700ms redirect |
+  | Trial flag var, `signOut` `enabled:true, ok:false` | Error toast, buton reset, **local session korunur** |
+- **Güvenlik kararı (login simetrisi):** Firebase ready + signOut
+  failure (örn. `auth/network-request-failed`, `auth/too-many-requests`)
+  durumunda **kesinlikle MV.auth.logout fallback yapılmaz**.
+  Operatör görünür hata mesajı alır, buton reset edilir, **local
+  session korunur** (silent downgrade engellenir). Operatör retry
+  edebilir. Bu, alpha.19'daki "credential failure → no fallback"
+  kararının ters yöndeki simetriği.
+- **Firebase not-ready fallback:** placeholder / disabled /
+  missing-loader / error gibi readiness reason'larında
+  (`enabled:false`) buton sessizce eski `MV.auth.logout` yoluna
+  döner. Default repo (placeholder config) bu yolu kullanır.
+- **Başarılı logout zinciri:**
+  ```
+  click → btn disabled + "Çıkış yapılıyor..."
+  MV.auth.firebase.signOut()
+    → { enabled:true, ok:true, provider:'firebase-auth' }
+  MV.auth.firebase.clearSessionAfterSignOut(result)
+    → { ok:true, cleared:true } → sessionStorage 'mv_admin_session' silinir
+  safeToast('Oturum kapatıldı.', 'info', 1500)
+  setTimeout(700) → location.replace('./index.html')
+  ```
+- **Hata mesajı mapping** (signOut tarafı; alpha.19'dan farklı):
+  - `auth/too-many-requests` → "Çok fazla deneme yapıldı. Bir süre
+    sonra tekrar dene."
+  - `auth/network-request-failed` → "Bağlantı hatası. İnternet
+    veya Firebase bağlantısını kontrol et."
+  - `no-provider` / `no-sign-out-method` / `auth-init-error` →
+    "Firebase çıkış altyapısı hazır değil."
+  - Bilinmeyen → "Firebase çıkış denemesi başarısız oldu."
+  Toast'lar mevcut `MV.core.toast` yardımcı fonksiyonu üzerinden
+  gider; yeni UI element eklenmedi.
+- **Debug log:** `window.MV_DEBUG_AUTH === true` set edildiğinde
+  `[beta.1 logout]` prefixli console log'lar (signOut result,
+  bridge result, fallback nedeni, unexpected throw). Default davranış
+  sıfır console spam.
+- **Promise.catch güvenliği:** `signOut` Promise'i beklenmedik bir
+  throw atarsa buton donmaz; generic error toast gösterilir, buton
+  reset edilir, session korunur.
+- **Dokümantasyon güncellendi (admin auth trial bundle senkronu):**
+  - `docs/firebase-local-setup.md`:
+    - Belge sürümü v12.0.0-alpha.18 → beta.1; hedef faz beta.2+.
+    - Phase Log tablosuna alpha.18 (`876b7ac`), alpha.19 (`8b58ad6`),
+      beta.1 (bu commit) satırları eklendi. Başlık "alpha.6 → beta.1".
+    - Current Scope login/logout trial bullet'larıyla güncellendi.
+    - Capability Matrix: "Admin login form Firebase mode" ve
+      "Dashboard logout Firebase mode" satırları "opt-in trial
+      available" olarak güncellendi; yeni "Production devLogin guard"
+      pending satırı eklendi.
+    - Yeni **§11 "Admin Login/Logout Trial Walkthrough"** bölümü:
+      trial fazları tablosu, opt-in kanalları, login/logout akış
+      diagramları, DevTools doğrulama komutları, default davranış
+      özeti, güvenlik notları. TOC: §11/§12/§13 → §12/§13/§14.
+    - Troubleshooting tablosuna 4 yeni satır eklendi (trial flag
+      debug, session payload, signOut failure davranışı).
+    - Next Roadmap: alpha.19 ✅ + beta.1 ✅ tamamlandı işaretlendi;
+      önümüzdeki sıra beta.2 (devLogin guard) → v12.1.0 (Firestore
+      rules foundation) → v12.2.0+ olarak güncellendi.
+    - Sürüm Notu satırı v12.0.0-beta.1 ile genişletildi.
+  - `docs/v12-readiness.md`:
+    - Auth Wrapper Layer Status'a "Admin login opt-in trial: available
+      (alpha.19, `8b58ad6`)" ve "Dashboard logout opt-in trial:
+      available (beta.1)" bullet'ları eklendi. Production devLogin
+      guard pending olarak işaretlendi (beta.2 hedefi).
+    - Sürüm tablosuna v12.0.0-beta.1 satırı eklendi.
+  - `docs/README.md`:
+    - Firebase Local Setup doküman açıklaması "alpha.6 → **alpha.17**"
+      → "alpha.6 → **beta.1**" olarak güncellendi; "admin
+      login/logout trial walkthrough" ifadesi eklendi.
+- **Dokunulmayan dosyalar / kapsam dışı:**
+  - `shared/js/auth.js` değişmedi — `MV.auth.firebase` API yüzeyi
+    bit-identical (alpha.18 baseline). `signOut`,
+    `clearSessionAfterSignOut`, `signIn`, `createSessionFromResult`,
+    `currentUser`, `onChange`, `inspect`, `isReady`,
+    `MV.auth.devLogin`, `isAuthed`, `getUser`, `requireAdmin`,
+    `logout` davranışları **bit-identical**.
+  - `shared/config/firebase.js`, `shared/config/firebase.local.example.js`,
+    `shared/config/site.js` değişmedi.
+  - `admin/index.html` (alpha.19 baseline), `admin/announcements.html`,
+    `admin/events.html`, `admin/apps.html`, `admin/logs.html`
+    değişmedi.
+  - `admin/borc/index.html`, `borc.html`, `index.html` değişmedi.
+  - `shared/js/core.js`, `theme.js`, `apps.js`, `shared/css/*`,
+    `assets/*`, `firebase.json`, `.firebaserc`, `firestore.rules`,
+    `firestore.indexes.json`, `.gitignore` değişmedi.
+  - `SESSION_KEY` (`'mv_admin_session'`), `SESSION_TTL_MS` (8 saat),
+    redirect path, sessionStorage payload şekli **bit-identical**.
+  - Firestore SDK eklenmedi; CRUD yok; gerçek Firebase config /
+    apiKey / projectId / appId / UID / email repo'ya girmedi.
+
 ## [v12.0.0-alpha.19] — Opt-in Firebase Admin Login Trial
 
 - `admin/index.html` login formu Firebase Auth trial modunu destekleyecek

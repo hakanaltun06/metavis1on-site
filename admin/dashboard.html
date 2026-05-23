@@ -868,15 +868,132 @@
         MV.core.setCurrentYear('[data-mv-year]');
       }
 
+      /* beta.1: Opt-in Firebase logout trial — mirror of alpha.19 login.
+         Trial is OFF by default. The original MV.auth.logout + toast +
+         setTimeout(700)→redirect chain stays bit-identical unless an
+         explicit opt-in tells us to use Firebase. Two opt-in channels
+         (shared with alpha.19 — one flag activates the full chain):
+           1) window.MV_ADMIN_FIREBASE_LOGIN === true (explicit, any host)
+           2) URL query ?mvFirebaseLogin=1 (or =true) on dev hosts only
+              (localhost / 127.0.0.1 / 0.0.0.0 / file:)
+         When the trial is on AND the wrapper is present AND Firebase is
+         ready, signOut + clearSessionAfterSignOut drive the redirect.
+         When Firebase is NOT ready we fall back to MV.auth.logout so
+         the button never strands. When Firebase IS ready but signOut
+         fails, we do NOT fall back — the session stays intact so the
+         operator gets visible feedback and can retry (symmetric with
+         the login side). */
+
+      function isDevHost() {
+        if (typeof window === 'undefined' || !window.location) return false;
+        if (window.location.protocol === 'file:') return true;
+        var h = window.location.hostname || '';
+        return h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0';
+      }
+
+      function isFirebaseLoginTrialEnabled() {
+        if (typeof window === 'undefined') return false;
+        if (window.MV_ADMIN_FIREBASE_LOGIN === true) return true;
+        try {
+          var q = new URLSearchParams(window.location.search || '');
+          var v = q.get('mvFirebaseLogin');
+          if (v === '1' || v === 'true') return isDevHost();
+        } catch (e) { /* swallow */ }
+        return false;
+      }
+
+      function hasFirebaseLogoutWrapper() {
+        return !!(window.MV && window.MV.auth && window.MV.auth.firebase &&
+                  typeof window.MV.auth.firebase.signOut === 'function' &&
+                  typeof window.MV.auth.firebase.clearSessionAfterSignOut === 'function');
+      }
+
+      function firebaseSignOutErrorMessage(reason) {
+        switch (reason) {
+          case 'auth/too-many-requests':
+            return 'Çok fazla deneme yapıldı. Bir süre sonra tekrar dene.';
+          case 'auth/network-request-failed':
+            return 'Bağlantı hatası. İnternet veya Firebase bağlantısını kontrol et.';
+          case 'no-provider':
+          case 'no-sign-out-method':
+          case 'auth-init-error':
+            return 'Firebase çıkış altyapısı hazır değil.';
+          default:
+            return 'Firebase çıkış denemesi başarısız oldu.';
+        }
+      }
+
+      function debugLog() {
+        if (window.MV_DEBUG_AUTH === true && window.console && typeof console.log === 'function') {
+          var args = ['[beta.1 logout]'].concat([].slice.call(arguments));
+          console.log.apply(console, args);
+        }
+      }
+
+      function safeToast(msg, type, duration) {
+        if (window.MV && MV.core && typeof MV.core.toast === 'function') {
+          MV.core.toast(msg, type || 'info', duration || 1500);
+        }
+      }
+
+      function runDefaultLogout() {
+        MV.auth.logout();
+        safeToast('Oturum kapatıldı.', 'info', 1500);
+        setTimeout(function () { window.location.replace('./index.html'); }, 700);
+      }
+
+      function resetLogoutBtn(btn) {
+        if (btn) { btn.disabled = false; btn.textContent = 'Çıkış Yap'; }
+      }
+
+      function runFirebaseLogout(btn) {
+        Promise.resolve()
+          .then(function () { return MV.auth.firebase.signOut(); })
+          .then(function (result) {
+            debugLog('signOut result:', result);
+            if (!result || result.enabled === false) {
+              // Firebase not ready → safe fallback to default logout.
+              debugLog('Firebase not ready (reason=' + (result && result.reason) + '), falling back to MV.auth.logout');
+              runDefaultLogout();
+              return;
+            }
+            if (result.ok === true) {
+              var bridge = MV.auth.firebase.clearSessionAfterSignOut(result);
+              debugLog('bridge result:', bridge);
+              if (bridge && bridge.ok === true) {
+                safeToast('Oturum kapatıldı.', 'info', 1500);
+                setTimeout(function () { window.location.replace('./index.html'); }, 700);
+                return;
+              }
+              // Bridge failed → local session NOT cleared. Show error, no fallback.
+              safeToast(firebaseSignOutErrorMessage(bridge && bridge.reason), 'error', 2500);
+              resetLogoutBtn(btn);
+              return;
+            }
+            // enabled:true, ok:false → Firebase reachable but signOut failed.
+            // NO MV.auth.logout fallback here — the local session stays
+            // intact so the operator sees the error and can retry.
+            safeToast(firebaseSignOutErrorMessage(result.reason), 'error', 2500);
+            resetLogoutBtn(btn);
+          })
+          .catch(function (err) {
+            debugLog('unexpected throw:', err);
+            safeToast('Firebase çıkış denemesi başarısız oldu.', 'error', 2500);
+            resetLogoutBtn(btn);
+          });
+      }
+
       // 4) Çıkış yap
       var logoutBtn = document.getElementById('logoutBtn');
       if (logoutBtn) {
         logoutBtn.addEventListener('click', function () {
-          MV.auth.logout();
-          if (MV.core && MV.core.toast) {
-            MV.core.toast('Oturum kapatıldı.', 'info', 1500);
+          if (isFirebaseLoginTrialEnabled() && hasFirebaseLogoutWrapper()) {
+            logoutBtn.disabled = true;
+            logoutBtn.textContent = 'Çıkış yapılıyor...';
+            runFirebaseLogout(logoutBtn);
+          } else {
+            runDefaultLogout();
           }
-          setTimeout(function () { window.location.replace('./index.html'); }, 700);
         });
       }
     })();

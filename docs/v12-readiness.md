@@ -242,11 +242,21 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
   bunları otomatik tetiklemez (deliberate decoupling).
 - **Sonuç:** *Auth wrapper layer is complete behind readiness
   guards; HTML wiring is the next controlled phase.*
-- **Admin HTML wiring: pending.** `admin/index.html` login formu
-  hâlâ `MV.auth.devLogin` üzerinden çalışır; `admin/dashboard.html`
-  logout hâlâ `MV.auth.logout` üzerinden çalışır. Wrapper
-  aktivasyonu alpha.19 (login trial) ve alpha.20 (logout trial)
-  opt-in fazlarına bırakıldı.
+- **Admin login opt-in trial: available** (alpha.19, `8b58ad6`).
+  `admin/index.html` form submit handler'ı flag arkasında
+  `MV.auth.firebase.signIn` + `createSessionFromResult` zincirine
+  bağlandı. Flag yoksa eski `MV.auth.devLogin` davranışı
+  bit-identical.
+- **Dashboard logout opt-in trial: available** (beta.1, _bu commit_).
+  `admin/dashboard.html` logout butonu flag arkasında
+  `MV.auth.firebase.signOut` + `clearSessionAfterSignOut` zincirine
+  bağlandı. Flag yoksa eski `MV.auth.logout` davranışı bit-identical.
+  Trial aktivasyonu için tek bir paylaşılan flag yeterli
+  (`?mvFirebaseLogin=1` dev host veya
+  `window.MV_ADMIN_FIREBASE_LOGIN=true`).
+- **Production devLogin guard: pending.** `MV.auth.devLogin`
+  format-only davranışı production'da hâlâ açık; beta.2 fazında
+  kapatılacak.
 - **Firestore: pending.** Firestore SDK admin sayfalarına
   eklenmedi; read / write / CRUD yok. v12.1.0 Firestore Rules
   foundation fazından sonra açılır.
@@ -264,6 +274,7 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
 | v11.6.0 | 2026-05-23 | İlk v12 readiness özet dokümanı. v11 tamamlanan işler, mevcut dokümanlar tablosu, v12.0.0-alpha scope + out-of-scope, runtime dokunma matrisi, entry criteria, önerilen commit planı, kalan riskler ve Go/Hold karar matrisi belgelendi. |
 | v12.0.0-alpha.15 | 2026-05-23 | Auth Wrapper Layer Status bölümü eklendi. alpha.6 → alpha.14 sonrası `MV.auth.firebase` katmanının mevcut durumu, pending wiring ve out-of-scope kalemleri özetlendi. Detay: [`firebase-local-setup.md`](./firebase-local-setup.md). |
 | v12.0.0-alpha.18 | 2026-05-23 | Auth Wrapper Layer Status alpha.16 (currentUser live-read) ve alpha.17 (onChange live-listener) sonrası tazelendi. Wrapper artık dört yüzeyiyle (signIn, signOut, currentUser, onChange) ready behind guard; "Auth wrapper layer is complete behind readiness guards; HTML wiring is the next controlled phase" beyanı eklendi. HTML wiring alpha.19/alpha.20 trial fazlarına bırakıldı. |
+| v12.0.0-beta.1 | 2026-05-23 | Admin auth trial bundle tamamlandı. Admin login opt-in trial (alpha.19, `8b58ad6`) ve dashboard logout opt-in trial (beta.1) bullet'ları "available" olarak işaretlendi; aynı paylaşılan flag pattern. Production devLogin guard beta.2 fazına yönlendirildi. Detay: [`firebase-local-setup.md`](./firebase-local-setup.md) §11 Trial Walkthrough. |
 
 Bu doküman v12.0.0-alpha PR açılana kadar canlı bir referanstır;
 PR description'ı için doğrudan referans olarak kullanılabilir. v12.0.0-alpha
