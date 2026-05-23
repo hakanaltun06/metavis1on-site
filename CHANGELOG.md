@@ -7,6 +7,31 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.1] — Firebase Config Safe Loader
+
+- `shared/config/firebase.js` dormant placeholder safe loader iskeletine
+  genişletildi (v10.0-alpha'dan beri repo'da var olan no-op IIFE dosyası
+  yeni baştan yazılarak fail-safe API yüzeyine kavuşturuldu — yeni dosya
+  oluşturulmadı).
+- API yüzeyi: `configured`, `status`, `config`, `note`, `getConfig()`,
+  `isConfigured()`, `isAvailable()`, `init(fbNamespace)`, `getApp()`,
+  `getStatus()`, `getLastError()`. Backward-compat alanlar (`configured`,
+  `config`, `note`) korundu.
+- Placeholder algılama: boş string, `null`/`undefined`, `YOUR_*` literal
+  listesi (`YOUR_API_KEY`, `YOUR_PROJECT_ID`, `YOUR_APP_ID` vb.) ve
+  `<UPPER_SNAKE>` angle-bracket pattern'leri.
+- Fail-safe davranış: Firebase namespace yoksa, config yoksa veya
+  placeholder config algılanırsa `init()` sessizce `false` döner; hata
+  durumunda exception yakalanır ve `getLastError()` üzerinden okunur,
+  sayfa bozulmaz. Debug log opt-in (`window.MV_DEBUG_FIREBASE = true`).
+- Gerçek Firebase API key / projectId / appId / measurementId / authDomain
+  yazılmadı; yalnız `YOUR_*` placeholder değerleri.
+- Firebase SDK script tag, `firebase.json`, `.firebaserc`,
+  `firestore.rules`, `firestore.indexes.json` eklenmedi.
+- **Hiçbir HTML dosyası bu script'i yüklemediği için runtime davranışı
+  değişmedi.** Borç paneli, public site ve admin auth akışı etkilenmedi.
+- Firestore bağlantısı / write / CRUD / deploy / emulator yok.
+
 ## [v11.6.1] — Firebase Project Setup Checklist
 
 - `docs/firebase-project-setup.md` eklendi.
