@@ -7,6 +7,81 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.13] — Firebase Session Bridge
+
+- `MV.auth.firebase.createSessionFromResult(result)` helper'ı eklendi.
+  Başarılı bir `firebaseSignIn()` sonucunu mevcut sessionStorage tabanlı
+  `mv_admin_session` gate'ine güvenli şekilde aktarır. Strict validation
+  ile çağrılır; eksik veya hatalı bir result hiçbir koşulda session
+  yazmaz.
+- **Deliberate decoupling:** `signIn()` bu bridge'i **otomatik
+  çağırmaz**. İki aşama (Firebase Auth çağrısı + local session yazımı)
+  bağımsız test edilebilir. Admin formuna bağlanmadan önce devtools'tan
+  manuel zincirleme yapılabilir:
+  ```js
+  const r = await MV.auth.firebase.signIn('admin@x','pw');
+  if (r.ok) MV.auth.firebase.createSessionFromResult(r);
+  ```
+- **Validation matrisi** (her biri reddedilir, session yazılmaz,
+  dönüş `{ ok:false, reason:'invalid-firebase-result' }`):
+  - `result` falsy veya object değil
+  - `result.enabled !== true`
+  - `result.ok !== true`
+  - `result.provider !== 'firebase-auth'`
+  - `result.uid` string değil veya boş
+  - `result.email` string değil veya boş
+  - `sessionStorage.setItem` throw ederse →
+    `{ ok:false, reason:'session-write-failed' }`
+- **Yazılan session objesi** (mevcut `readSession()` doğrulamasıyla
+  uyumlu):
+  ```js
+  {
+    authed: true,            // readSession gate'i için
+    username: result.email,  // getUser().username olarak görünür
+    email: result.email,     // carry-through (getUser bunu döndürmez)
+    uid: result.uid,         // carry-through
+    loginAt: Date.now(),     // TTL hesaplaması için (8 saat)
+    provider: 'firebase-auth'
+  }
+  ```
+  `SESSION_KEY` (`'mv_admin_session'`) ve `SESSION_TTL_MS` (8 saat)
+  değişmedi.
+- **Başarı dönüşü:**
+  ```js
+  {
+    ok: true,
+    provider: 'firebase-auth',
+    user: { uid, email, provider: 'firebase-auth', loginAt }
+  }
+  ```
+- **Gate uyumluluğu** (mock harness doğrulandı):
+  - `MV.auth.isAuthed()` Firebase-bridged session ile `true` döner.
+  - `MV.auth.getUser()` `{ username:email, provider:'firebase-auth',
+    loginAt }` döner — mevcut shape korunur.
+  - `MV.auth.requireAdmin()` Firebase session varken `true` döner,
+    redirect yapmaz; session yoksa `false` döner ve redirect yapar.
+  - `MV.auth.logout()` Firebase-bridged session'ı da temizler
+    (`SESSION_KEY` tek source-of-truth).
+- **Diğer Firebase wrapper'ları değişmedi:** `signIn` alpha.12 live
+  davranışı, `signOut` / `onChange` dry-run, `currentUser` null,
+  `inspect` side-effect-free.
+- **Mevcut `MV.auth` API bit-identical:** `isAuthed`, `getUser`,
+  `devLogin`, `requireAdmin`, `logout` davranışı, `SESSION_KEY`,
+  `SESSION_TTL_MS`, redirect path değişmedi. Mock harness'ta devLogin
+  → isAuthed → logout zinciri eski sonuçları üretti.
+- **Side-effect kontrolü:** 12 invalid input testinde 0 session
+  yazımı; valid input testinde tam 1 session yazımı + okuma
+  uyumluluğu. `signIn` live success path'inde **0 session yazımı**
+  (caller'ın bridge'i manuel çağırması zorunlu).
+- Admin login formu **henüz Firebase'e bağlanmadı**. Hiçbir HTML
+  değişmedi; admin sayfaları hâlâ `MV.auth.devLogin` üzerinden çalışıyor.
+- `shared/config/firebase.js`, `shared/config/site.js`,
+  `shared/config/firebase.local.example.js`, `.gitignore`, admin HTML
+  dosyaları, `admin/borc/index.html`, `borc.html`, `index.html` ve
+  diğer `shared/js/*` dosyaları **değişmedi**. Firestore SDK, CRUD,
+  `onAuthStateChanged`, gerçek Firebase config commit edilmedi. Gerçek
+  apiKey / projectId / appId / UID / email repo'ya girmedi.
+
 ## [v12.0.0-alpha.12] — Guarded Firebase signIn Wrapper
 
 - `MV.auth.firebase.signIn(email, password)` **LIVE** moduna geçirildi

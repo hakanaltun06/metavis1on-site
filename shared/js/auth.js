@@ -171,6 +171,53 @@
       });
   }
 
+  /* Bridge from a successful firebaseSignIn() result to the existing
+     sessionStorage admin gate. Strictly validated; writes nothing on
+     malformed input. Deliberately NOT auto-invoked by signIn() so the
+     two stages stay independently testable until the admin form is
+     wired up. */
+  function createSessionFromFirebaseResult(result) {
+    if (!result || typeof result !== 'object') {
+      return { ok: false, reason: 'invalid-firebase-result' };
+    }
+    if (result.enabled !== true || result.ok !== true) {
+      return { ok: false, reason: 'invalid-firebase-result' };
+    }
+    if (result.provider !== 'firebase-auth') {
+      return { ok: false, reason: 'invalid-firebase-result' };
+    }
+    if (typeof result.uid !== 'string' || !result.uid) {
+      return { ok: false, reason: 'invalid-firebase-result' };
+    }
+    if (typeof result.email !== 'string' || !result.email) {
+      return { ok: false, reason: 'invalid-firebase-result' };
+    }
+    const loginAt = Date.now();
+    const session = {
+      authed: true,
+      username: result.email,
+      email: result.email,
+      uid: result.uid,
+      loginAt: loginAt,
+      provider: 'firebase-auth'
+    };
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    } catch (e) {
+      return { ok: false, reason: 'session-write-failed' };
+    }
+    return {
+      ok: true,
+      provider: 'firebase-auth',
+      user: {
+        uid: result.uid,
+        email: result.email,
+        provider: 'firebase-auth',
+        loginAt: loginAt
+      }
+    };
+  }
+
   const auth = {
     /* Aktif oturum var mı? */
     isAuthed: function () {
@@ -228,9 +275,11 @@
     },
 
     /* Firebase Auth wrapper namespace — signIn is LIVE behind a double
-       guard; signOut / onChange / currentUser remain dry-run. See the
-       comment block above firebaseSignIn() for per-method semantics and
-       guard order. */
+       guard; signOut / onChange / currentUser remain dry-run.
+       createSessionFromResult bridges a successful signIn result into
+       the existing sessionStorage gate; it is NOT called automatically
+       by signIn(). See the comment blocks above firebaseSignIn() and
+       createSessionFromFirebaseResult() for per-method semantics. */
     firebase: {
       isReady: function () {
         return getFirebaseAuthReadiness();
@@ -242,6 +291,10 @@
 
       signIn: function (email, password) {
         return firebaseSignIn(email, password);
+      },
+
+      createSessionFromResult: function (result) {
+        return createSessionFromFirebaseResult(result);
       },
 
       signOut: function () {
