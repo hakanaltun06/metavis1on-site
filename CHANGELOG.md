@@ -7,6 +7,25 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v11.5.3] — Firebase Rules Test Plan
+
+- `docs/firebase-rules-test-plan.md` eklendi.
+- Firestore Security Rules için rol bazlı pozitif/negatif test
+  senaryoları belgelendi (anonymous, authenticated non-admin, viewer,
+  admin, owner ve disabled admin rolleri).
+- Borç paneli için özel test senaryoları (D-01 … D-14) eklendi; public
+  read deny, audit logging gereksinimleri ve regression kontrolü
+  tanımlandı.
+- Read/write beklenti matrisi, emulator test stratejisi, test data
+  placeholder şeması, expected report template, deployment gate
+  checklist ve rollback planı yazıldı.
+- `docs/README.md` güncellendi: yeni test plan dokümanı Current Documents
+  altına taşındı; planlanan listeden çıkarıldı.
+- Runtime dosyalara dokunulmadı.
+- Firebase SDK / config / kod eklenmedi.
+- `firebase.json`, `.firebaserc`, `firestore.rules`,
+  `firestore.indexes.json` oluşturulmadı; emulator kurulmadı.
+
 ## [v11.5.2] — Debt Panel Security Audit
 
 - `docs/debt-panel-audit.md` eklendi.

@@ -15,6 +15,11 @@ zemin hazırlayan referans dokümanlardır.
   (Firestore koleksiyonları + localStorage/sessionStorage key'leri),
   yönlendirme zinciri ve güvenlik risklerini read-only şekilde
   belgeler. Refactor önerisi değil; tespit + risk kayıt dokümanıdır.
+- **[Firebase Rules Test Plan](./firebase-rules-test-plan.md)**
+  Firestore Security Rules için rol bazlı pozitif/negatif test
+  senaryolarını, borç paneli özel testlerini ve deployment gate
+  kurallarını içerir. Aktif rules dosyası değildir; v12.1.0 Firestore
+  Rules foundation fazına hazırlıktır.
 
 ## Planned Documents
 
@@ -24,8 +29,6 @@ ihtiyaç doğdukça eklenecek:
 - **Debt Panel Migration Plan** — `admin/borc/` modülünün collection
   adları, localStorage key'leri ve potansiyel Firebase taşıma adımları.
   Yalnız ayrı bir sprint açıldığında yazılır.
-- **Firebase Rules Test Plan** — Emulator Suite test senaryoları,
-  pozitif/negatif case'ler, rollback prosedürü.
 - **Admin Module CRUD Plan** — v12.3 sonrası announcements/events/apps
   modülleri için create/update/delete akışları, validation kuralları,
   paired adminLogs write desenleri.
