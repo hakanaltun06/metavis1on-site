@@ -20,6 +20,8 @@
 </head>
 <body class="adm-body">
 
+  <a class="adm-skip-link" href="#mainContent">İçeriğe atla</a>
+
   <header class="adm-top" role="banner">
     <div class="adm-top__inner">
       <a class="adm-top__brand" href="./dashboard.html" aria-label="metavis1on Admin Anasayfası">
@@ -69,10 +71,30 @@
       <div class="adm-section-hint" id="evCount">—</div>
     </div>
 
+    <div class="adm-filter" role="search">
+      <label for="evSearch" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Etkinliklerde ara</label>
+      <input
+        id="evSearch"
+        class="adm-filter__input"
+        type="search"
+        placeholder="Etkinliklerde ara…"
+        autocomplete="off"
+        aria-controls="evList">
+    </div>
+
     <div class="adm-list" id="evList" aria-live="polite"></div>
 
+    <details class="adm-raw">
+      <summary class="adm-raw__summary">Ham etkinlik verisi</summary>
+      <div class="adm-raw__note">
+        Bu alan Firebase şema hazırlığı için gösterilir. İçerik <code>MV_SITE.events</code> verisinin
+        JSON görünümüdür ve düzenlenemez.
+      </div>
+      <pre class="adm-raw__pre" id="evRaw">[]</pre>
+    </details>
+
     <div class="adm-foot">
-      <span>metavis1on Admin · v11.3.0</span>
+      <span>metavis1on Admin · v11.3.1</span>
       <span>© <span data-mv-year>2026</span> metavis1on</span>
     </div>
   </main>
@@ -99,43 +121,81 @@
         'İptal':     'adm-pill adm-pill--mute'
       };
 
-      var list  = document.getElementById('evList');
-      var count = document.getElementById('evCount');
-      var items = (window.MV_SITE && Array.isArray(MV_SITE.events)) ? MV_SITE.events : [];
+      var list   = document.getElementById('evList');
+      var count  = document.getElementById('evCount');
+      var search = document.getElementById('evSearch');
+      var raw    = document.getElementById('evRaw');
 
-      if (count) count.textContent = items.length + ' kayıt';
+      // Orijinal global veriyi mutate etmemek için kopya alıyoruz.
+      var items = (window.MV_SITE && Array.isArray(MV_SITE.events))
+        ? MV_SITE.events.slice() : [];
 
-      if (!items.length) {
-        list.innerHTML =
-          '<div class="adm-empty">' +
-          '  <div class="adm-empty__title">Henüz etkinlik yok</div>' +
-          '  <div class="adm-empty__desc">Statik veri kaynağında kayıt bulunamadı.</div>' +
-          '</div>';
-      } else {
-        list.innerHTML = items.map(function (e) {
-          var pillCls = STATUS_PILL[e.status] || 'adm-pill adm-pill--mute';
-          return ''
-            + '<article class="adm-card">'
-            +   '<div class="adm-event">'
-            +     '<div class="adm-event__date">'
-            +       '<span class="adm-event__day">' + esc(e.day) + '</span>'
-            +       '<span class="adm-event__month">' + esc(e.month) + '</span>'
-            +     '</div>'
-            +     '<div class="adm-event__body">'
-            +       '<div class="adm-event__title">' + esc(e.title) + '</div>'
-            +       '<div class="adm-event__meta">'
-            +         (e.time     ? '<span>⏰ ' + esc(e.time)     + '</span>' : '')
-            +         (e.location ? '<span>📍 ' + esc(e.location) + '</span>' : '')
-            +         '<span>id: <code>' + esc(e.id) + '</code></span>'
-            +       '</div>'
-            +     '</div>'
-            +     '<span class="' + pillCls + ' adm-event__status">'
-            +       '<span class="adm-pill__dot"></span> ' + esc(e.status)
-            +     '</span>'
-            +   '</div>'
-            + '</article>';
-        }).join('');
+      if (raw) raw.textContent = JSON.stringify(items, null, 2);
+
+      function cardHtml(e) {
+        var pillCls = STATUS_PILL[e.status] || 'adm-pill adm-pill--mute';
+        return ''
+          + '<article class="adm-card">'
+          +   '<div class="adm-event">'
+          +     '<div class="adm-event__date">'
+          +       '<span class="adm-event__day">' + esc(e.day) + '</span>'
+          +       '<span class="adm-event__month">' + esc(e.month) + '</span>'
+          +     '</div>'
+          +     '<div class="adm-event__body">'
+          +       '<div class="adm-event__title">' + esc(e.title) + '</div>'
+          +       '<div class="adm-event__meta">'
+          +         (e.time     ? '<span>⏰ ' + esc(e.time)     + '</span>' : '')
+          +         (e.location ? '<span>📍 ' + esc(e.location) + '</span>' : '')
+          +         '<span>id: <code>' + esc(e.id) + '</code></span>'
+          +       '</div>'
+          +     '</div>'
+          +     '<span class="' + pillCls + ' adm-event__status">'
+          +       '<span class="adm-pill__dot"></span> ' + esc(e.status)
+          +     '</span>'
+          +   '</div>'
+          + '</article>';
       }
+
+      function emptyHtml(searchActive) {
+        if (searchActive) {
+          return '<div class="adm-empty adm-empty--search">'
+            +   '<div class="adm-empty__title">Aramayla eşleşen etkinlik bulunamadı.</div>'
+            +   '<div class="adm-empty__desc">Farklı bir anahtar kelime deneyin.</div>'
+            + '</div>';
+        }
+        return '<div class="adm-empty">'
+          +   '<div class="adm-empty__title">Henüz etkinlik yok</div>'
+          +   '<div class="adm-empty__desc">Statik veri kaynağında kayıt bulunamadı.</div>'
+          + '</div>';
+      }
+
+      function matches(e, q) {
+        if (!q) return true;
+        var hay = [e.title, e.day, e.month, e.time, e.location, e.status, e.id]
+          .map(function (v) { return String(v == null ? '' : v).toLowerCase(); })
+          .join('  ');
+        return hay.indexOf(q) !== -1;
+      }
+
+      function render() {
+        var q = search ? search.value.trim().toLowerCase() : '';
+        var filtered = q ? items.filter(function (e) { return matches(e, q); }) : items.slice();
+
+        if (count) {
+          count.textContent = q
+            ? (filtered.length + ' / ' + items.length + ' kayıt')
+            : (items.length + ' kayıt');
+        }
+
+        if (!filtered.length) {
+          list.innerHTML = emptyHtml(!!q);
+        } else {
+          list.innerHTML = filtered.map(cardHtml).join('');
+        }
+      }
+
+      if (search) search.addEventListener('input', render);
+      render();
 
       var logoutBtn = document.getElementById('logoutBtn');
       if (logoutBtn) {

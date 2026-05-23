@@ -20,6 +20,8 @@
 </head>
 <body class="adm-body">
 
+  <a class="adm-skip-link" href="#mainContent">İçeriğe atla</a>
+
   <header class="adm-top" role="banner">
     <div class="adm-top__inner">
       <a class="adm-top__brand" href="./dashboard.html" aria-label="metavis1on Admin Anasayfası">
@@ -70,10 +72,36 @@
       <div class="adm-section-hint" id="appsCount">—</div>
     </div>
 
+    <div class="adm-filter" role="search">
+      <label for="appsSearch" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Uygulamalarda ara</label>
+      <input
+        id="appsSearch"
+        class="adm-filter__input"
+        type="search"
+        placeholder="Uygulamalarda ara…"
+        autocomplete="off"
+        aria-controls="appsList">
+
+      <div class="adm-filter__group" role="group" aria-label="Görünürlüğe göre filtrele">
+        <button type="button" class="adm-filter__btn" data-vis="all"    aria-pressed="true">Tümü</button>
+        <button type="button" class="adm-filter__btn" data-vis="public" aria-pressed="false">Public</button>
+        <button type="button" class="adm-filter__btn" data-vis="admin"  aria-pressed="false">Admin</button>
+      </div>
+    </div>
+
     <div class="adm-grid" id="appsList" aria-live="polite"></div>
 
+    <details class="adm-raw">
+      <summary class="adm-raw__summary">Ham uygulama verisi</summary>
+      <div class="adm-raw__note">
+        Bu alan Firebase şema hazırlığı için gösterilir. İçerik <code>MV.apps.forProjectsPage()</code>
+        (fallback <code>MV_SITE.apps</code>) verisinin JSON görünümüdür ve düzenlenemez.
+      </div>
+      <pre class="adm-raw__pre" id="appsRaw">[]</pre>
+    </details>
+
     <div class="adm-foot">
-      <span>metavis1on Admin · v11.3.0</span>
+      <span>metavis1on Admin · v11.3.1</span>
       <span>© <span data-mv-year>2026</span> metavis1on</span>
     </div>
   </main>
@@ -104,59 +132,114 @@
         return app.legacyUrl || app.targetUrl || '#';
       }
 
-      var list  = document.getElementById('appsList');
-      var count = document.getElementById('appsCount');
+      var list   = document.getElementById('appsList');
+      var count  = document.getElementById('appsCount');
+      var search = document.getElementById('appsSearch');
+      var raw    = document.getElementById('appsRaw');
+      var visBtns = document.querySelectorAll('[data-vis]');
 
       var items = [];
       if (window.MV && MV.apps && typeof MV.apps.forProjectsPage === 'function') {
-        items = MV.apps.forProjectsPage();
+        // MV.apps.forProjectsPage zaten kopya döner — yine de slice() güvenliği.
+        items = MV.apps.forProjectsPage().slice();
       } else if (window.MV_SITE && Array.isArray(MV_SITE.apps)) {
         items = MV_SITE.apps.slice();
       }
 
-      if (count) count.textContent = items.length + ' kayıt';
+      if (raw) raw.textContent = JSON.stringify(items, null, 2);
 
-      if (!items.length) {
-        list.innerHTML =
-          '<div class="adm-empty" style="grid-column:1 / -1;">' +
-          '  <div class="adm-empty__title">Kayıtlı uygulama yok</div>' +
-          '  <div class="adm-empty__desc">Statik veri kaynağı boş döndü.</div>' +
-          '</div>';
-      } else {
-        list.innerHTML = items.map(function (app) {
-          var isAdmin = app.visibility === 'admin';
-          var visPill = isAdmin
-            ? '<span class="adm-pill adm-pill--admin"><span class="adm-pill__dot"></span>Admin</span>'
-            : '<span class="adm-pill"><span class="adm-pill__dot"></span>Public</span>';
-          var statusText = STATUS_LABEL[app.status] || (app.status || '—');
-          var category = CATEGORY[app.id] || app.tag || '';
-          var glyph = GLYPH[app.id] || '◇';
-          var url = resolveUrl(app);
-          var safeUrl = esc(url);
-          var ctaLabel = isAdmin ? 'Yetkili panele git →' : 'Modülü aç →';
+      var visFilter = 'all';
 
-          return ''
-            + '<article class="adm-card">'
-            +   '<div class="adm-card__head">'
-            +     '<div>'
-            +       '<div class="adm-card__title">'
-            +         '<span style="font-family:var(--mv-font-mono); margin-right:8px; color:var(--mv-theme-primary);">' + glyph + '</span>'
-            +         esc(app.name)
-            +       '</div>'
-            +       '<div class="adm-card__sub">' + esc(category) + ' · id: <code>' + esc(app.id) + '</code></div>'
-            +     '</div>'
-            +     visPill
-            +   '</div>'
-            +   '<div class="adm-card__body">' + esc(app.description) + '</div>'
-            +   '<div class="adm-card__meta">'
-            +     '<span class="adm-card__meta-item">Durum: ' + esc(statusText) + '</span>'
-            +     (app.accent ? '<span class="adm-card__meta-item">Aksent: ' + esc(app.accent) + '</span>' : '')
-            +     (isAdmin ? '<span class="adm-card__meta-item">Yetkili panel</span>' : '')
-            +   '</div>'
-            +   '<a class="adm-card__link" href="' + safeUrl + '" rel="noopener">' + ctaLabel + '</a>'
-            + '</article>';
-        }).join('');
+      function cardHtml(app) {
+        var isAdmin = app.visibility === 'admin';
+        var visPill = isAdmin
+          ? '<span class="adm-pill adm-pill--admin"><span class="adm-pill__dot"></span>Admin</span>'
+          : '<span class="adm-pill"><span class="adm-pill__dot"></span>Public</span>';
+        var statusText = STATUS_LABEL[app.status] || (app.status || '—');
+        var category = CATEGORY[app.id] || app.tag || '';
+        var glyph = GLYPH[app.id] || '◇';
+        var url = resolveUrl(app);
+        var safeUrl = esc(url);
+        var ctaLabel = isAdmin ? 'Yetkili panele git →' : 'Modülü aç →';
+
+        return ''
+          + '<article class="adm-card">'
+          +   '<div class="adm-card__head">'
+          +     '<div>'
+          +       '<div class="adm-card__title">'
+          +         '<span style="font-family:var(--mv-font-mono); margin-right:8px; color:var(--mv-theme-primary);">' + glyph + '</span>'
+          +         esc(app.name)
+          +       '</div>'
+          +       '<div class="adm-card__sub">' + esc(category) + ' · id: <code>' + esc(app.id) + '</code></div>'
+          +     '</div>'
+          +     visPill
+          +   '</div>'
+          +   '<div class="adm-card__body">' + esc(app.description) + '</div>'
+          +   '<div class="adm-card__meta">'
+          +     '<span class="adm-card__meta-item">Durum: ' + esc(statusText) + '</span>'
+          +     (app.accent ? '<span class="adm-card__meta-item">Aksent: ' + esc(app.accent) + '</span>' : '')
+          +     (isAdmin ? '<span class="adm-card__meta-item">Yetkili panel</span>' : '')
+          +   '</div>'
+          +   '<a class="adm-card__link" href="' + safeUrl + '" rel="noopener">' + ctaLabel + '</a>'
+          + '</article>';
       }
+
+      function emptyHtml(filterActive) {
+        if (filterActive) {
+          return '<div class="adm-empty adm-empty--search" style="grid-column:1 / -1;">'
+            +   '<div class="adm-empty__title">Filtreyle eşleşen uygulama bulunamadı.</div>'
+            +   '<div class="adm-empty__desc">Aramayı veya görünürlük filtresini değiştirin.</div>'
+            + '</div>';
+        }
+        return '<div class="adm-empty" style="grid-column:1 / -1;">'
+          +   '<div class="adm-empty__title">Kayıtlı uygulama yok</div>'
+          +   '<div class="adm-empty__desc">Statik veri kaynağı boş döndü.</div>'
+          + '</div>';
+      }
+
+      function matches(app, q) {
+        if (!q) return true;
+        var hay = [app.name, app.description, app.tag, CATEGORY[app.id], app.status, app.id]
+          .map(function (v) { return String(v == null ? '' : v).toLowerCase(); })
+          .join('  ');
+        return hay.indexOf(q) !== -1;
+      }
+
+      function render() {
+        var q = search ? search.value.trim().toLowerCase() : '';
+        var filtered = items.filter(function (a) {
+          if (visFilter !== 'all' && a.visibility !== visFilter) return false;
+          return matches(a, q);
+        });
+
+        var filterActive = (q.length > 0) || (visFilter !== 'all');
+
+        if (count) {
+          count.textContent = filterActive
+            ? (filtered.length + ' / ' + items.length + ' kayıt')
+            : (items.length + ' kayıt');
+        }
+
+        if (!filtered.length) {
+          list.innerHTML = emptyHtml(filterActive);
+        } else {
+          list.innerHTML = filtered.map(cardHtml).join('');
+        }
+      }
+
+      if (search) search.addEventListener('input', render);
+
+      Array.prototype.forEach.call(visBtns, function (btn) {
+        btn.addEventListener('click', function () {
+          visFilter = btn.getAttribute('data-vis') || 'all';
+          Array.prototype.forEach.call(visBtns, function (b) {
+            b.setAttribute('aria-pressed', String(b === btn));
+          });
+          render();
+        });
+      });
+
+      render();
 
       var logoutBtn = document.getElementById('logoutBtn');
       if (logoutBtn) {

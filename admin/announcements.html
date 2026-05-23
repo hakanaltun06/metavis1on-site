@@ -20,6 +20,8 @@
 </head>
 <body class="adm-body">
 
+  <a class="adm-skip-link" href="#mainContent">İçeriğe atla</a>
+
   <header class="adm-top" role="banner">
     <div class="adm-top__inner">
       <a class="adm-top__brand" href="./dashboard.html" aria-label="metavis1on Admin Anasayfası">
@@ -70,10 +72,30 @@
       <div class="adm-section-hint" id="annCount">—</div>
     </div>
 
+    <div class="adm-filter" role="search">
+      <label for="annSearch" class="mv-sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);">Duyurularda ara</label>
+      <input
+        id="annSearch"
+        class="adm-filter__input"
+        type="search"
+        placeholder="Duyurularda ara…"
+        autocomplete="off"
+        aria-controls="annList">
+    </div>
+
     <div class="adm-list" id="annList" aria-live="polite"></div>
 
+    <details class="adm-raw">
+      <summary class="adm-raw__summary">Ham duyuru verisi</summary>
+      <div class="adm-raw__note">
+        Bu alan Firebase şema hazırlığı için gösterilir. İçerik <code>MV_SITE.announcements</code> verisinin
+        JSON görünümüdür ve düzenlenemez.
+      </div>
+      <pre class="adm-raw__pre" id="annRaw">[]</pre>
+    </details>
+
     <div class="adm-foot">
-      <span>metavis1on Admin · v11.3.0</span>
+      <span>metavis1on Admin · v11.3.1</span>
       <span>© <span data-mv-year>2026</span> metavis1on</span>
     </div>
   </main>
@@ -93,34 +115,73 @@
 
       var esc = (MV.core && MV.core.escapeHtml) || function (s) { return String(s == null ? '' : s); };
 
-      var list  = document.getElementById('annList');
-      var count = document.getElementById('annCount');
+      var list   = document.getElementById('annList');
+      var count  = document.getElementById('annCount');
+      var search = document.getElementById('annSearch');
+      var raw    = document.getElementById('annRaw');
+
+      // Orijinal global veriyi mutate etmemek için kopya alıyoruz.
       var items = (window.MV_SITE && Array.isArray(MV_SITE.announcements))
-        ? MV_SITE.announcements : [];
+        ? MV_SITE.announcements.slice() : [];
 
-      if (count) count.textContent = items.length + ' kayıt';
+      if (raw) raw.textContent = JSON.stringify(items, null, 2);
 
-      if (!items.length) {
-        list.innerHTML =
-          '<div class="adm-empty">' +
-          '  <div class="adm-empty__title">Henüz duyuru yok</div>' +
-          '  <div class="adm-empty__desc">Statik veri kaynağında kayıt bulunamadı.</div>' +
-          '</div>';
-      } else {
-        list.innerHTML = items.map(function (a) {
-          return ''
-            + '<article class="adm-card">'
-            +   '<div class="adm-card__head">'
-            +     '<div>'
-            +       '<div class="adm-card__title">' + esc(a.title) + '</div>'
-            +       '<div class="adm-card__sub">' + esc(a.date) + ' · id: <code>' + esc(a.id) + '</code></div>'
-            +     '</div>'
-            +     '<span class="adm-pill adm-pill--mute">Yayında</span>'
-            +   '</div>'
-            +   '<div class="adm-card__body">' + esc(a.text) + '</div>'
-            + '</article>';
-        }).join('');
+      function cardHtml(a) {
+        return ''
+          + '<article class="adm-card">'
+          +   '<div class="adm-card__head">'
+          +     '<div>'
+          +       '<div class="adm-card__title">' + esc(a.title) + '</div>'
+          +       '<div class="adm-card__sub">' + esc(a.date) + ' · id: <code>' + esc(a.id) + '</code></div>'
+          +     '</div>'
+          +     '<span class="adm-pill adm-pill--mute">Yayında</span>'
+          +   '</div>'
+          +   '<div class="adm-card__body">' + esc(a.text) + '</div>'
+          + '</article>';
       }
+
+      function emptyHtml(searchActive) {
+        if (searchActive) {
+          return '<div class="adm-empty adm-empty--search">'
+            +   '<div class="adm-empty__title">Aramayla eşleşen duyuru bulunamadı.</div>'
+            +   '<div class="adm-empty__desc">Farklı bir anahtar kelime deneyin.</div>'
+            + '</div>';
+        }
+        return '<div class="adm-empty">'
+          +   '<div class="adm-empty__title">Henüz duyuru yok</div>'
+          +   '<div class="adm-empty__desc">Statik veri kaynağında kayıt bulunamadı.</div>'
+          + '</div>';
+      }
+
+      function matches(a, q) {
+        if (!q) return true;
+        var hay = [a.title, a.text, a.id, a.date].map(function (v) {
+          return String(v == null ? '' : v).toLowerCase();
+        }).join('  ');
+        return hay.indexOf(q) !== -1;
+      }
+
+      function render() {
+        var q = search ? search.value.trim().toLowerCase() : '';
+        var filtered = q ? items.filter(function (a) { return matches(a, q); }) : items.slice();
+
+        if (count) {
+          count.textContent = q
+            ? (filtered.length + ' / ' + items.length + ' kayıt')
+            : (items.length + ' kayıt');
+        }
+
+        if (!filtered.length) {
+          list.innerHTML = emptyHtml(!!q);
+        } else {
+          list.innerHTML = filtered.map(cardHtml).join('');
+        }
+      }
+
+      if (search) {
+        search.addEventListener('input', render);
+      }
+      render();
 
       var logoutBtn = document.getElementById('logoutBtn');
       if (logoutBtn) {

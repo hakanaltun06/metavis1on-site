@@ -20,6 +20,8 @@
 </head>
 <body class="adm-body">
 
+  <a class="adm-skip-link" href="#mainContent">İçeriğe atla</a>
+
   <header class="adm-top" role="banner">
     <div class="adm-top__inner">
       <a class="adm-top__brand" href="./dashboard.html" aria-label="metavis1on Admin Anasayfası">
@@ -67,11 +69,21 @@
         <div class="adm-section-eyebrow">Sürüm Geçmişi</div>
         <h2 class="adm-section-title">v11 portal zaman çizelgesi</h2>
       </div>
-      <div class="adm-section-hint">Manuel kayıt · 8 sürüm</div>
+      <div class="adm-section-hint">Manuel kayıt · 9 sürüm</div>
     </div>
+
+    <p class="mv-text-muted" style="font-size:0.86rem; margin: 0 0 var(--mv-space-md);">
+      Bu liste sürüm geçmişidir, gerçek zamanlı log değildir.
+    </p>
 
     <ol class="adm-timeline" aria-label="Sürüm geçmişi">
       <li class="adm-timeline__item adm-timeline__item--current">
+        <div class="adm-timeline__head">
+          <span class="adm-timeline__ver">v11.3.1</span>
+          <span class="adm-timeline__title">read-only admin modülleri UX iyileştirmesi</span>
+        </div>
+      </li>
+      <li class="adm-timeline__item">
         <div class="adm-timeline__head">
           <span class="adm-timeline__ver">v11.3.0</span>
           <span class="adm-timeline__title">read-only admin modülleri</span>
@@ -121,8 +133,18 @@
       </li>
     </ol>
 
+    <div class="adm-note" style="margin-top: var(--mv-space-xl);" role="note">
+      <span class="adm-note__icon" aria-hidden="true">i</span>
+      <div class="adm-note__body">
+        <strong>Firebase bağlantısı yok.</strong>
+        Gerçek zamanlı log akışı v12 fazında <code>adminLogs</code> koleksiyonu bağlandığında
+        bu sayfada listelenecektir. Şu an oturum açma, yönetici aksiyonları ve sistem olayları
+        toplanmamaktadır.
+      </div>
+    </div>
+
     <div class="adm-foot">
-      <span>metavis1on Admin · v11.3.0</span>
+      <span>metavis1on Admin · v11.3.1</span>
       <span>© <span data-mv-year>2026</span> metavis1on</span>
     </div>
   </main>
