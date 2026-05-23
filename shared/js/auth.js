@@ -41,14 +41,22 @@
   /* ----------------------------------------------------------------------
      MV.auth.firebase — partially-live Firebase Auth wrapper.
      ----------------------------------------------------------------------
-     Per-method execution mode (alpha.16):
+     Per-method execution mode (alpha.17):
        signIn      → LIVE when MV_FIREBASE.isAuthReady() is true; otherwise
                      no-op. Calls firebase.auth().signInWithEmailAndPassword
                      ONLY after readiness + credential validation pass.
        signOut     → LIVE when MV_FIREBASE.isAuthReady() is true; otherwise
                      no-op. Calls firebase.auth().signOut ONLY after the
                      readiness + provider acquisition guards pass.
-       onChange    → dry-run; never calls onAuthStateChanged.
+       onChange    → LIVE LISTENER when MV_FIREBASE.isAuthReady() is true;
+                     otherwise no-op. Calls firebase.auth()
+                     .onAuthStateChanged ONLY after the readiness +
+                     provider acquisition guards pass. Callback receives
+                     a sanitized snapshot (same shape as currentUser())
+                     or null — never the raw Firebase user object.
+                     unsubscribe is wrapped in try/catch so it cannot
+                     throw into the caller. No sessionStorage access,
+                     no DOM access, no redirect, no bridge invocation.
        currentUser → LIVE READ when MV_FIREBASE.isAuthReady() is true;
                      otherwise null. Reads the firebase.auth().currentUser
                      property only; no listener, no network, no
@@ -57,13 +65,14 @@
      Neither signIn nor signOut writes/clears the sessionStorage admin
      gate by itself. createSessionFromResult and clearSessionAfterSignOut
      are explicit bridges the caller invokes after a successful SDK call.
+     onChange never invokes either bridge; it is observation-only.
      The existing sessionStorage-based MV.auth gate (devLogin / logout /
      requireAdmin / 8h TTL) is unchanged. No admin page calls these
      wrappers automatically — activation comes from devtools or a future
      commit. Repo default leaves MV_FIREBASE in placeholder state, so
-     signIn/signOut/currentUser stay no-ops until real config is supplied
-     via the alpha.9/10 channels. inspect() reports the per-method
-     capability map.
+     signIn/signOut/currentUser/onChange stay no-ops until real config
+     is supplied via the alpha.9/10 channels. inspect() reports the
+     per-method capability map.
      ---------------------------------------------------------------------- */
   function getFirebaseAuthReadiness() {
     const mvfb = (typeof window !== 'undefined') ? window.MV_FIREBASE : null;
@@ -113,7 +122,7 @@
       capabilities: {
         signIn: isAuthReady ? 'live' : 'no-op',
         signOut: isAuthReady ? 'live' : 'no-op',
-        onChange: 'dry-run',
+        onChange: isAuthReady ? 'live-listener' : 'no-op',
         currentUser: isAuthReady ? 'live-read' : 'no-op',
         sessionBridge: 'available',
         logoutBridge: 'available'
@@ -320,6 +329,115 @@
     };
   }
 
+  /* Guarded Firebase Auth state listener. Mirrors the readiness +
+     provider acquisition guards used by firebaseSignIn / firebaseSignOut
+     / firebaseCurrentUser, but actually calls
+     firebase.auth().onAuthStateChanged when ready. The caller's callback
+     is wrapped so it receives a sanitized snapshot (same 5-field shape
+     as firebaseCurrentUser's return value) or null — never the raw
+     Firebase user object, never tokens or providerData. The returned
+     unsubscribe wraps the SDK detach call in try/catch so calling it
+     can never throw into the caller. No sessionStorage write/clear,
+     no DOM access, no redirect, no bridge invocation: this method
+     observes only. Repo default (placeholder config) keeps this an
+     enabled:false no-op with a stable unsubscribe() function so call
+     sites don't need extra null guards. */
+  function firebaseOnChange(callback) {
+    if (typeof callback !== 'function') {
+      return {
+        enabled: false,
+        ok: false,
+        reason: 'invalid-callback',
+        unsubscribe: function () { /* no-op */ }
+      };
+    }
+    if (typeof window === 'undefined' || !window.MV_FIREBASE) {
+      return {
+        enabled: false,
+        ok: false,
+        reason: 'missing-loader',
+        unsubscribe: function () { /* no-op */ }
+      };
+    }
+    const r = getFirebaseAuthReadiness();
+    if (!r.enabled) {
+      return {
+        enabled: false,
+        ok: false,
+        reason: r.reason,
+        unsubscribe: function () { /* no-op */ }
+      };
+    }
+    const mvfb = window.MV_FIREBASE;
+    const provider = (typeof mvfb.getAuthProvider === 'function')
+      ? mvfb.getAuthProvider()
+      : null;
+    if (!provider || typeof provider.auth !== 'function') {
+      return {
+        enabled: true,
+        ok: false,
+        reason: 'no-provider',
+        unsubscribe: function () { /* no-op */ }
+      };
+    }
+    let authInstance;
+    try {
+      authInstance = provider.auth();
+    } catch (err) {
+      return {
+        enabled: true,
+        ok: false,
+        reason: (err && err.code) || 'auth-init-error',
+        message: (err && err.message) || 'Firebase auth init failed.',
+        unsubscribe: function () { /* no-op */ }
+      };
+    }
+    if (!authInstance || typeof authInstance.onAuthStateChanged !== 'function') {
+      return {
+        enabled: true,
+        ok: false,
+        reason: 'no-auth-state-listener',
+        unsubscribe: function () { /* no-op */ }
+      };
+    }
+    const wrapped = function (user) {
+      if (!user) {
+        callback(null);
+        return;
+      }
+      callback({
+        uid: user.uid || null,
+        email: user.email || null,
+        emailVerified: !!user.emailVerified,
+        displayName: user.displayName || null,
+        provider: 'firebase-auth'
+      });
+    };
+    let rawUnsubscribe;
+    try {
+      rawUnsubscribe = authInstance.onAuthStateChanged(wrapped);
+    } catch (err) {
+      return {
+        enabled: true,
+        ok: false,
+        reason: (err && err.code) || 'auth-state-listener-error',
+        message: (err && err.message) || 'Failed to register auth state listener.',
+        unsubscribe: function () { /* no-op */ }
+      };
+    }
+    const safeUnsubscribe = (typeof rawUnsubscribe === 'function')
+      ? function () {
+          try { rawUnsubscribe(); } catch (e) { /* swallow */ }
+        }
+      : function () { /* no-op */ };
+    return {
+      enabled: true,
+      ok: true,
+      provider: 'firebase-auth',
+      unsubscribe: safeUnsubscribe
+    };
+  }
+
   /* Bridge from a successful firebaseSignOut() result to the existing
      sessionStorage admin gate. Strictly validated; clears nothing on
      malformed input. Inlines the same removeItem/try-catch pattern as
@@ -399,13 +517,18 @@
       return false;
     },
 
-    /* Firebase Auth wrapper namespace — signIn and signOut are both
-       LIVE behind a double guard; onChange / currentUser remain dry-run.
-       createSessionFromResult bridges a successful signIn into the
-       existing sessionStorage gate; clearSessionAfterSignOut bridges a
-       successful signOut by clearing the same key. Neither bridge is
-       called automatically by its SDK counterpart — the two stages
-       stay independently testable. See firebaseSignIn(), firebaseSignOut(),
+    /* Firebase Auth wrapper namespace — signIn, signOut, currentUser
+       (read-only snapshot) and onChange (state listener) are all LIVE
+       behind a double guard; default repo placeholder config keeps
+       every entry point a safe no-op. createSessionFromResult bridges
+       a successful signIn into the existing sessionStorage gate;
+       clearSessionAfterSignOut bridges a successful signOut by clearing
+       the same key. Neither bridge is called automatically by its SDK
+       counterpart — the two stages stay independently testable. onChange
+       observes only: no bridge invocation, no sessionStorage touch, no
+       DOM access, no redirect; its callback receives the same sanitized
+       5-field shape that currentUser() returns. See firebaseSignIn(),
+       firebaseSignOut(), firebaseCurrentUser(), firebaseOnChange(),
        createSessionFromFirebaseResult(), and
        clearSessionFromFirebaseSignOutResult() for per-method semantics. */
     firebase: {
@@ -433,14 +556,8 @@
         return clearSessionFromFirebaseSignOutResult(result);
       },
 
-      onChange: function (/* callback */) {
-        const r = dryRunResult();
-        return {
-          enabled: r.enabled,
-          simulated: r.enabled ? true : undefined,
-          reason: r.reason,
-          unsubscribe: function () { /* no-op */ }
-        };
+      onChange: function (callback) {
+        return firebaseOnChange(callback);
       },
 
       currentUser: function () {

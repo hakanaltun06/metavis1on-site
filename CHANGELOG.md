@@ -7,6 +7,115 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.17] — Guarded Firebase onChange Listener
+
+- `MV.auth.firebase.onChange(callback)` readiness guard arkasında
+  gerçek Firebase Auth `onAuthStateChanged` listener kurabilecek hale
+  getirildi. Default repo ve placeholder config altında `onChange()`
+  güvenli no-op döner (`enabled:false, ok:false, reason:'<status>',
+  unsubscribe:no-op`) ve callback hiçbir koşulda tetiklenmez.
+- **Guard sırası** (sıralı, ilk reddeden döner; her durumda
+  `unsubscribe` çağrılabilir bir function):
+  1. `callback` function değil → `{ enabled:false, ok:false,
+     reason:'invalid-callback' }`.
+  2. `window` veya `window.MV_FIREBASE` yok → `{ enabled:false, ok:false,
+     reason:'missing-loader' }`.
+  3. `getFirebaseAuthReadiness().enabled === false` → `{ enabled:false,
+     ok:false, reason:'<status>' }`. Reason değerleri: `'missing-loader'`
+     | `'disabled'` | `'placeholder'` | `'error'`.
+  4. `getAuthProvider()` null veya `.auth` function değil →
+     `{ enabled:true, ok:false, reason:'no-provider' }`.
+  5. `provider.auth()` throw → `{ enabled:true, ok:false, reason:err.code
+     || 'auth-init-error', message }`.
+  6. Auth instance'da `onAuthStateChanged` function değil →
+     `{ enabled:true, ok:false, reason:'no-auth-state-listener' }`.
+  7. `authInstance.onAuthStateChanged(wrapped)` throw → `{ enabled:true,
+     ok:false, reason:err.code || 'auth-state-listener-error', message }`.
+- **Başarı dönüşü:** `{ enabled:true, ok:true, provider:'firebase-auth',
+  unsubscribe:fn }`.
+- **Callback payload sanitization:** wrapper, kullanıcı callback'ini bir
+  iç sarmalayıcıdan geçirir. Firebase Auth raw `user` objesi callback'e
+  **hiçbir koşulda** ham haliyle verilmez. Callback yalnız iki şeyden
+  birini alır:
+  - `null` (signed out / no user)
+  - sanitized object — `currentUser()` ile aynı şekil:
+    ```
+    {
+      uid: user.uid || null,
+      email: user.email || null,
+      emailVerified: !!user.emailVerified,
+      displayName: user.displayName || null,
+      provider: 'firebase-auth'
+    }
+    ```
+  Şu alanlar / metodlar callback'e **kesinlikle sızmaz:**
+  `refreshToken`, `accessToken`, `stsTokenManager`, `getIdToken`,
+  `getIdTokenResult`, `providerData`, `metadata`, `phoneNumber`,
+  `photoURL`, `tenantId`, ham `user` objesi.
+- **`unsubscribe` güvenliği:** SDK'dan dönen unsubscribe function ise
+  wrapper bunu `try/catch` ile sarar; çağrı throw etse bile sayfaya
+  patlamaz (sessizce yutulur). SDK function dönmezse `unsubscribe`
+  no-op olur. Wrapper'ın döndürdüğü `unsubscribe` her durumda
+  çağrılabilir bir function'dır — call site ekstra null guard
+  yapmak zorunda değildir.
+- **`inspect()` capability güncellemesi:**
+  - `onChange: 'live-listener'` (isAuthReady true).
+  - `onChange: 'no-op'` (isAuthReady false). Eskiden her durumda
+    `'dry-run'` idi.
+  Diğer capability alanları (`signIn`, `signOut`, `currentUser`,
+  `sessionBridge`, `logoutBridge`) değişmedi.
+- **Side-effect kontratı (her durumda):**
+  - `sessionStorage`'a **yazmaz / silmez**.
+  - `createSessionFromResult` veya `clearSessionAfterSignOut` **çağırmaz**.
+  - `MV.auth.requireAdmin` veya `redirect` **çağırmaz**.
+  - DOM'a **dokunmaz**.
+  - Sadece `authInstance.onAuthStateChanged` çağrısı yapar; başka SDK
+    method'u tetiklemez.
+- **Mevcut Firebase wrapper davranışları korundu (regression):**
+  - `signIn`: ready iken live, otomatik session yazmaz.
+  - `createSessionFromResult`: valid result ile session yazar, invalid
+    inputlarda yazmaz.
+  - `signOut`: ready iken live, otomatik session temizlemez.
+  - `clearSessionAfterSignOut`: valid result ile session temizler,
+    invalid inputlarda temizlemez.
+  - `currentUser`: ready iken sanitized live-read; sessionStorage'a
+    dokunmaz, SDK method invoke etmez.
+  - `inspect`: side-effect-free.
+- **Mevcut `MV.auth` API bit-identical:** `isAuthed`, `getUser`,
+  `devLogin`, `requireAdmin`, `logout` davranışı, `SESSION_KEY`
+  (`'mv_admin_session'`), `SESSION_TTL_MS` (8 saat), redirect path,
+  sessionStorage payload şekli değişmedi. Mock harness'ta devLogin
+  → isAuthed → logout zinciri eski sonuçları üretti.
+- **Davranış matrisi (onChange):**
+  | Faz | `callback` | `isAuthReady` | `onChange(cb)` | SDK | Callback |
+  |---|---|---|---|---|---|
+  | Invalid callback | non-fn | any | `enabled:false, reason:'invalid-callback'` | 0 | 0 |
+  | Default repo | fn | false | `enabled:false, reason:'placeholder'` | 0 | 0 |
+  | Ready + success | fn | true | `enabled:true, ok:true, unsubscribe:fn` | 1 | sanitized |
+  | Ready + SDK throw | fn | true | `enabled:true, ok:false, reason:err.code` | 0 (sayılmaz) | 0 |
+- **Side-effect kontrolü:** mock harness 6 phase boyunca `onChange`'i
+  çağırdı. Sayaçlar:
+  - `onAuthStateChanged` SDK: yalnız ready + valid callback durumunda
+    çağrı sayısı kadar (1).
+  - `firebase.auth()`: yalnız ready phase'lerde provider acquire için.
+  - `signInWithEmailAndPassword`, `signOut`: 0 (onChange başka SDK
+    method invoke etmez).
+  - `sessionStorage.setItem` / `removeItem`: 0 (observation-only).
+  - Sanitization testi: mock user'a inject edilen 7 sensitive field
+    (`refreshToken`, `accessToken`, `getIdToken`, `providerData`,
+    `metadata`, `phoneNumber`, `photoURL`, `tenantId`) **hiçbiri**
+    callback payload'a sızmadı.
+- Admin login formu ve dashboard logout akışı **henüz Firebase'e
+  bağlanmadı**. Hiçbir HTML değişmedi. `admin/index.html` hâlâ
+  `MV.auth.devLogin` üzerinden çalışıyor; `admin/dashboard.html` hâlâ
+  `MV.auth.logout` üzerinden çalışıyor.
+- `shared/config/firebase.js`, `shared/config/site.js`,
+  `shared/config/firebase.local.example.js`, `.gitignore`, admin HTML
+  dosyaları, `admin/borc/index.html`, `borc.html`, `index.html`,
+  `docs/*` ve diğer `shared/js/*` dosyaları **değişmedi**. Firestore
+  SDK, CRUD, gerçek Firebase config commit edilmedi. Gerçek apiKey /
+  projectId / appId / UID / email repo'ya girmedi.
+
 ## [v12.0.0-alpha.16] — Guarded Firebase currentUser Live Read
 
 - `MV.auth.firebase.currentUser()` readiness guard arkasında Firebase
