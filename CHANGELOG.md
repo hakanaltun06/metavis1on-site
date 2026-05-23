@@ -7,6 +7,18 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v11.5.2] — Debt Panel Security Audit
+
+- `docs/debt-panel-audit.md` eklendi.
+- Borç panelinin mevcut gate (dış `MV.auth` + iç Firebase Auth),
+  storage (Firestore koleksiyonları + localStorage/sessionStorage
+  key'leri), yönlendirme zinciri ve risk haritası read-only olarak
+  belgelendi.
+- `docs/README.md` güncellendi: yeni audit dokümanı Current Documents
+  altına taşındı; planlanan listeden çıkarıldı.
+- Runtime dosyalara dokunulmadı.
+- Firebase SDK / config / kod eklenmedi.
+
 ## [v11.5.0] — Documentation Index & Changelog
 
 - `CHANGELOG.md` (bu dosya) eklendi.

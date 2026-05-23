@@ -10,6 +10,11 @@ zemin hazırlayan referans dokümanlardır.
   Firebase Auth, Firestore koleksiyonları, security rules yaklaşımı,
   v12 uygulama roadmap'i ve borç paneli için özel politika içerir.
   Aktif kod değildir; v12.x fazları için mimari rehberdir.
+- **[Debt Panel Security Audit](./debt-panel-audit.md)**
+  Borç panelinin mevcut gate (dış MV.auth + iç Firebase Auth), storage
+  (Firestore koleksiyonları + localStorage/sessionStorage key'leri),
+  yönlendirme zinciri ve güvenlik risklerini read-only şekilde
+  belgeler. Refactor önerisi değil; tespit + risk kayıt dokümanıdır.
 
 ## Planned Documents
 
@@ -19,9 +24,6 @@ ihtiyaç doğdukça eklenecek:
 - **Debt Panel Migration Plan** — `admin/borc/` modülünün collection
   adları, localStorage key'leri ve potansiyel Firebase taşıma adımları.
   Yalnız ayrı bir sprint açıldığında yazılır.
-- **Debt Panel Security Audit** — Borç panelinin dış kapı (oturum gate)
-  ve iç kapı (Firebase Auth + modal) yapısının statik kod review raporu.
-  Refactor önerisi değil, tespit raporu.
 - **Firebase Rules Test Plan** — Emulator Suite test senaryoları,
   pozitif/negatif case'ler, rollback prosedürü.
 - **Admin Module CRUD Plan** — v12.3 sonrası announcements/events/apps
