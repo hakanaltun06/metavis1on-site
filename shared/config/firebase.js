@@ -14,17 +14,28 @@
      affect it.
 
    API surface on window.MV_FIREBASE:
-     configured         boolean  — backward-compat; stays false until init succeeds
-     status             string   — 'disabled' | 'placeholder' | 'ready' | 'error'
-     config             object   — backward-compat; stays null until init succeeds
-     note               string   — human-readable status
-     getConfig()        → real config or null
-     isConfigured()     → true only when config is non-placeholder
-     isAvailable()      → true only when configured AND app initialized
-     init(fbNamespace)  → returns boolean; safe to call repeatedly
-     getApp()           → initialized Firebase app or null
-     getStatus()        → current status string
-     getLastError()     → last init error or null
+     configured             boolean — backward-compat; stays false until init succeeds
+     status                 string  — 'disabled' | 'placeholder' | 'ready' | 'error'
+     config                 object  — backward-compat; stays null until init succeeds
+     note                   string  — human-readable status
+     getConfig()            → real config or null
+     isConfigured()         → true only when config is non-placeholder
+     isAvailable()          → true only when configured AND app initialized
+     isEnabled()            → alias of isAvailable(); convenience for call-sites
+     init(fbNamespace)      → returns boolean; safe to call repeatedly
+     getApp()               → initialized Firebase app or null
+     getStatus()            → current status string
+     getLastError()         → last init error or null
+
+   Auth readiness helpers (passive — never call firebase.auth(), never hit
+   the network, never create an Auth instance or state listener):
+     hasAuthSdk()           → true if a Firebase namespace was supplied AND
+                              its `auth` property is callable; reflects SDK
+                              presence only, independent of init success
+     isAuthReady()          → true only when isAvailable() AND hasAuthSdk()
+     getFirebaseNamespace() → the namespace captured during init(), or null
+     getAuthProvider()      → namespace when isAuthReady() is true, else null;
+                              callers must invoke `.auth()` themselves later
 
    Debug logging is opt-in via window.MV_DEBUG_FIREBASE = true (no console
    spam by default).
@@ -68,7 +79,8 @@
     app: null,
     status: 'disabled',
     lastError: null,
-    initialized: false
+    initialized: false,
+    firebaseNamespace: null
   };
 
   var debugEnabled = false;
@@ -105,6 +117,27 @@
       return api.isConfigured() && state.app !== null;
     },
 
+    isEnabled: function () {
+      return api.isAvailable();
+    },
+
+    hasAuthSdk: function () {
+      var ns = state.firebaseNamespace;
+      return !!(ns && typeof ns.auth === 'function');
+    },
+
+    isAuthReady: function () {
+      return api.isAvailable() && api.hasAuthSdk();
+    },
+
+    getFirebaseNamespace: function () {
+      return state.firebaseNamespace;
+    },
+
+    getAuthProvider: function () {
+      return api.isAuthReady() ? state.firebaseNamespace : null;
+    },
+
     getStatus: function () {
       return state.status;
     },
@@ -127,6 +160,7 @@
         debugLog('[MV_FIREBASE] init aborted: no Firebase namespace available.');
         return false;
       }
+      state.firebaseNamespace = firebaseNamespace;
       if (!looksReal(state.config)) {
         state.status = 'placeholder';
         api.status = 'placeholder';

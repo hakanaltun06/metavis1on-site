@@ -7,6 +7,45 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.7] — Firebase Auth Readiness Helpers
+
+- `shared/config/firebase.js` safe loader'a beş yeni **pasif** helper
+  fonksiyonu eklendi:
+  - `isEnabled()` — `isAvailable()` ile aynı semantik (alias). Yalnızca
+    gerçek config + başarılı `initializeApp` durumunda `true`. Placeholder,
+    SDK yok veya hata varsa `false`.
+  - `hasAuthSdk()` — `init()` sırasında yakalanan Firebase namespace'inde
+    `auth` özelliğinin function olduğunu kontrol eder. `firebase.auth()`'u
+    **çağırmaz**; salt namespace varlık denetimi.
+  - `isAuthReady()` — `isAvailable() && hasAuthSdk()`. Placeholder
+    config'te `false`, app init edilmemişse `false`.
+  - `getFirebaseNamespace()` — `init()` çağrısında saklanan namespace'i
+    veya `null` döner. Sadece inspection helper.
+  - `getAuthProvider()` — `isAuthReady()` `true` ise namespace'i,
+    değilse `null` döner. **Bu fazda hiçbir koşulda `firebase.auth()`
+    çağırmaz**, Auth instance veya listener oluşturmaz.
+- Internal state'e yeni alan: `state.firebaseNamespace`. `init()`
+  içinde, namespace sanity check'ten **sonra** ama placeholder
+  gate'inden **önce** saklanır → placeholder config bile olsa
+  `hasAuthSdk()` SDK varlığını doğru raporlar, ama `isAvailable()` /
+  `isAuthReady()` `false` kalmaya devam eder.
+- **Geriye uyumluluk:** `configured`, `status`, `config`, `note`,
+  `getConfig()`, `isConfigured()`, `isAvailable()`, `init()`, `getApp()`,
+  `getStatus()`, `getLastError()` davranışı bit-identical.
+  Placeholder config altında `init(window.firebase)` hâlâ sessizce
+  `false` döner ve `getStatus()` `'placeholder'` kalır.
+- **Side-effect kontrolü:** yeni helper'ların hiçbiri
+  `firebase.initializeApp(...)`, `firebase.auth()`, network isteği,
+  Auth state listener, DOM, sessionStorage veya localStorage'a
+  dokunmaz.
+- `shared/js/auth.js`, admin HTML dosyaları, `admin/borc/index.html`,
+  `borc.html` ve public site (`index.html`) **değişmedi**. Auth wrapper,
+  login davranış değişikliği, Firestore SDK, CRUD, deploy veya gerçek
+  Firebase config eklenmedi. `signInWithEmailAndPassword`,
+  `onAuthStateChanged`, `getFirestore` yok.
+- Mevcut login, logout ve sessionStorage tabanlı admin gate davranışı
+  değiştirilmedi.
+
 ## [v12.0.0-alpha.6] — Firebase Auth SDK Passive Load
 
 - Borç paneli dışındaki admin sayfalarına Firebase Auth **compat** SDK
