@@ -16,17 +16,79 @@
   <link rel="stylesheet" href="../shared/css/themes.css">
   <link rel="stylesheet" href="../shared/css/components.css">
   <link rel="stylesheet" href="../shared/css/layout.css">
+
+  <style>
+    /* admin/index.html — login ekranı sayfaya özel cila (v11.2.0) */
+    body { background: var(--mv-bg-deep); }
+
+    .admin-auth-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: var(--mv-radius-full);
+      background: rgba(14, 165, 233, 0.08);
+      border: 1px solid rgba(14, 165, 233, 0.30);
+      color: var(--mv-theme-primary);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: var(--mv-letter-wide);
+      text-transform: uppercase;
+    }
+    .admin-auth-badge__dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+    }
+    .admin-auth-card-wrap { text-align: center; margin-bottom: var(--mv-space-md); }
+
+    .admin-auth-foot {
+      margin-top: var(--mv-space-lg);
+      padding-top: var(--mv-space-md);
+      border-top: 1px solid var(--mv-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.74rem;
+      color: var(--mv-text-dim);
+      gap: var(--mv-space-sm);
+      flex-wrap: wrap;
+    }
+    .admin-auth-foot__kbd {
+      font-family: var(--mv-font-mono);
+      padding: 2px 8px;
+      border-radius: var(--mv-radius-sm);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--mv-border);
+      color: var(--mv-text-muted);
+    }
+
+    @media (max-width: 480px) {
+      .mv-back-link { top: 16px !important; left: 16px !important; font-size: 0.82rem; }
+    }
+  </style>
 </head>
 <body>
 
   <main class="mv-auth-page">
     <a class="mv-back-link" href="../index.html" style="position:absolute; top:24px; left:24px;">
-      ← Ana Sayfa
+      ← Ana Siteye Dön
     </a>
 
     <div class="mv-auth-card">
+      <div class="admin-auth-card-wrap">
+        <span class="admin-auth-badge">
+          <span class="admin-auth-badge__dot"></span>
+          Yetkili Yönetim Alanı
+        </span>
+      </div>
+
       <div class="mv-auth-card__logo">
-        <img src="../assets/logo.png" alt="metavis1on" onerror="this.style.display='none'">
+        <img src="../assets/logo-mark-64.png"
+             srcset="../assets/logo-mark-64.png 1x, ../assets/logo-mark-128.png 2x"
+             alt="metavis1on" width="56" height="56" decoding="async"
+             onerror="this.style.display='none'">
         <div style="font-size:0.72rem; letter-spacing:2.5px; text-transform:uppercase; color:var(--mv-theme-primary);">
           Yönetim Merkezi
         </div>
@@ -34,7 +96,7 @@
 
       <h1 class="mv-auth-card__title">Yönetici Girişi</h1>
       <p class="mv-auth-card__sub">
-        Yönetim paneline erişmek için yetkili hesap bilgilerinizi girin.
+        metavis1on portal yönetim paneline erişmek için yetkili hesap bilgilerinizi girin.
       </p>
 
       <form class="mv-auth-form" id="loginForm" novalidate>
@@ -74,6 +136,11 @@
           🔒 Bu sayfa yetkili erişim içindir.
         </div>
       </form>
+
+      <div class="admin-auth-foot">
+        <span>metavis1on Admin · v11.2.0</span>
+        <span>Enter <kbd class="admin-auth-foot__kbd">↵</kbd> ile gönder</span>
+      </div>
 
       <!--
         GELİŞTİRME NOTU:

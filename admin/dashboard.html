@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>metavis1on | Yönetim Paneli</title>
+  <title>metavis1on | Admin Command Center</title>
   <meta name="robots" content="noindex,nofollow">
   <meta name="theme-color" content="#030407">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../shared/css/tokens.css">
   <link rel="stylesheet" href="../shared/css/reset.css">
@@ -18,316 +18,829 @@
   <link rel="stylesheet" href="../shared/css/layout.css">
 
   <style>
-    .dash-greeting {
-      display: flex; justify-content: space-between; align-items: center;
-      gap: var(--mv-space-md); flex-wrap: wrap;
-      margin-bottom: var(--mv-space-lg);
+    /* ============================================================
+       admin/dashboard.html — Admin Command Center (v11.2.0)
+       Sayfaya özel cila. Genel sistem shared/css üzerinden gelir.
+       ============================================================ */
+    body {
+      background:
+        radial-gradient(ellipse at top, rgba(14, 165, 233, 0.06), transparent 55%),
+        var(--mv-bg-deep);
+      color: var(--mv-text-soft);
+      font-family: var(--mv-font-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    .dash-greeting__title { font-size: 1.6rem; font-weight: 800; }
-    .dash-greeting__sub { color: var(--mv-text-muted); margin-top: 4px; }
 
-    .section-heading {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1.8px;
+    /* ---------- Üst Bar ---------- */
+    .adm-top {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: rgba(5, 5, 7, 0.78);
+      backdrop-filter: var(--mv-glass-blur);
+      -webkit-backdrop-filter: var(--mv-glass-blur);
+      border-bottom: 1px solid var(--mv-border);
+    }
+    .adm-top__inner {
+      max-width: var(--mv-container-wide);
+      margin: 0 auto;
+      padding: 14px var(--mv-space-lg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--mv-space-md);
+      flex-wrap: wrap;
+    }
+    .adm-top__brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--mv-text-main);
+    }
+    .adm-top__brand img { width: 32px; height: 32px; object-fit: contain; }
+    .adm-top__brand-text {
+      font-family: var(--mv-font-display);
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.3px;
+    }
+    .adm-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--mv-radius-full);
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: var(--mv-letter-wide);
+      text-transform: uppercase;
+      background: rgba(255, 51, 102, 0.10);
+      color: var(--mv-accent-red);
+      border: 1px solid rgba(255, 51, 102, 0.30);
+    }
+    .adm-pill__dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 6px currentColor;
+    }
+    .adm-top__actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ---------- Shell ---------- */
+    .adm-shell {
+      max-width: var(--mv-container-wide);
+      margin: 0 auto;
+      padding: var(--mv-space-xl) var(--mv-space-lg);
+      flex: 1;
+      width: 100%;
+    }
+
+    /* ---------- Hero ---------- */
+    .adm-hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: var(--mv-space-lg);
+      margin-bottom: var(--mv-space-xl);
+      flex-wrap: wrap;
+    }
+    .adm-hero__eyebrow {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: var(--mv-letter-wide);
+      text-transform: uppercase;
+      color: var(--mv-theme-primary);
+      margin-bottom: 6px;
+    }
+    .adm-hero__title {
+      font-family: var(--mv-font-display);
+      font-size: 2.1rem;
+      font-weight: 800;
+      letter-spacing: var(--mv-letter-tight);
+      color: var(--mv-text-main);
+      line-height: 1.1;
+      margin: 0 0 8px;
+    }
+    .adm-hero__lead {
       color: var(--mv-text-muted);
-      margin: var(--mv-space-xl) 0 var(--mv-space-md);
+      max-width: 560px;
+      font-size: 0.95rem;
+      line-height: 1.55;
     }
-    .section-heading::after {
-      content: ''; flex: 1; height: 1px; background: var(--mv-border);
+    .adm-hero__meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      min-width: 220px;
     }
-
-    .placeholder-card {
-      opacity: 0.7;
+    .adm-hero__clock {
+      font-family: var(--mv-font-mono);
+      font-size: 1.05rem;
+      color: var(--mv-text-soft);
     }
-    .placeholder-card .mv-badge {
-      background: rgba(255,255,255,0.05);
+    .adm-hero__user {
+      font-size: 0.82rem;
       color: var(--mv-text-muted);
-      border-color: var(--mv-border);
+    }
+    .adm-hero__user strong { color: var(--mv-text-main); font-weight: 600; }
+
+    /* ---------- Bölüm başlığı ---------- */
+    .adm-section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--mv-space-md);
+      margin: var(--mv-space-2xl) 0 var(--mv-space-md);
+      flex-wrap: wrap;
+    }
+    .adm-section-head:first-child { margin-top: 0; }
+    .adm-section-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: var(--mv-letter-wide);
+      text-transform: uppercase;
+      color: var(--mv-theme-primary);
+      margin-bottom: 4px;
+    }
+    .adm-section-title {
+      font-family: var(--mv-font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: var(--mv-letter-tight);
+      color: var(--mv-text-main);
+      margin: 0;
+    }
+    .adm-section-hint {
+      font-size: 0.82rem;
+      color: var(--mv-text-muted);
     }
 
-    .app-card {
-      display: flex; flex-direction: column; gap: var(--mv-space-md);
+    /* ---------- Stat kartları ---------- */
+    .adm-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--mv-space-md);
     }
-    .app-card__head {
-      display: flex; align-items: center; gap: var(--mv-space-md);
+    .adm-stat {
+      padding: var(--mv-space-md);
+      background: var(--mv-bg-glass);
+      border: 1px solid var(--mv-border);
+      border-radius: var(--mv-radius-md);
+      backdrop-filter: var(--mv-glass-blur);
+      -webkit-backdrop-filter: var(--mv-glass-blur);
     }
-    .app-card__title { font-weight: 700; font-size: 1.05rem; }
-    .app-card__sub { font-size: 0.78rem; color: var(--mv-text-muted); }
-    .app-card__body { color: var(--mv-text-soft); font-size: 0.9rem; line-height: 1.5; }
-    .app-card__meta {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-top: var(--mv-space-sm); border-top: 1px solid var(--mv-border);
+    .adm-stat__label {
+      font-size: 0.72rem;
+      letter-spacing: var(--mv-letter-wide);
+      text-transform: uppercase;
+      color: var(--mv-text-muted);
+      margin-bottom: 6px;
     }
-
-    .future-note {
+    .adm-stat__value {
+      font-family: var(--mv-font-display);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--mv-text-main);
+      line-height: 1.1;
+    }
+    .adm-stat__hint {
       font-size: 0.78rem;
-      padding: 8px 12px;
-      background: rgba(255, 145, 0, 0.06);
-      border: 1px solid rgba(255, 145, 0, 0.25);
-      color: var(--mv-accent-orange);
+      color: var(--mv-text-dim);
+      margin-top: 4px;
+    }
+    .adm-stat--ok .adm-stat__value { color: var(--mv-accent-green); }
+
+    /* ---------- Hızlı erişim ---------- */
+    .adm-access-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--mv-space-md);
+    }
+    .adm-access {
+      display: flex;
+      flex-direction: column;
+      gap: var(--mv-space-sm);
+      padding: var(--mv-space-md);
+      background: var(--mv-bg-glass);
+      border: 1px solid var(--mv-border);
+      border-radius: var(--mv-radius-md);
+      text-decoration: none;
+      color: inherit;
+      transition: var(--mv-transition-fast);
+      position: relative;
+    }
+    .adm-access:hover {
+      border-color: var(--mv-border-strong);
+      transform: translateY(-2px);
+      box-shadow: var(--mv-shadow-sm);
+    }
+    .adm-access:focus-visible {
+      outline: 2px solid var(--mv-theme-primary);
+      outline-offset: 2px;
+    }
+    .adm-access__head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .adm-access__glyph {
+      width: 38px; height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border-radius: var(--mv-radius-sm);
-      margin-top: var(--mv-space-sm);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--mv-border);
+      font-size: 1.05rem;
+      font-family: var(--mv-font-mono);
+      color: var(--mv-text-soft);
+    }
+    .adm-access__title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--mv-text-main);
+    }
+    .adm-access__sub {
+      font-size: 0.74rem;
+      color: var(--mv-text-muted);
+    }
+    .adm-access__body {
+      font-size: 0.86rem;
+      color: var(--mv-text-soft);
+      line-height: 1.5;
+      flex: 1;
+    }
+    .adm-access__cta {
+      font-size: 0.85rem;
+      color: var(--mv-theme-primary);
+      font-weight: 600;
+    }
+    /* Borç Paneli — vurgu kartı */
+    .adm-access--primary {
+      background: linear-gradient(135deg, rgba(255, 51, 102, 0.08), rgba(176, 38, 255, 0.05));
+      border-color: rgba(255, 51, 102, 0.30);
+    }
+    .adm-access--primary .adm-access__glyph {
+      background: linear-gradient(135deg, var(--mv-accent-red), #b91c1c);
+      color: #fff;
+      border-color: rgba(255, 51, 102, 0.40);
+    }
+    .adm-access--primary .adm-access__cta { color: var(--mv-accent-red); }
+
+    /* ---------- Sistem durumu listesi ---------- */
+    .adm-sys {
+      background: var(--mv-bg-glass);
+      border: 1px solid var(--mv-border);
+      border-radius: var(--mv-radius-md);
+      overflow: hidden;
+    }
+    .adm-sys__row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: var(--mv-space-md);
+      padding: 14px var(--mv-space-md);
+      border-bottom: 1px solid var(--mv-border);
+    }
+    .adm-sys__row:last-child { border-bottom: 0; }
+    .adm-sys__label {
+      font-size: 0.92rem;
+      color: var(--mv-text-soft);
+    }
+    .adm-sys__label small {
+      display: block;
+      color: var(--mv-text-dim);
+      font-size: 0.76rem;
+      margin-top: 2px;
+    }
+    .adm-sys__state {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--mv-radius-full);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: var(--mv-letter-wide);
+      text-transform: uppercase;
+      border: 1px solid var(--mv-border);
+      background: rgba(255,255,255,0.03);
+      color: var(--mv-text-muted);
+      white-space: nowrap;
+    }
+    .adm-sys__state--ok    { color: var(--mv-accent-green);  border-color: rgba(0, 230, 118, 0.30);  background: rgba(0, 230, 118, 0.08); }
+    .adm-sys__state--info  { color: var(--mv-theme-primary); border-color: rgba(14, 165, 233, 0.30); background: rgba(14, 165, 233, 0.08); }
+    .adm-sys__state--mute  { color: var(--mv-text-muted);    border-color: var(--mv-border);         background: rgba(255,255,255,0.03); }
+
+    /* ---------- Sürüm timeline ---------- */
+    .adm-timeline {
+      position: relative;
+      padding-left: 22px;
+      margin: 0;
+    }
+    .adm-timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px; top: 4px; bottom: 4px;
+      width: 1px;
+      background: linear-gradient(180deg, var(--mv-theme-primary), transparent);
+      opacity: 0.5;
+    }
+    .adm-timeline__item {
+      position: relative;
+      padding: 0 0 var(--mv-space-md) 0;
+    }
+    .adm-timeline__item::before {
+      content: '';
+      position: absolute;
+      left: -22px; top: 7px;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--mv-theme-primary);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+    }
+    .adm-timeline__item--current::before {
+      background: var(--mv-accent-green);
+      box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.18);
+    }
+    .adm-timeline__head {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .adm-timeline__ver {
+      font-family: var(--mv-font-mono);
+      font-size: 0.82rem;
+      color: var(--mv-theme-primary);
+      font-weight: 600;
+    }
+    .adm-timeline__title {
+      font-size: 0.92rem;
+      color: var(--mv-text-soft);
+    }
+    .adm-timeline__item--current .adm-timeline__ver { color: var(--mv-accent-green); }
+
+    /* ---------- Yakında modülleri ---------- */
+    .adm-soon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: var(--mv-space-md);
+    }
+    .adm-soon {
+      padding: var(--mv-space-md);
+      background: rgba(255,255,255,0.02);
+      border: 1px dashed var(--mv-border-strong);
+      border-radius: var(--mv-radius-md);
+      opacity: 0.72;
+    }
+    .adm-soon__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .adm-soon__title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--mv-text-soft);
+    }
+    .adm-soon__badge {
+      font-size: 0.66rem;
+      font-weight: 600;
+      letter-spacing: var(--mv-letter-wide);
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: var(--mv-radius-full);
+      background: rgba(255, 145, 0, 0.08);
+      border: 1px solid rgba(255, 145, 0, 0.30);
+      color: var(--mv-accent-orange);
+    }
+    .adm-soon__desc {
+      font-size: 0.82rem;
+      color: var(--mv-text-muted);
+      line-height: 1.5;
+    }
+
+    /* ---------- Footer ---------- */
+    .adm-foot {
+      margin-top: var(--mv-space-2xl);
+      padding-top: var(--mv-space-md);
+      border-top: 1px solid var(--mv-border);
+      display: flex;
+      justify-content: space-between;
+      gap: var(--mv-space-md);
+      font-size: 0.78rem;
+      color: var(--mv-text-dim);
+      flex-wrap: wrap;
+    }
+
+    /* ---------- Mobil ---------- */
+    @media (max-width: 720px) {
+      .adm-hero__title { font-size: 1.7rem; }
+      .adm-hero { align-items: flex-start; }
+      .adm-hero__meta { align-items: flex-start; min-width: 0; }
+      .adm-shell { padding: var(--mv-space-lg) var(--mv-space-md); }
+    }
+    @media (max-width: 380px) {
+      .adm-top__brand-text { display: none; }
+    }
+
+    /* ---------- Reduced motion ---------- */
+    @media (prefers-reduced-motion: reduce) {
+      .adm-access { transition: none; }
+      .adm-access:hover { transform: none; }
     }
   </style>
 </head>
 <body>
 
-  <div class="mv-admin-shell">
-    <aside class="mv-admin-shell__sidebar mv-sidebar" aria-label="Yönetim Menüsü">
-      <div class="mv-sidebar__brand">
-        <img src="../assets/logo.png" alt="metavis1on" onerror="this.style.display='none'">
-        <div>
-          <div class="mv-sidebar__brand-text">metavis1on</div>
-          <div class="mv-sidebar__brand-sub">Admin v10.0</div>
-        </div>
+  <!-- ============================================================
+       ÜST BAR
+       ============================================================ -->
+  <header class="adm-top" role="banner">
+    <div class="adm-top__inner">
+      <a class="adm-top__brand" href="./dashboard.html" aria-label="metavis1on Admin Anasayfası">
+        <img src="../assets/logo-mark-64.png"
+             srcset="../assets/logo-mark-64.png 1x, ../assets/logo-mark-128.png 2x"
+             alt="metavis1on" width="32" height="32" decoding="async"
+             onerror="this.style.display='none'">
+        <span class="adm-top__brand-text">metavis1on Admin</span>
+        <span class="adm-pill" aria-label="Admin Alanı">
+          <span class="adm-pill__dot"></span>
+          Admin Alanı
+        </span>
+      </a>
+
+      <div class="adm-top__actions">
+        <a class="mv-btn mv-btn--ghost mv-btn--sm" href="../index.html">← Ana Siteye Dön</a>
+        <button class="mv-btn mv-btn--sm" type="button" id="logoutBtn">Çıkış Yap</button>
       </div>
+    </div>
+  </header>
 
-      <nav class="mv-sidebar__nav">
-        <a class="mv-sidebar__link is-active" href="./dashboard.html">
-          <span>🏠</span><span>Dashboard</span>
-        </a>
+  <main class="adm-shell" id="mainContent">
 
-        <div class="mv-sidebar__section-label">İçerik</div>
-        <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
-          <span>📣</span><span>Duyurular</span>
-        </a>
-        <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
-          <span>📅</span><span>Etkinlikler</span>
-        </a>
-        <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
-          <span>📝</span><span>İçerik Yönetimi</span>
-        </a>
-
-        <div class="mv-sidebar__section-label">Modüller</div>
-        <a class="mv-sidebar__link" href="./borc/" id="navBorc">
-          <span>₺</span><span>Borç Paneli</span>
-        </a>
-        <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
-          <span>🧩</span><span>Uygulama Yönetimi</span>
-        </a>
-
-        <div class="mv-sidebar__section-label">Sistem</div>
-        <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
-          <span>⚙️</span><span>Ayarlar</span>
-        </a>
-        <a class="mv-sidebar__link" href="#" aria-disabled="true" title="Sonraki fazda aktif olacak">
-          <span>📋</span><span>Loglar</span>
-        </a>
-      </nav>
-
-      <div class="mv-sidebar__footer">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px;">
-          <div>
-            <div style="font-size:0.78rem; color:var(--mv-text-muted);">Aktif Yönetici</div>
-            <div style="font-weight:700;" id="adminUserLabel">—</div>
-          </div>
-          <span class="mv-status-dot" title="Sistem aktif"></span>
-        </div>
-        <button class="mv-btn mv-btn--ghost mv-btn--block mv-btn--sm" id="logoutBtn">
-          Çıkış Yap
-        </button>
+    <!-- ============================================================
+         HERO — Yönetim Merkezi
+         ============================================================ -->
+    <section class="adm-hero" aria-labelledby="admHeroTitle">
+      <div>
+        <div class="adm-hero__eyebrow">Admin Command Center</div>
+        <h1 id="admHeroTitle" class="adm-hero__title">Yönetim Merkezi</h1>
+        <p class="adm-hero__lead">
+          metavis1on portalı, uygulama bağlantıları ve yetkili paneller için merkezi kontrol alanı.
+          Bu fazda veriler statik olarak gösterilir; bağlı modüller mevcut yetkili kanallar üzerinden çalışmaya devam eder.
+        </p>
       </div>
-    </aside>
-
-    <section class="mv-admin-shell__main">
-      <header class="mv-topbar">
-        <div class="mv-topbar__title">Yönetim Paneli</div>
-        <div class="mv-topbar__meta">
-          <span class="mv-text-muted" style="font-size:0.85rem;">
-            <span class="mv-status-dot"></span> Sistemler çevrimiçi
-          </span>
-          <a class="mv-btn mv-btn--ghost mv-btn--sm" href="../index.html">Siteye Dön</a>
-        </div>
-      </header>
-
-      <div class="mv-admin-shell__content">
-
-        <!-- Hoşgeldin -->
-        <div class="dash-greeting">
-          <div>
-            <div class="dash-greeting__title" id="greetingTitle">Hoş geldin, Yönetici</div>
-            <div class="dash-greeting__sub" id="greetingSub">metavis1on yönetim merkezine erişim sağlandı.</div>
-          </div>
-          <div class="mv-text-muted" id="greetingClock" style="font-family:var(--mv-font-mono); font-size:1.05rem;"></div>
-        </div>
-
-        <!-- Hızlı İstatistikler -->
-        <div class="mv-grid mv-grid--4">
-          <div class="mv-stat">
-            <div class="mv-stat__label">Bağlı Uygulama</div>
-            <div class="mv-stat__value" id="statApps">—</div>
-            <div class="mv-stat__hint">Toplam (admin + public)</div>
-          </div>
-          <div class="mv-stat">
-            <div class="mv-stat__label">Public Modüller</div>
-            <div class="mv-stat__value" id="statPublic">—</div>
-            <div class="mv-stat__hint">Vitrinde herkese açık</div>
-          </div>
-          <div class="mv-stat">
-            <div class="mv-stat__label">Admin Modülleri</div>
-            <div class="mv-stat__value" id="statAdmin">—</div>
-            <div class="mv-stat__hint">Yetkili erişim</div>
-          </div>
-          <div class="mv-stat">
-            <div class="mv-stat__label">Sistem Durumu</div>
-            <div class="mv-stat__value" style="color:var(--mv-accent-green);">Aktif</div>
-            <div class="mv-stat__hint">Tüm servisler çalışıyor</div>
-          </div>
-        </div>
-
-        <!-- Bağlı Uygulamalar -->
-        <div class="section-heading">Bağlı Uygulamalar</div>
-        <div class="mv-grid mv-grid--auto" id="adminAppGrid">
-          <!-- JS ile doldurulur -->
-        </div>
-
-        <!-- Sonraki Modüller (Placeholder) -->
-        <div class="section-heading">Sonraki Fazlar — Yer Tutucu</div>
-        <div class="mv-grid mv-grid--3">
-          <div class="mv-card mv-card--glass placeholder-card">
-            <div class="mv-card__header">
-              <div class="mv-card__title">📣 Duyurular</div>
-              <span class="mv-badge">Soon</span>
-            </div>
-            <div class="mv-card__desc">Ana sitedeki duyuru bandını yönetmek için modül. Firestore koleksiyon: <code>announcements</code>.</div>
-          </div>
-          <div class="mv-card mv-card--glass placeholder-card">
-            <div class="mv-card__header">
-              <div class="mv-card__title">📅 Etkinlik Takvimi</div>
-              <span class="mv-badge">Soon</span>
-            </div>
-            <div class="mv-card__desc">Discord etkinlik takvimi ile senkronize edilecek tek noktadan yönetim ekranı.</div>
-          </div>
-          <div class="mv-card mv-card--glass placeholder-card">
-            <div class="mv-card__header">
-              <div class="mv-card__title">📝 İçerik Yönetimi</div>
-              <span class="mv-badge">Soon</span>
-            </div>
-            <div class="mv-card__desc">Ekip kartları, FAQ soruları, manifesto, hero metinleri.</div>
-          </div>
-          <div class="mv-card mv-card--glass placeholder-card">
-            <div class="mv-card__header">
-              <div class="mv-card__title">🧩 Uygulama Yönetimi</div>
-              <span class="mv-badge">Soon</span>
-            </div>
-            <div class="mv-card__desc">Uygulamaları yayında / gizli toggle'ları, açıklamalar, ikonlar.</div>
-          </div>
-          <div class="mv-card mv-card--glass placeholder-card">
-            <div class="mv-card__header">
-              <div class="mv-card__title">⚙️ Site Ayarları</div>
-              <span class="mv-badge">Soon</span>
-            </div>
-            <div class="mv-card__desc">Discord davet bağlantısı, sosyal medya, varsayılan tema, sayaçlar.</div>
-          </div>
-          <div class="mv-card mv-card--glass placeholder-card">
-            <div class="mv-card__header">
-              <div class="mv-card__title">📋 Sistem Logları</div>
-              <span class="mv-badge">Soon</span>
-            </div>
-            <div class="mv-card__desc">Kim ne zaman neyi değiştirdi — Firestore <code>sysLogs</code> entegrasyonu.</div>
-          </div>
-        </div>
-
+      <div class="adm-hero__meta" aria-live="polite">
+        <div class="adm-hero__clock" id="admClock">—</div>
+        <div class="adm-hero__user">Oturum: <strong id="admUserLabel">—</strong></div>
       </div>
     </section>
-  </div>
 
-  <!-- Shared scriptler -->
+    <!-- ============================================================
+         STAT KARTLARI
+         ============================================================ -->
+    <div class="adm-section-head">
+      <div>
+        <div class="adm-section-eyebrow">Durum Özeti</div>
+        <h2 class="adm-section-title">Sistem göstergeleri</h2>
+      </div>
+      <div class="adm-section-hint">Statik özet · canlı veri bu fazda yok</div>
+    </div>
+
+    <div class="adm-stat-grid">
+      <div class="adm-stat adm-stat--ok">
+        <div class="adm-stat__label">Portal Durumu</div>
+        <div class="adm-stat__value">Aktif</div>
+        <div class="adm-stat__hint">Public portal yayında</div>
+      </div>
+      <div class="adm-stat">
+        <div class="adm-stat__label">Bağlı Uygulamalar</div>
+        <div class="adm-stat__value">4</div>
+        <div class="adm-stat__hint">Visiocial · Tetris · GRID · Borç</div>
+      </div>
+      <div class="adm-stat">
+        <div class="adm-stat__label">Yönetim Modülü</div>
+        <div class="adm-stat__value">Borç Paneli</div>
+        <div class="adm-stat__hint">Yetkili erişim, ayrı kapı</div>
+      </div>
+      <div class="adm-stat">
+        <div class="adm-stat__label">Sürüm</div>
+        <div class="adm-stat__value">v11.2.0</div>
+        <div class="adm-stat__hint">Admin dashboard polish</div>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         HIZLI ERİŞİM
+         ============================================================ -->
+    <div class="adm-section-head">
+      <div>
+        <div class="adm-section-eyebrow">Hızlı Erişim</div>
+        <h2 class="adm-section-title">Modüller ve bağlantılar</h2>
+      </div>
+      <div class="adm-section-hint">Borç paneli vurgulanmıştır</div>
+    </div>
+
+    <div class="adm-access-grid">
+      <!-- Borç Paneli — vurgu kartı -->
+      <a class="adm-access adm-access--primary" href="./borc/">
+        <div class="adm-access__head">
+          <div class="adm-access__glyph" aria-hidden="true">₺</div>
+          <div>
+            <div class="adm-access__title">Borç Paneli</div>
+            <div class="adm-access__sub">Yetkili modül · admin/borc/</div>
+          </div>
+        </div>
+        <div class="adm-access__body">
+          Topluluk borç takibi, taksit kayıtları ve sistem logları. Yetkili oturum kontrolü ayrı bir katmanda devam ediyor.
+        </div>
+        <div class="adm-access__cta">Paneli aç →</div>
+      </a>
+
+      <a class="adm-access" href="../index.html">
+        <div class="adm-access__head">
+          <div class="adm-access__glyph" aria-hidden="true">◐</div>
+          <div>
+            <div class="adm-access__title">Public Portal</div>
+            <div class="adm-access__sub">Anasayfa</div>
+          </div>
+        </div>
+        <div class="adm-access__body">
+          metavis1on ana sayfası: duyurular, ekosistem, değerler, etkinlikler ve projeler.
+        </div>
+        <div class="adm-access__cta">Siteye git →</div>
+      </a>
+
+      <a class="adm-access" href="../public/projeler.html">
+        <div class="adm-access__head">
+          <div class="adm-access__glyph" aria-hidden="true">▢</div>
+          <div>
+            <div class="adm-access__title">Projeler Sayfası</div>
+            <div class="adm-access__sub">Vitrin</div>
+          </div>
+        </div>
+        <div class="adm-access__body">
+          Tüm mini uygulamaların ve modüllerin halka açık vitrini.
+        </div>
+        <div class="adm-access__cta">Vitrine git →</div>
+      </a>
+
+      <a class="adm-access" href="../visiocial.html">
+        <div class="adm-access__head">
+          <div class="adm-access__glyph" aria-hidden="true">◈</div>
+          <div>
+            <div class="adm-access__title">Visiocial</div>
+            <div class="adm-access__sub">Sosyal · Demo / Prototip</div>
+          </div>
+        </div>
+        <div class="adm-access__body">
+          Topluluk sosyal ağ prototipi. UI/UX demosu.
+        </div>
+        <div class="adm-access__cta">Modülü aç →</div>
+      </a>
+
+      <a class="adm-access" href="../tetris.html">
+        <div class="adm-access__head">
+          <div class="adm-access__glyph" aria-hidden="true">▦</div>
+          <div>
+            <div class="adm-access__title">Tetris</div>
+            <div class="adm-access__sub">Mini Oyun</div>
+          </div>
+        </div>
+        <div class="adm-access__body">
+          Neon temalı klasik Tetris. Mobil destekli.
+        </div>
+        <div class="adm-access__cta">Oyunu aç →</div>
+      </a>
+
+      <a class="adm-access" href="../game.html">
+        <div class="adm-access__head">
+          <div class="adm-access__glyph" aria-hidden="true">▩</div>
+          <div>
+            <div class="adm-access__title">GRID</div>
+            <div class="adm-access__sub">Puzzle</div>
+          </div>
+        </div>
+        <div class="adm-access__body">
+          Sayı birleştirme bulmacası, neon estetik.
+        </div>
+        <div class="adm-access__cta">Oyunu aç →</div>
+      </a>
+    </div>
+
+    <!-- ============================================================
+         SİSTEM DURUMU (STATİK)
+         ============================================================ -->
+    <div class="adm-section-head">
+      <div>
+        <div class="adm-section-eyebrow">Sistem Durumu</div>
+        <h2 class="adm-section-title">Statik durum özeti</h2>
+      </div>
+      <div class="adm-section-hint">Gerçek monitoring değil — bilgi amaçlı</div>
+    </div>
+
+    <div class="adm-sys" role="list">
+      <div class="adm-sys__row" role="listitem">
+        <div class="adm-sys__label">
+          Public portal
+          <small>metavis1on.com ana sayfa</small>
+        </div>
+        <span class="adm-sys__state adm-sys__state--ok">Yayında</span>
+      </div>
+      <div class="adm-sys__row" role="listitem">
+        <div class="adm-sys__label">
+          SEO dosyaları
+          <small>robots.txt · sitemap.xml</small>
+        </div>
+        <span class="adm-sys__state adm-sys__state--ok">Mevcut</span>
+      </div>
+      <div class="adm-sys__row" role="listitem">
+        <div class="adm-sys__label">
+          Sosyal kart
+          <small>og-card.png · 1200×630</small>
+        </div>
+        <span class="adm-sys__state adm-sys__state--ok">Aktif</span>
+      </div>
+      <div class="adm-sys__row" role="listitem">
+        <div class="adm-sys__label">
+          Admin veri bağlantısı
+          <small>Bağlı bir veri kaynağı yok</small>
+        </div>
+        <span class="adm-sys__state adm-sys__state--info">Bu fazda statik</span>
+      </div>
+      <div class="adm-sys__row" role="listitem">
+        <div class="adm-sys__label">
+          Borç paneli
+          <small>admin/borc/ — ayrı yetkili kapı</small>
+        </div>
+        <span class="adm-sys__state adm-sys__state--mute">Ayrı panel</span>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         SÜRÜM GEÇMİŞİ
+         ============================================================ -->
+    <div class="adm-section-head">
+      <div>
+        <div class="adm-section-eyebrow">Sürüm Geçmişi</div>
+        <h2 class="adm-section-title">v11 portal zaman çizelgesi</h2>
+      </div>
+    </div>
+
+    <ol class="adm-timeline" aria-label="Sürüm geçmişi">
+      <li class="adm-timeline__item adm-timeline__item--current">
+        <div class="adm-timeline__head">
+          <span class="adm-timeline__ver">v11.2.0</span>
+          <span class="adm-timeline__title">admin dashboard polish</span>
+        </div>
+      </li>
+      <li class="adm-timeline__item">
+        <div class="adm-timeline__head">
+          <span class="adm-timeline__ver">v11.1.5</span>
+          <span class="adm-timeline__title">logo asset optimizasyonu</span>
+        </div>
+      </li>
+      <li class="adm-timeline__item">
+        <div class="adm-timeline__head">
+          <span class="adm-timeline__ver">v11.1.4</span>
+          <span class="adm-timeline__title">focus-trap / scroll-lock eklendi</span>
+        </div>
+      </li>
+      <li class="adm-timeline__item">
+        <div class="adm-timeline__head">
+          <span class="adm-timeline__ver">v11.1.3</span>
+          <span class="adm-timeline__title">mobil nav ve erişilebilirlik iyileştirildi</span>
+        </div>
+      </li>
+      <li class="adm-timeline__item">
+        <div class="adm-timeline__head">
+          <span class="adm-timeline__ver">v11.1.2</span>
+          <span class="adm-timeline__title">favicon / OG kart eklendi</span>
+        </div>
+      </li>
+      <li class="adm-timeline__item">
+        <div class="adm-timeline__head">
+          <span class="adm-timeline__ver">v11.1.1</span>
+          <span class="adm-timeline__title">SEO / sitemap eklendi</span>
+        </div>
+      </li>
+      <li class="adm-timeline__item">
+        <div class="adm-timeline__head">
+          <span class="adm-timeline__ver">v11.0.7</span>
+          <span class="adm-timeline__title">v11 portal canlı ana sayfa oldu</span>
+        </div>
+      </li>
+    </ol>
+
+    <!-- ============================================================
+         YAKINDA MODÜLLERİ
+         ============================================================ -->
+    <div class="adm-section-head">
+      <div>
+        <div class="adm-section-eyebrow">Yol Haritası</div>
+        <h2 class="adm-section-title">Yakında — hazırlık aşaması</h2>
+      </div>
+      <div class="adm-section-hint">Bu fazda etkileşim yok</div>
+    </div>
+
+    <div class="adm-soon-grid">
+      <div class="adm-soon" aria-disabled="true">
+        <div class="adm-soon__head">
+          <div class="adm-soon__title">Duyuru Yönetimi</div>
+          <span class="adm-soon__badge">Hazırlık</span>
+        </div>
+        <div class="adm-soon__desc">Ana sitedeki duyuru şeridine yönetim arayüzü.</div>
+      </div>
+      <div class="adm-soon" aria-disabled="true">
+        <div class="adm-soon__head">
+          <div class="adm-soon__title">Etkinlik Yönetimi</div>
+          <span class="adm-soon__badge">Hazırlık</span>
+        </div>
+        <div class="adm-soon__desc">Yaklaşan etkinlikler listesinin merkezi düzenleme alanı.</div>
+      </div>
+      <div class="adm-soon" aria-disabled="true">
+        <div class="adm-soon__head">
+          <div class="adm-soon__title">Uygulama Bağlantıları</div>
+          <span class="adm-soon__badge">Hazırlık</span>
+        </div>
+        <div class="adm-soon__desc">Vitrindeki uygulama kartlarının görünürlük ve sıra kontrolü.</div>
+      </div>
+      <div class="adm-soon" aria-disabled="true">
+        <div class="adm-soon__head">
+          <div class="adm-soon__title">Sistem Logları</div>
+          <span class="adm-soon__badge">Hazırlık</span>
+        </div>
+        <div class="adm-soon__desc">Yönetici aksiyonlarının kronolojik kaydı için ileride bağlanacak.</div>
+      </div>
+    </div>
+
+    <div class="adm-foot">
+      <span>metavis1on Admin Command Center · v11.2.0</span>
+      <span>© <span data-mv-year>2026</span> metavis1on</span>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       SCRIPTS — shared (DOKUNULMADI)
+       ============================================================ -->
   <script src="../shared/config/site.js"></script>
   <script src="../shared/js/core.js"></script>
   <script src="../shared/js/theme.js"></script>
   <script src="../shared/js/auth.js"></script>
-  <script src="../shared/js/apps.js"></script>
-  <script src="../shared/js/nav.js"></script>
 
   <script>
     (function () {
       'use strict';
 
-      // 1) Yetki kontrolü — oturum yoksa login'e yönlendir
+      // 1) Yetki kontrolü — oturum yoksa login'e yönlendir.
+      //    Bu kontrol önceki dashboard.html davranışıyla aynıdır.
       if (!MV.auth.requireAdmin('./index.html')) return;
 
-      const user = MV.auth.getUser();
-      const userLabel = document.getElementById('adminUserLabel');
-      const greet = document.getElementById('greetingTitle');
+      var user = MV.auth.getUser();
+      var userLabel = document.getElementById('admUserLabel');
       if (user && userLabel) userLabel.textContent = user.username;
-      if (user && greet) greet.textContent = 'Hoş geldin, ' + MV.core.escapeHtml(user.username);
 
-      // 2) Saat
+      // 2) Saat — her 30sn'de güncellenir
       function tick() {
-        const el = document.getElementById('greetingClock');
+        var el = document.getElementById('admClock');
         if (!el) return;
-        const now = new Date();
-        el.textContent = now.toLocaleString('tr-TR', { weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' });
+        var now = new Date();
+        el.textContent = now.toLocaleString('tr-TR', {
+          weekday: 'long', day: '2-digit', month: 'long',
+          hour: '2-digit', minute: '2-digit'
+        });
       }
       tick();
       setInterval(tick, 30 * 1000);
 
-      // 3) İstatistik kartları
-      const all = MV.apps.all();
-      const pub = MV.apps.byVisibility('public');
-      const adm = MV.apps.byVisibility('admin');
-      const $ = MV.core.$;
-      $('#statApps').textContent   = all.length;
-      $('#statPublic').textContent = pub.length;
-      $('#statAdmin').textContent  = adm.length;
-
-      // 4) Uygulama kartları
-      const grid = document.getElementById('adminAppGrid');
-      function buildAppCard(app) {
-        const card = document.createElement('div');
-        card.className = 'mv-card mv-card--glass app-card';
-
-        const accent = 'mv-card__icon--' + (app.accent || 'cyan');
-        const isAdmin = (app.visibility === 'admin');
-        const badge = isAdmin
-          ? '<span class="mv-badge mv-badge--admin">Admin</span>'
-          : (app.status === 'prototype'
-              ? '<span class="mv-badge mv-badge--demo">Demo</span>'
-              : '<span class="mv-badge mv-badge--public">Public</span>');
-
-        const iconMap = { visiocial: 'V', tetris: 'T', grid: 'G', borc: '₺' };
-        const glyph = MV.core.escapeHtml(iconMap[app.id] || '·');
-
-        card.innerHTML =
-          '<div class="app-card__head">' +
-            '<div class="mv-card__icon ' + accent + '"><span style="font-size:1.4rem;">' + glyph + '</span></div>' +
-            '<div style="flex:1;">' +
-              '<div class="app-card__title">' + MV.core.escapeHtml(app.name) + '</div>' +
-              '<div class="app-card__sub">' + MV.core.escapeHtml(app.tag) + '</div>' +
-            '</div>' +
-            badge +
-          '</div>' +
-          '<div class="app-card__body">' + MV.core.escapeHtml(app.description) + '</div>' +
-          '<div class="app-card__meta">' +
-            '<a class="mv-btn mv-btn--sm" href="' + MV.core.escapeHtml(app.id === 'borc' ? './borc/' : app.legacyUrl) + '">Modülü Aç</a>' +
-            '<span class="mv-text-muted" style="font-size:0.75rem;">' +
-              (app.id === 'borc'
-                ? 'admin/borc/ altında, oturum koruması aktif'
-                : 'Eski URL üzerinden erişim') +
-            '</span>' +
-          '</div>';
-
-        if (app.id === 'borc') {
-          const note = document.createElement('div');
-          note.className = 'future-note';
-          note.style.background = 'rgba(0, 230, 118, 0.06)';
-          note.style.borderColor = 'rgba(0, 230, 118, 0.25)';
-          note.style.color = 'var(--mv-accent-green)';
-          note.innerHTML = '✓ Modül <code>admin/borc/</code>\'a taşındı. Eski <code>/borc.html</code> URL\'i artık buraya yönlendirir. Firebase bağlantısı, <code>debts</code>/<code>sysLogs</code> koleksiyonları ve tüm özellikler korunuyor.';
-          card.appendChild(note);
-        }
-
-        return card;
+      // 3) Yıl güncelleyici
+      if (window.MV && MV.core && MV.core.setCurrentYear) {
+        MV.core.setCurrentYear('[data-mv-year]');
       }
-      all.forEach(function (a) { grid.appendChild(buildAppCard(a)); });
 
-      // 5) Logout
-      MV.core.on(document.getElementById('logoutBtn'), 'click', function () {
-        MV.auth.logout();
-        MV.core.toast('Oturum kapatıldı.', 'info', 1500);
-        setTimeout(function () { window.location.replace('./index.html'); }, 700);
-      });
+      // 4) Çıkış yap
+      var logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          MV.auth.logout();
+          if (MV.core && MV.core.toast) {
+            MV.core.toast('Oturum kapatıldı.', 'info', 1500);
+          }
+          setTimeout(function () { window.location.replace('./index.html'); }, 700);
+        });
+      }
     })();
   </script>
 </body>
