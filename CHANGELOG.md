@@ -7,6 +7,144 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-beta.2] — Firebase Auth Trial Persistence and Production Guard Scaffold
+
+- **Trial flag persistence eklendi.** Dev hostta
+  `?mvFirebaseLogin=1` (veya `=true`) admin login/dashboard
+  sayfalarında `sessionStorage` key `mv_firebase_login_trial`'i
+  `'1'` olarak yazar; `?mvFirebaseLogin=0` (veya `=false`) bu
+  key'i temizler. Aynı browser session boyunca login → dashboard
+  navigasyonu query string'i kaybetse bile trial aktif kalır —
+  tek bir `?mvFirebaseLogin=1` ile zincirin tümü (login form +
+  dashboard logout) Firebase moduna alınabilir.
+- **Production'da query param tamamen no-op.** Dev host
+  detection (`localhost` / `127.0.0.1` / `0.0.0.0` / `file:`)
+  geçmeyen host'ta `?mvFirebaseLogin=...` ne okunur ne yazılır.
+  Stray bir URL production trial'ı toggle edemez. Explicit
+  `window.MV_ADMIN_FIREBASE_LOGIN === true` override'ı host
+  bağımsız çalışmaya devam eder (alpha.19 davranışı korunur).
+- **`isFirebaseLoginTrialEnabled()` artık üç kanaldan birini
+  OR'lar:**
+  1. `window.MV_ADMIN_FIREBASE_LOGIN === true` (explicit, any host)
+  2. Dev host + valid `?mvFirebaseLogin=1/true` query param (immediate)
+  3. `sessionStorage 'mv_firebase_login_trial' === '1'` (persisted)
+- **Persistence yazımı `isAuthed()` / `requireAdmin` short-circuit'-
+  inden önce çalışır.** Hem `admin/index.html` hem
+  `admin/dashboard.html` IIFE'lerinin en üstünde
+  `persistFirebaseLoginTrialIfRequested()` çağrılır; redirect
+  yolu çalışsa bile dev hostta sessionStorage key güncellenir.
+- **Helper iskeleti tutarlı:** `isDevHost`,
+  `getFirebaseLoginTrialParam`, `persistFirebaseLoginTrialIfRequested`,
+  `isFirebaseLoginTrialPersisted`, `isFirebaseLoginTrialEnabled`
+  her iki HTML dosyasında aynı imzayla. HTML duplication bu
+  fazda bilinçli kabul edildi; shared helper'a taşımak ileride
+  düşünülebilir.
+- **Production `devLogin` guard scaffold eklendi
+  (`shared/js/auth.js`).** Yeni internal helper'lar
+  `isProductionHostForDevLoginGuard()` ve `isDevLoginGuardEnforced()`.
+  `MV.auth.devLogin` artık enforce flag aktifken kontrol eder:
+  ```
+  if (window.MV_ENFORCE_FIREBASE_AUTH === true && !isDevHost)
+    return { ok:false, error:'Geliştirme girişi üretim ortamında devre dışı.' };
+  ```
+  Diğer tüm durumlarda devLogin format-only davranışıyla
+  **bit-identical** çalışmaya devam eder.
+- **Default enforce OFF — canlı kilitleme yok.** Production
+  Firebase config + admin allowlist + smoke test henüz default
+  loader path'inde tamamlanmadığı için `MV_ENFORCE_FIREBASE_AUTH`
+  default'u `false` olarak bırakıldı. Production hostta enforce
+  flag set edilmedikçe `devLogin` hâlâ format-only davranışıyla
+  açık. Enforce eşiği beta.3+ fazına bırakıldı.
+- **Guard scaffold yüzeyi dar tutuldu:**
+  - `MV.auth` üzerinde yeni public API eklenmedi
+    (`inspect` / `isReady` / `signIn` / `signOut` / `currentUser`
+    / `onChange` / `createSessionFromResult`
+    / `clearSessionAfterSignOut` / `isAuthed` / `getUser`
+    / `requireAdmin` / `logout` imzaları **bit-identical**).
+  - `MV.auth.firebase.*` davranışı değişmedi.
+  - Dev host'larda (`localhost` / `127.0.0.1` / `0.0.0.0` /
+    `file:`) guard aktif değil; `MV_ENFORCE_FIREBASE_AUTH=true`
+    set edilmiş olsa bile `devLogin` çalışır (operatörü local
+    geliştirmede kilitlememek için).
+  - `SESSION_KEY` (`'mv_admin_session'`), `SESSION_TTL_MS`
+    (8 saat), `mv_admin_session` payload şekli **bit-identical**.
+- **Karar matrisi (devLogin çağrısı):**
+  | Koşul | Dönüş |
+  |---|---|
+  | Dev host (her zaman) | Mevcut format-only davranış |
+  | Production host + enforce flag yok | Mevcut format-only davranış (default) |
+  | Production host + `MV_ENFORCE_FIREBASE_AUTH === true` | `{ ok:false, error:'Geliştirme girişi üretim ortamında devre dışı.' }` |
+- **Default davranış matrisi (trial flag yok + enforce flag yok):**
+  - `admin/index.html` submit → eski `MV.auth.devLogin` zinciri
+    (350ms→500ms→`./dashboard.html`).
+  - `admin/dashboard.html` logout click → eski `MV.auth.logout` +
+    `MV.core.toast('Oturum kapatıldı.', 'info', 1500)` +
+    `setTimeout(700)` + `./index.html` zinciri.
+  - sessionStorage payload `provider:'dev-session'`, `loginAt`,
+    `username` aynen alpha.19 / beta.1 öncesi gibi.
+- **Davranış matrisi (trial flag persistence):**
+  | URL / Flag | Dev host | Production host |
+  |---|---|---|
+  | `?mvFirebaseLogin=1` veya `=true` | sessionStorage yazılır → trial aktif | no-op (read & write yok) |
+  | `?mvFirebaseLogin=0` veya `=false` | sessionStorage temizlenir → trial pasif | no-op |
+  | Param yok, sessionStorage `'1'` | trial aktif (persistence) | trial aktif **yalnız** `MV_ADMIN_FIREBASE_LOGIN===true` ile |
+  | `window.MV_ADMIN_FIREBASE_LOGIN = true` | trial aktif | trial aktif |
+- **Dokümantasyon güncellendi:**
+  - `docs/firebase-local-setup.md`:
+    - Belge sürümü v12.0.0-beta.1 → beta.2; hedef faz beta.3+.
+    - Phase Log'a beta.2 satırı eklendi; beta.1 hash'i `b0cb84b`
+      olarak doğrulandı; başlık "alpha.6 → beta.2".
+    - Current Scope: trial persistence + production devLogin
+      guard scaffold bullet'ları eklendi.
+    - Capability Matrix: "Trial flag persistence — available"
+      ve "Production devLogin guard scaffold — available,
+      enforce pending" satırları eklendi.
+    - Yeni **§12 "Trial Persistence and Production devLogin
+      Guard"** bölümü (§12.1 persistence rules + helpers + URL/host
+      tablosu + DevTools doğrulama, §12.2 enforce koşulları +
+      dönüş matrisi + helper garantileri + DevTools doğrulama,
+      §12.3 beta.3 enforce eşik koşulları). TOC: §12 → §13,
+      §13 → §14, §14 → §15.
+    - Troubleshooting tablosuna 4 yeni satır eklendi
+      (persistence kayıp, `?mvFirebaseLogin=0` çalışmadı,
+      production enforce çalışmadı, dev hostta enforce etkisiz).
+    - Security Notes maddesi enforce flag policy'siyle
+      güncellendi.
+    - Next Roadmap beta.3 enforce hedefiyle yenilendi;
+      Firestore foundation v12.1.0'a kaydı.
+    - Sürüm Notu satırı v12.0.0-beta.2 ile genişletildi.
+  - `docs/v12-readiness.md`:
+    - Auth Wrapper Layer Status'a "Trial flag persistence:
+      available (beta.2)" ve "Production devLogin guard:
+      available, enforce pending (beta.2)" bullet'ları eklendi.
+      beta.1 hash'i `b0cb84b` olarak doğrulandı.
+    - Sürüm tablosuna v12.0.0-beta.2 satırı eklendi.
+  - `docs/README.md`:
+    - Firebase Local Setup doküman açıklaması "alpha.6 →
+      **beta.1**" → "alpha.6 → **beta.2**" güncellendi; trial
+      flag persistence + production devLogin guard scaffold
+      ifadeleri eklendi.
+- **Dokunulmayan dosyalar / kapsam dışı:**
+  - `shared/config/firebase.js`,
+    `shared/config/firebase.local.example.js`,
+    `shared/config/site.js` değişmedi.
+  - `admin/announcements.html`, `admin/events.html`,
+    `admin/apps.html`, `admin/logs.html` değişmedi.
+  - `admin/borc/index.html`, `borc.html`, `index.html` değişmedi.
+  - `shared/js/core.js`, `theme.js`, `apps.js`, `shared/css/*`,
+    `assets/*`, `firebase.json`, `.firebaserc`,
+    `firestore.rules`, `firestore.indexes.json`, `.gitignore`
+    değişmedi.
+  - `MV.auth.firebase` API yüzeyi (`isReady`, `inspect`,
+    `signIn`, `createSessionFromResult`, `signOut`,
+    `clearSessionAfterSignOut`, `onChange`, `currentUser`)
+    **bit-identical**.
+  - `MV.auth` üzerinde yeni public API yok.
+  - `SESSION_KEY` (`'mv_admin_session'`), `SESSION_TTL_MS`
+    (8 saat), sessionStorage payload şekli **bit-identical**.
+  - Firestore SDK eklenmedi; CRUD yok; gerçek Firebase config /
+    apiKey / projectId / appId / UID / email repo'ya girmedi.
+
 ## [v12.0.0-beta.1] — Firebase Admin Auth Trial Bundle
 
 - `admin/dashboard.html` logout butonu opt-in Firebase trial moduna

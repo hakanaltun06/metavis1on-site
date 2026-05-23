@@ -21,6 +21,45 @@
   const SESSION_KEY = 'mv_admin_session';
   const SESSION_TTL_MS = 8 * 60 * 60 * 1000; // 8 saat
 
+  /* beta.2: production devLogin guard scaffold.
+     ----------------------------------------------------------------
+     devLogin remains the format-only dev session producer it has
+     always been. The scaffold below ONLY closes that door when BOTH
+     conditions hold:
+       (a) the current host is NOT a recognized dev host
+           (localhost / 127.0.0.1 / 0.0.0.0 / file:), AND
+       (b) window.MV_ENFORCE_FIREBASE_AUTH === true is explicitly set.
+     Default repo behavior is unchanged: production hosts without the
+     explicit enforce flag still accept devLogin, because the real
+     Firebase production config has not landed in the default loader
+     path yet. Locking devLogin in production without a working
+     Firebase route would strand operators out of the live admin —
+     so this stage only ships the scaffold. The enforce flag will be
+     turned on by a later phase (beta.3+) once Firebase production
+     config + admin allowlist are wired up and verified.
+     This guard is intentionally narrow:
+       - No new public API surface on MV.auth.
+       - No effect on MV.auth.firebase wrapper methods.
+       - No effect on dev hosts (localhost / 127.0.0.1 / 0.0.0.0 /
+         file:) regardless of MV_ENFORCE_FIREBASE_AUTH.
+       - No effect on requireAdmin / isAuthed / logout / getUser.
+       - Only devLogin's branch behavior changes, and only when both
+         conditions above hold.
+     ---------------------------------------------------------------- */
+  function isProductionHostForDevLoginGuard() {
+    if (typeof window === 'undefined' || !window.location) return false;
+    if (window.location.protocol === 'file:') return false;
+    const h = window.location.hostname || '';
+    if (h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0') return false;
+    return true;
+  }
+
+  function isDevLoginGuardEnforced() {
+    return typeof window !== 'undefined' &&
+           window.MV_ENFORCE_FIREBASE_AUTH === true &&
+           isProductionHostForDevLoginGuard();
+  }
+
   function readSession() {
     try {
       const raw = sessionStorage.getItem(SESSION_KEY);
@@ -468,8 +507,13 @@
     /* Geçici dev login.
        Production auth Firebase ile bağlanacak — bu fonksiyon o zaman
        gerçek bir signInWithEmailAndPassword çağrısına dönüşecek.
-       Şu an SADECE format kontrolü yapar; parola DOĞRULAMASI YAPMAZ. */
+       Şu an SADECE format kontrolü yapar; parola DOĞRULAMASI YAPMAZ.
+       beta.2: production hostta MV_ENFORCE_FIREBASE_AUTH === true ise
+       devLogin kapatılır (scaffold; default off — bkz. helper bloğu). */
     devLogin: function (username, password) {
+      if (isDevLoginGuardEnforced()) {
+        return { ok: false, error: 'Geliştirme girişi üretim ortamında devre dışı.' };
+      }
       if (!username || !password) {
         return { ok: false, error: 'Kullanıcı adı ve parola zorunludur.' };
       }

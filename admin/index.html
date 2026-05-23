@@ -169,6 +169,13 @@
     (function () {
       'use strict';
 
+      const FIREBASE_LOGIN_TRIAL_KEY = 'mv_firebase_login_trial';
+
+      // beta.2: trial flag persistence MUST run before any redirect /
+      // short-circuit so a freshly-arrived ?mvFirebaseLogin=1 (or =0)
+      // is honored even when MV.auth.isAuthed() bounces to dashboard.
+      persistFirebaseLoginTrialIfRequested();
+
       // Zaten giriş yapmışsa direkt dashboard'a yönlendir
       if (MV.auth.isAuthed()) {
         window.location.replace('./dashboard.html');
@@ -196,13 +203,22 @@
         feedback.classList.remove('is-info');
       }
 
-      /* alpha.19: Opt-in Firebase login trial.
-         Trial is OFF by default. The submit handler keeps the existing
-         MV.auth.devLogin / sessionStorage path bit-identical unless an
-         explicit opt-in tells us to use Firebase. Two opt-in channels:
+      /* alpha.19 + beta.2: Opt-in Firebase login trial with session
+         persistence. Trial is OFF by default. The submit handler keeps
+         the existing MV.auth.devLogin / sessionStorage path bit-
+         identical unless an explicit opt-in tells us to use Firebase.
+         Three opt-in channels (any one is sufficient):
            1) window.MV_ADMIN_FIREBASE_LOGIN === true (explicit, any host)
            2) URL query ?mvFirebaseLogin=1 (or =true) on dev hosts only
               (localhost / 127.0.0.1 / 0.0.0.0 / file:)
+           3) sessionStorage 'mv_firebase_login_trial' === '1', written
+              by channel #2 on a prior visit so the trial survives an
+              in-session navigation that drops the query string
+              (login → dashboard).
+         On dev hosts ?mvFirebaseLogin=1/true also writes the
+         sessionStorage key; ?mvFirebaseLogin=0/false clears it. On
+         production hosts the query param is fully ignored (no read,
+         no write) so a stray URL cannot toggle the trial in prod.
          When the trial is on AND the wrapper is present AND Firebase is
          ready, signIn + createSessionFromResult drive the redirect.
          When Firebase is not ready (placeholder, missing-loader, etc.)
@@ -218,15 +234,52 @@
         return h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0';
       }
 
-      function isFirebaseLoginTrialEnabled() {
-        if (typeof window === 'undefined') return false;
-        if (window.MV_ADMIN_FIREBASE_LOGIN === true) return true;
+      function getFirebaseLoginTrialParam() {
+        if (typeof window === 'undefined' || !window.location) return null;
         try {
           const q = new URLSearchParams(window.location.search || '');
-          const v = q.get('mvFirebaseLogin');
-          if (v === '1' || v === 'true') return isDevHost();
+          if (!q.has('mvFirebaseLogin')) return null;
+          return q.get('mvFirebaseLogin');
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function persistFirebaseLoginTrialIfRequested() {
+        // Production hosts: full no-op (no read, no write).
+        if (!isDevHost()) return;
+        const v = getFirebaseLoginTrialParam();
+        if (v === null) return;
+        try {
+          if (v === '1' || v === 'true') {
+            sessionStorage.setItem(FIREBASE_LOGIN_TRIAL_KEY, '1');
+          } else if (v === '0' || v === 'false') {
+            sessionStorage.removeItem(FIREBASE_LOGIN_TRIAL_KEY);
+          }
         } catch (e) { /* swallow */ }
-        return false;
+      }
+
+      function isFirebaseLoginTrialPersisted() {
+        try {
+          return sessionStorage.getItem(FIREBASE_LOGIN_TRIAL_KEY) === '1';
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function isFirebaseLoginTrialEnabled() {
+        if (typeof window === 'undefined') return false;
+        // 1) Explicit global flag (any host)
+        if (window.MV_ADMIN_FIREBASE_LOGIN === true) return true;
+        // 2) Dev host + valid query param (immediate activation;
+        //    persistence is also written by the call above so the
+        //    flag survives navigation to the dashboard).
+        if (isDevHost()) {
+          const v = getFirebaseLoginTrialParam();
+          if (v === '1' || v === 'true') return true;
+        }
+        // 3) sessionStorage persistence
+        return isFirebaseLoginTrialPersisted();
       }
 
       function hasFirebaseLoginWrapper() {
