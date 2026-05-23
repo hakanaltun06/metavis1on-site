@@ -114,6 +114,12 @@
   <script src="../shared/js/apps.js"></script>
 
   <script>
+    if (window.MV_FIREBASE && typeof window.MV_FIREBASE.init === 'function') {
+      window.MV_FIREBASE.init(window.firebase);
+    }
+  </script>
+
+  <script>
     (function () {
       'use strict';
 

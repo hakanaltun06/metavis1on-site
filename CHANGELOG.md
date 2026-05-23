@@ -7,6 +7,37 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.4] — Firebase Init Call-site
+
+- Borç paneli dışındaki admin sayfalarına fail-safe
+  `MV_FIREBASE.init(window.firebase)` çağrı noktası eklendi:
+  - `admin/index.html`
+  - `admin/dashboard.html`
+  - `admin/announcements.html`
+  - `admin/events.html`
+  - `admin/apps.html`
+  - `admin/logs.html`
+- Call-site konumu: her admin sayfasında shared script bloğunun
+  (`site.js` → `firebase.js` → `core.js` → `theme.js` → `auth.js`,
+  `apps.html`'de + `apps.js`) hemen ardına, ayrı küçük bir `<script>`
+  bloğu olarak. Mevcut inline IIFE bloklarına dokunulmadı.
+- Çağrı `window.MV_FIREBASE` ve `init` fonksiyon kontrolüyle guard
+  edildi; `MV_FIREBASE` tanımsız bile olsa ReferenceError oluşmaz.
+- Firebase SDK hâlâ eklenmediği için `window.firebase` tanımsız;
+  loader'ın fail-safe yolu devreye girer ve `init()` sessizce `false`
+  döner. `MV_FIREBASE.getStatus()` `'disabled'` olarak kalır.
+- Auth wrapper, Firestore, CRUD, deploy veya gerçek Firebase config
+  eklenmedi. Hiçbir `firebase.initializeApp(...)`, `getAuth(...)`,
+  `signInWithEmailAndPassword(...)`, `getFirestore(...)`,
+  `onAuthStateChanged(...)` çağrısı yok.
+- `admin/borc/index.html`, `borc.html` ve public site (`index.html`)
+  dokunulmadı; borç paneli kendi iki katmanlı gate'ini ve inline
+  `firebaseConfig`'ini korumaya devam ediyor.
+- **Davranışsal etki:** sıfır. Mevcut login, logout, sessionStorage
+  tabanlı admin gate, modül akışları aynen çalışıyor; tek fark her
+  admin sayfa load'unda fail-safe init çağrısının canlı çalıştırılıyor
+  olması (sonucu silently `false`).
+
 ## [v12.0.0-alpha.3] — Firebase Loader Script Order
 
 - Admin sayfalarındaki passive Firebase loader script'inden `defer`
