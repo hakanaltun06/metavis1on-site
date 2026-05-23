@@ -7,6 +7,62 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.10] — Opt-in Local Firebase Config Loader
+
+- `shared/config/firebase.js` safe loader'a **default kapalı** bir local
+  config auto-loader eklendi. Aktif olduğunda `shared/config/firebase.local.js`
+  dosyasını `firebase.js`'in sibling'i olarak dinamik `<script>` ile
+  yükler ve `window.MV_FIREBASE_CONFIG`'i hazır ederek `init()`'i
+  retry'lar. Default repo davranışı **bit-identical** kalır: hiçbir
+  ek script tag, hiçbir 404, hiçbir network isteği oluşmaz.
+- **Opt-in koşulları (script-eval anında değerlendirilir):**
+  - `window.MV_FIREBASE_AUTO_LOAD_LOCAL === true` (explicit flag —
+    her host'ta çalışır, kodla deliberate seçimdir), VEYA
+  - URL'de `?mvFirebaseLocal=1` (veya `=true`) **VE** host
+    `localhost` / `127.0.0.1` / `0.0.0.0` / `file:` olduğunda.
+  - Production-like host'ta `?mvFirebaseLocal=1` no-op'tur; loader
+    `'off'` durumunda kalır.
+- **Race-safe init retry:** local script `firebase.js` IIFE evaluation
+  sırasında head'e eklenir. Admin sayfasının inline `MV_FIREBASE.init(window.firebase)`
+  çağrısı bu yükleme bitmeden tetiklenirse: ilk `init()` placeholder
+  döner ama `state.firebaseNamespace` saklanır. Local script `onload`'ı
+  geldiğinde `tryRetryInit()` aynı namespace ile `api.init()`'i tekrar
+  çağırır; config bu kez `looksReal()` geçtiği için `firebase.initializeApp(...)`
+  bir kez çalışır ve status `'ready'` olur. Çift-init yok.
+- **Hata tolerans:** dosya 404 dönerse veya yükleme hata verirse
+  `onerror` sessizce yutulur, `getLocalConfigStatus()` `'error'`
+  olur, sayfa bozulmaz. Console spam yok (debug log yalnızca
+  `MV_DEBUG_FIREBASE === true` ise).
+- **Yeni public helper'lar** (`MV_FIREBASE` üzerinde, side-effect kontrollü):
+  - `isLocalConfigLoadEnabled()` — opt-in koşulları şu an geçerli mi?
+  - `getLocalConfigStatus()` — `'off' | 'skipped' | 'loading' |
+    'loaded' | 'error'`. Default `'off'`.
+  - `loadLocalConfig()` — manuel trigger. Idempotent (ikinci çağrıda
+    sadece mevcut status'u döner, ikinci script tag eklemez).
+- **Path resolution:** `document.currentScript.src`'den base path
+  hesaplanır (`.../shared/config/firebase.js` → `.../shared/config/firebase.local.js`).
+  `currentScript` mevcut değilse (module script, eski tarayıcı vs.)
+  status `'skipped'` olur — yine page-safe.
+- `shared/config/firebase.local.example.js` güncellendi: artık iki yolu
+  (manuel script tag — Path A vs. opt-in auto-loader — Path B) açıkça
+  belgeliyor; gerçek değer yok, sadece placeholder.
+- **Mevcut API yüzeyi bit-identical:** `configured`, `status`, `config`,
+  `note`, `getConfig`, `isConfigured`, `isAvailable`, `isEnabled`,
+  `hasAuthSdk`, `isAuthReady`, `getFirebaseNamespace`, `getAuthProvider`,
+  `hasExternalConfig`, `getExternalConfig`, `resolveConfig`, `init`,
+  `getApp`, `getStatus`, `getLastError` davranışları değişmedi.
+- **No-side-effect kontrolü:** mock harness 9 senaryoda doğrulandı.
+  Tüm başarılı yollar dahil `auth()` çağrı sayacı **0**:
+  `signInWithEmailAndPassword`, `signOut`, `onAuthStateChanged` çağrısı
+  yok. Firestore SDK eklenmedi. Gerçek API key / projectId / appId /
+  measurementId / UID / email repo'ya girmedi.
+- `.gitignore`, admin HTML dosyaları, `admin/borc/index.html`,
+  `borc.html`, `index.html`, `shared/js/auth.js`, `shared/config/site.js`
+  ve diğer `shared/js/*` dosyaları **değişmedi**. `MV.auth.firebase`
+  wrapper'ı (alpha.8) hâlâ dormant. Mevcut login, logout ve
+  sessionStorage tabanlı admin gate davranışı aynen korunuyor. Borç
+  paneli ve public site etkilenmedi.
+
 ## [v12.0.0-alpha.9] — Gated Firebase Config Injection
 
 - `shared/config/firebase.js` safe loader'a **opt-in** config injection
