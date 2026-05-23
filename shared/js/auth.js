@@ -39,20 +39,25 @@
   }
 
   /* ----------------------------------------------------------------------
-     MV.auth.firebase — passive Firebase Auth wrapper (DORMANT).
+     MV.auth.firebase — passive Firebase Auth wrapper (DRY-RUN).
      ----------------------------------------------------------------------
      This namespace prepares a future Firebase-backed auth flow. In this
-     phase Firebase config is still a placeholder, so every wrapper below
-     is a deliberate no-op:
+     phase every wrapper below is deliberately side-effect-free:
        - never calls firebase.auth()
        - never calls signInWithEmailAndPassword / signOut /
          onAuthStateChanged
        - never opens a network request
        - never touches DOM, sessionStorage, or localStorage
        - never alters the existing sessionStorage-based MV.auth gate
-     Wrappers are not invoked by any admin page in this commit. When the
-     real Firebase config lands, the wrapper bodies will be replaced
-     behind the same readiness guard.
+     Behavior split by Firebase Auth readiness (MV_FIREBASE.isAuthReady()):
+       - unready (placeholder / missing-loader / disabled / error):
+           returns { enabled: false, reason: '<status>' }
+       - ready (real config loaded, app initialized, SDK present):
+           returns { enabled: true, simulated: true,
+                     reason: 'ready-no-execute' }
+     Even in the ready branch the wrapper bodies stay dry-run — no SDK
+     call. inspect() exposes a structured snapshot for sanity-checking
+     wiring before alpha.12 flips this to real sign-in execution.
      ---------------------------------------------------------------------- */
   function getFirebaseAuthReadiness() {
     const mvfb = (typeof window !== 'undefined') ? window.MV_FIREBASE : null;
@@ -66,12 +71,40 @@
     return { enabled: true, reason: 'ready' };
   }
 
-  function dormantResult() {
+  function dryRunResult() {
     const r = getFirebaseAuthReadiness();
     if (r.enabled) {
-      return { enabled: false, reason: 'wrapper-dormant' };
+      return { enabled: true, simulated: true, reason: 'ready-no-execute' };
     }
     return { enabled: false, reason: r.reason };
+  }
+
+  function inspectFirebaseAuth() {
+    const mvfb = (typeof window !== 'undefined') ? window.MV_FIREBASE : null;
+    const r = getFirebaseAuthReadiness();
+    const status = (mvfb && typeof mvfb.getStatus === 'function')
+      ? mvfb.getStatus()
+      : 'unknown';
+    const hasAuthSdk = !!(mvfb && typeof mvfb.hasAuthSdk === 'function' && mvfb.hasAuthSdk());
+    const isAuthReady = !!(mvfb && typeof mvfb.isAuthReady === 'function' && mvfb.isAuthReady());
+    const hasProvider = !!(mvfb && typeof mvfb.getAuthProvider === 'function' && mvfb.getAuthProvider() !== null);
+    const localConfig = {
+      enabled: !!(mvfb && typeof mvfb.isLocalConfigLoadEnabled === 'function' && mvfb.isLocalConfigLoadEnabled()),
+      status: (mvfb && typeof mvfb.getLocalConfigStatus === 'function')
+        ? mvfb.getLocalConfigStatus()
+        : 'unavailable'
+    };
+    return {
+      enabled: r.enabled,
+      reason: r.reason,
+      status: status,
+      hasLoader: !!mvfb,
+      hasAuthSdk: hasAuthSdk,
+      isAuthReady: isAuthReady,
+      hasProvider: hasProvider,
+      localConfig: localConfig,
+      mode: 'dry-run'
+    };
   }
 
   const auth = {
@@ -130,25 +163,33 @@
       return false;
     },
 
-    /* Passive Firebase Auth wrapper namespace. See comment block above
-       getFirebaseAuthReadiness(). All methods are dormant in this phase. */
+    /* Passive Firebase Auth wrapper namespace (DRY-RUN). See comment
+       block above getFirebaseAuthReadiness(). Wrappers stay side-effect
+       free even when readiness reports true; the ready branch returns
+       a 'ready-no-execute' marker so call-sites can be validated before
+       alpha.12 enables real SDK execution. */
     firebase: {
       isReady: function () {
         return getFirebaseAuthReadiness();
       },
 
+      inspect: function () {
+        return inspectFirebaseAuth();
+      },
+
       signIn: function (/* email, password */) {
-        return Promise.resolve(dormantResult());
+        return Promise.resolve(dryRunResult());
       },
 
       signOut: function () {
-        return Promise.resolve(dormantResult());
+        return Promise.resolve(dryRunResult());
       },
 
       onChange: function (/* callback */) {
-        const r = dormantResult();
+        const r = dryRunResult();
         return {
-          enabled: false,
+          enabled: r.enabled,
+          simulated: r.enabled ? true : undefined,
           reason: r.reason,
           unsubscribe: function () { /* no-op */ }
         };

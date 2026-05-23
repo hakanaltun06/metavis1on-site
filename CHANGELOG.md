@@ -7,6 +7,63 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.11] — Firebase Auth Dry-run Inspection
+
+- `MV.auth.firebase` namespace'i **dry-run** moduna geçirildi. Wrapper'lar
+  hâlâ side-effect-free; gerçek SDK çağrısı yok. Fark: artık readiness
+  durumuna göre iki ayrı dönüş şekli sunuyor.
+- Yeni metod: `MV.auth.firebase.inspect()`. Yapılandırılmış snapshot
+  döner:
+  ```
+  {
+    enabled, reason, status,
+    hasLoader, hasAuthSdk, isAuthReady, hasProvider,
+    localConfig: { enabled, status },
+    mode: 'dry-run'
+  }
+  ```
+  Devtools'tan tek çağrıyla wiring durumu okunabilir. Side-effect yok
+  (`MV_FIREBASE.getAuthProvider()` yalnızca namespace ref'i okur,
+  `.auth()` çağrılmaz).
+- `dormantResult()` → `dryRunResult()` olarak yeniden adlandırıldı.
+  Davranış:
+  - **Unready** (placeholder / missing-loader / disabled / error):
+    eskisi gibi `{ enabled: false, reason: '<status>' }`.
+  - **Ready** (gerçek config yüklü, app initialized, SDK var):
+    `{ enabled: true, simulated: true, reason: 'ready-no-execute' }`.
+- Wrapper davranışları:
+  - `signIn(email, password)` → `Promise<dryRunResult>`. Ready iken bile
+    `signInWithEmailAndPassword` **çağrılmaz**.
+  - `signOut()` → `Promise<dryRunResult>`. Ready iken bile
+    `firebase.auth().signOut()` **çağrılmaz**, sessionStorage'a
+    dokunulmaz.
+  - `onChange(callback)` → `{ enabled, simulated?, reason, unsubscribe }`.
+    Ready iken bile `onAuthStateChanged` **çağrılmaz**, callback
+    tetiklenmez, unsubscribe no-op.
+  - `currentUser()` → her zaman `null` (ready iken bile auth instance
+    okunmaz — spec gereği).
+- **Anlam:** gerçek Firebase config (alpha.9/10 yollarıyla) yüklendiğinde
+  bile `MV.auth.firebase` katmanı sadece "şu an gerçek login
+  yapabilirdim" sinyali döner — alpha.12'de gerçek SDK çağrı yapısının
+  açılmadan önce sahada doğrulanabilir hale gelir.
+- **Mevcut `MV.auth` API bit-identical:** `isAuthed`, `getUser`,
+  `devLogin`, `requireAdmin`, `logout` davranışı, `SESSION_KEY`
+  (`'mv_admin_session'`), 8 saat TTL, redirect path değişmedi. Mock
+  harness'ta dev login → isAuthed → logout zinciri aynı sonucu üretti.
+- **Side-effect kontrolü:** mock harness placeholder + ready iki fazda
+  her wrapper'ı çağırdı; SDK call sayaçları **0**:
+  `firebase.auth()=0`, `signInWithEmailAndPassword=0`, `signOut=0`,
+  `onAuthStateChanged=0`. `onChange` callback hiç tetiklenmedi.
+  `currentUser()` her iki fazda da `null` döndü. `sessionStorage` clean
+  bırakıldı (logout sonrası absent).
+- `shared/config/firebase.js` (alpha.10 loader), admin HTML dosyaları,
+  `admin/borc/index.html`, `borc.html`, `index.html`,
+  `shared/config/site.js`, `shared/config/firebase.local.example.js`,
+  `.gitignore` ve diğer `shared/js/*` dosyaları **değişmedi**.
+  Firestore SDK, CRUD, deploy veya gerçek config commit edilmedi.
+  Gerçek apiKey / projectId / appId / measurementId / UID / email
+  repo'ya girmedi.
+
 ## [v12.0.0-alpha.10] — Opt-in Local Firebase Config Loader
 
 - `shared/config/firebase.js` safe loader'a **default kapalı** bir local
