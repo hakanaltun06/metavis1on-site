@@ -7,6 +7,34 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.2] — Passive Firebase Loader Integration
+
+- `shared/config/firebase.js` loader'ı borç paneli dışındaki admin
+  sayfalarına passive `<script src="../shared/config/firebase.js" defer></script>`
+  olarak eklendi:
+  - `admin/index.html`
+  - `admin/dashboard.html`
+  - `admin/announcements.html`
+  - `admin/events.html`
+  - `admin/apps.html`
+  - `admin/logs.html`
+- Script konumu: mevcut `shared/config/site.js`'in hemen ardına, mevcut
+  script sırası bozulmadan eklendi (config'ler birlikte gruplandı).
+- `defer` attribute kullanıldı; mevcut non-defer scriptlerden sonra
+  çalışır, davranış sırasını bozmaz.
+- `admin/borc/index.html` ve `borc.html` dokunulmadı; borç paneli kendi
+  iki katmanlı gate'ini ([`debt-panel-audit.md`](docs/debt-panel-audit.md) §1)
+  korumaya devam ediyor.
+- Public site (`index.html`), `shared/js/auth.js`, `shared/config/site.js`
+  ve `shared/config/firebase.js` dokunulmadı.
+- Firebase SDK script tag, Auth init, Firestore, CRUD veya deploy
+  eklenmedi.
+- Hiçbir HTML'de `MV_FIREBASE.init(...)`, `firebase.initializeApp(...)`,
+  `getAuth(...)`, `signInWithEmailAndPassword(...)` çağrısı yok.
+- **Davranışsal etki:** admin sayfaları yüklendiğinde `window.MV_FIREBASE`
+  global'i pasif `status: 'disabled'` state ile tanımlanır; başka hiçbir
+  şey değişmez. Auth akışı, login, logout, modül davranışları aynı.
+
 ## [v12.0.0-alpha.1] — Firebase Config Safe Loader
 
 - `shared/config/firebase.js` dormant placeholder safe loader iskeletine
