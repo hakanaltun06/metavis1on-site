@@ -7,6 +7,31 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.3] — Firebase Loader Script Order
+
+- Admin sayfalarındaki passive Firebase loader script'inden `defer`
+  attribute'u kaldırıldı:
+  - `admin/index.html`
+  - `admin/dashboard.html`
+  - `admin/announcements.html`
+  - `admin/events.html`
+  - `admin/apps.html`
+  - `admin/logs.html`
+- Yeni script sırası deterministik:
+  `site.js` → `firebase.js` → `core.js` → `theme.js` → `auth.js`
+  (alpha.2'de `defer` nedeniyle `firebase.js` non-defer scriptlerden sonra
+  çalışıyordu; artık inline sırasında çalışır, sonraki fazlarda
+  auth wrapper'ın `MV_FIREBASE`'i deterministik şekilde okumasına zemin
+  hazırlandı).
+- Firebase SDK script tag, Auth init, Auth wrapper, Firestore, CRUD veya
+  deploy eklenmedi.
+- `admin/borc/index.html`, `borc.html` ve public site (`index.html`)
+  dokunulmadı.
+- `shared/config/firebase.js` loader içeriği değişmedi.
+- **Davranışsal etki:** sıfır. `window.MV_FIREBASE` global'i hâlâ pasif
+  `status: 'disabled'` state ile dolar; hiçbir auth/login/modül davranışı
+  değişmedi.
+
 ## [v12.0.0-alpha.2] — Passive Firebase Loader Integration
 
 - `shared/config/firebase.js` loader'ı borç paneli dışındaki admin
