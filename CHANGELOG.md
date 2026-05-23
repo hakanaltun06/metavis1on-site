@@ -7,6 +7,47 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.6] — Firebase Auth SDK Passive Load
+
+- Borç paneli dışındaki admin sayfalarına Firebase Auth **compat** SDK
+  script tag'i passive şekilde eklendi (10.8.1):
+  - `admin/index.html`
+  - `admin/dashboard.html`
+  - `admin/announcements.html`
+  - `admin/events.html`
+  - `admin/apps.html`
+  - `admin/logs.html`
+- SDK URL:
+  `https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js`
+  (App SDK ile aynı sürüm; compat formu kullanılıyor, böylece namespace
+  `window.firebase.auth` olarak hazır olur).
+- Konum: shared script bloğunda `firebase-app-compat.js`'in **hemen
+  ardına**, `../shared/config/firebase.js` loader'ının **öncesine**
+  eklendi. Yeni sıra:
+  `site.js → firebase-app-compat.js → firebase-auth-compat.js →
+  firebase.js → core.js → theme.js → auth.js`.
+- **Davranış:** admin sayfaları yüklendiğinde `window.firebase` ve
+  `window.firebase.auth` artık tanımlı; ancak `MV_FIREBASE.init()` hâlâ
+  placeholder config algılayıp `initializeApp`'i çağırmaz, sessizce
+  `false` döner ve `getStatus()` `'placeholder'` olarak kalır.
+  `firebase.auth()` çağrılmadığı için Auth state listener, login, logout
+  veya Auth backend isteği oluşmaz.
+- **Network etkisi:** admin sayfaları artık her load'da ikinci bir CDN
+  GET'i atar (`firebase-auth-compat.js`). Firebase Auth backend'e
+  (`identitytoolkit.googleapis.com`, `securetoken.googleapis.com`) veya
+  Firestore'a hiçbir istek yok.
+- Firestore SDK, Auth wrapper, CRUD, deploy veya gerçek Firebase config
+  eklenmedi. Hiçbir `firebase.auth()`, `firebase.initializeApp(...)`
+  doğrudan çağrısı, `signInWithEmailAndPassword(...)`,
+  `onAuthStateChanged(...)`, `getFirestore(...)` yok.
+- `shared/js/auth.js` değiştirilmedi; sessionStorage tabanlı `MV.auth`
+  gate'i aynen korunuyor.
+- `admin/borc/index.html`, `borc.html` ve public site (`index.html`)
+  dokunulmadı; borç paneli kendi modular Firebase setup'ını ve iki
+  katmanlı gate'ini korumaya devam ediyor.
+- Mevcut login, logout ve sessionStorage tabanlı admin gate davranışı
+  değiştirilmedi.
+
 ## [v12.0.0-alpha.5] — Firebase App SDK Passive Load
 
 - Borç paneli dışındaki admin sayfalarına Firebase App **compat** SDK
