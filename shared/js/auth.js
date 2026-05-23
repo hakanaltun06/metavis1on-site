@@ -41,20 +41,24 @@
   /* ----------------------------------------------------------------------
      MV.auth.firebase — partially-live Firebase Auth wrapper.
      ----------------------------------------------------------------------
-     Per-method execution mode (alpha.12):
+     Per-method execution mode (alpha.14):
        signIn      → LIVE when MV_FIREBASE.isAuthReady() is true; otherwise
                      no-op. Calls firebase.auth().signInWithEmailAndPassword
                      ONLY after readiness + credential validation pass.
-       signOut     → dry-run; never calls firebase.auth().signOut.
+       signOut     → LIVE when MV_FIREBASE.isAuthReady() is true; otherwise
+                     no-op. Calls firebase.auth().signOut ONLY after the
+                     readiness + provider acquisition guards pass.
        onChange    → dry-run; never calls onAuthStateChanged.
        currentUser → dry-run; never reads firebase.auth().currentUser.
-     The wrapper still never touches DOM, sessionStorage, or localStorage,
-     and the existing sessionStorage-based MV.auth gate (devLogin / logout
-     / requireAdmin / 8h TTL) is unchanged. No admin page calls signIn
-     automatically — activation comes from devtools or a future commit.
-     Repo default leaves MV_FIREBASE in placeholder state, so signIn stays
-     a no-op until real config is supplied via the alpha.9/10 channels.
-     inspect() reports the per-method capability map.
+     Neither signIn nor signOut writes/clears the sessionStorage admin
+     gate by itself. createSessionFromResult and clearSessionAfterSignOut
+     are explicit bridges the caller invokes after a successful SDK call.
+     The existing sessionStorage-based MV.auth gate (devLogin / logout /
+     requireAdmin / 8h TTL) is unchanged. No admin page calls these
+     wrappers automatically — activation comes from devtools or a future
+     commit. Repo default leaves MV_FIREBASE in placeholder state, so
+     signIn/signOut stay no-ops until real config is supplied via the
+     alpha.9/10 channels. inspect() reports the per-method capability map.
      ---------------------------------------------------------------------- */
   function getFirebaseAuthReadiness() {
     const mvfb = (typeof window !== 'undefined') ? window.MV_FIREBASE : null;
@@ -103,9 +107,11 @@
       mode: isAuthReady ? 'partial-live' : 'dry-run',
       capabilities: {
         signIn: isAuthReady ? 'live' : 'no-op',
-        signOut: 'dry-run',
+        signOut: isAuthReady ? 'live' : 'no-op',
         onChange: 'dry-run',
-        currentUser: 'dry-run'
+        currentUser: 'dry-run',
+        sessionBridge: 'available',
+        logoutBridge: 'available'
       }
     };
   }
@@ -218,6 +224,75 @@
     };
   }
 
+  /* Mirror of firebaseSignIn() for the logout side. Calls
+     firebase.auth().signOut() ONLY when readiness + provider acquisition
+     succeed. Does NOT touch sessionStorage; the local session is cleared
+     separately by clearSessionFromFirebaseSignOutResult(). */
+  function firebaseSignOut() {
+    const r = getFirebaseAuthReadiness();
+    if (!r.enabled) {
+      return Promise.resolve({ enabled: false, ok: false, reason: r.reason });
+    }
+    const mvfb = window.MV_FIREBASE;
+    const provider = (mvfb && typeof mvfb.getAuthProvider === 'function')
+      ? mvfb.getAuthProvider()
+      : null;
+    if (!provider || typeof provider.auth !== 'function') {
+      return Promise.resolve({ enabled: true, ok: false, reason: 'no-provider' });
+    }
+    let authInstance;
+    try {
+      authInstance = provider.auth();
+    } catch (err) {
+      return Promise.resolve({
+        enabled: true, ok: false,
+        reason: (err && err.code) || 'auth-init-error',
+        message: (err && err.message) || 'Failed to acquire Auth instance.'
+      });
+    }
+    if (!authInstance || typeof authInstance.signOut !== 'function') {
+      return Promise.resolve({ enabled: true, ok: false, reason: 'no-sign-out-method' });
+    }
+    return Promise.resolve()
+      .then(function () {
+        return authInstance.signOut();
+      })
+      .then(function () {
+        return { enabled: true, ok: true, provider: 'firebase-auth' };
+      })
+      .catch(function (err) {
+        return {
+          enabled: true,
+          ok: false,
+          reason: (err && err.code) || 'firebase-sign-out-error',
+          message: (err && err.message) || 'Firebase sign-out failed.'
+        };
+      });
+  }
+
+  /* Bridge from a successful firebaseSignOut() result to the existing
+     sessionStorage admin gate. Strictly validated; clears nothing on
+     malformed input. Inlines the same removeItem/try-catch pattern as
+     auth.logout() to stay self-contained — bridge behavior must remain
+     stable even if logout() later grows side effects (redirect, hooks). */
+  function clearSessionFromFirebaseSignOutResult(result) {
+    if (!result || typeof result !== 'object') {
+      return { ok: false, reason: 'invalid-firebase-sign-out-result' };
+    }
+    if (result.enabled !== true || result.ok !== true) {
+      return { ok: false, reason: 'invalid-firebase-sign-out-result' };
+    }
+    if (result.provider !== 'firebase-auth') {
+      return { ok: false, reason: 'invalid-firebase-sign-out-result' };
+    }
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+    } catch (e) {
+      return { ok: false, reason: 'session-clear-failed' };
+    }
+    return { ok: true, cleared: true, provider: 'firebase-auth' };
+  }
+
   const auth = {
     /* Aktif oturum var mı? */
     isAuthed: function () {
@@ -274,12 +349,15 @@
       return false;
     },
 
-    /* Firebase Auth wrapper namespace — signIn is LIVE behind a double
-       guard; signOut / onChange / currentUser remain dry-run.
-       createSessionFromResult bridges a successful signIn result into
-       the existing sessionStorage gate; it is NOT called automatically
-       by signIn(). See the comment blocks above firebaseSignIn() and
-       createSessionFromFirebaseResult() for per-method semantics. */
+    /* Firebase Auth wrapper namespace — signIn and signOut are both
+       LIVE behind a double guard; onChange / currentUser remain dry-run.
+       createSessionFromResult bridges a successful signIn into the
+       existing sessionStorage gate; clearSessionAfterSignOut bridges a
+       successful signOut by clearing the same key. Neither bridge is
+       called automatically by its SDK counterpart — the two stages
+       stay independently testable. See firebaseSignIn(), firebaseSignOut(),
+       createSessionFromFirebaseResult(), and
+       clearSessionFromFirebaseSignOutResult() for per-method semantics. */
     firebase: {
       isReady: function () {
         return getFirebaseAuthReadiness();
@@ -298,7 +376,11 @@
       },
 
       signOut: function () {
-        return Promise.resolve(dryRunResult());
+        return firebaseSignOut();
+      },
+
+      clearSessionAfterSignOut: function (result) {
+        return clearSessionFromFirebaseSignOutResult(result);
       },
 
       onChange: function (/* callback */) {

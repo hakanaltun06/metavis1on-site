@@ -7,6 +7,97 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.14] — Guarded Firebase signOut and Logout Bridge
+
+- `MV.auth.firebase.signOut()` **LIVE** moduna geçirildi ama
+  double-guard arkasında — alpha.12 `signIn` pattern'inin simetriği.
+  Yalnızca `MV_FIREBASE.isAuthReady() === true` iken gerçek
+  `firebase.auth().signOut()` çağrılır. Default repo placeholder
+  config ile **hâlâ no-op** davranır.
+- **Guard sırası** (sıralı, ilk reddeden döner):
+  1. `getFirebaseAuthReadiness().enabled === false` →
+     `{ enabled:false, ok:false, reason:'missing-loader'|'disabled'|
+     'placeholder'|'error' }`.
+  2. `getAuthProvider()` null veya `.auth` function değil →
+     `{ enabled:true, ok:false, reason:'no-provider' }`.
+  3. `provider.auth()` throw → `{ enabled:true, ok:false, reason:err.code
+     || 'auth-init-error', message }`.
+  4. Auth instance'da `signOut` function değil →
+     `{ enabled:true, ok:false, reason:'no-sign-out-method' }`.
+- **Başarı dönüşü:** `{ enabled:true, ok:true, provider:'firebase-auth' }`
+- **Hata dönüşü:** `{ enabled:true, ok:false, reason: err.code ||
+  'firebase-sign-out-error', message: err.message || 'Firebase sign-out
+  failed.' }`. `auth/network-request-failed` gibi Firebase error code'ları
+  olduğu gibi forward edilir.
+- `MV.auth.firebase.clearSessionAfterSignOut(result)` bridge helper'ı
+  eklendi — alpha.13 `createSessionFromResult` pattern'inin simetriği.
+  Strict validation ile çağrılır; eksik veya hatalı bir result hiçbir
+  koşulda session temizlemez.
+- **Deliberate decoupling:** `signOut()` bu bridge'i **otomatik
+  çağırmaz**. İki aşama (Firebase Auth signOut + local session clear)
+  bağımsız test edilebilir. Devtools'tan manuel zincirleme:
+  ```js
+  const r = await MV.auth.firebase.signOut();
+  if (r.ok) MV.auth.firebase.clearSessionAfterSignOut(r);
+  ```
+- **clearSessionAfterSignOut validation matrisi** (her biri reddedilir,
+  session temizlenmez, dönüş `{ ok:false, reason:'invalid-firebase-
+  sign-out-result' }`):
+  - `result` falsy veya object değil
+  - `result.enabled !== true`
+  - `result.ok !== true`
+  - `result.provider !== 'firebase-auth'`
+  - `sessionStorage.removeItem` throw → `{ ok:false, reason:'session-
+    clear-failed' }`
+- **Başarı dönüşü:** `{ ok:true, cleared:true, provider:'firebase-auth' }`
+- Bridge implementasyonu `sessionStorage.removeItem(SESSION_KEY)` çağrısını
+  **inline** yapıyor (mevcut `logout()` ile aynı try/catch pattern'i).
+  Self-contained — gelecekte `logout()` redirect/hook gibi yan etkiler
+  kazanırsa bile bridge davranışı stabil kalır.
+- **inspect() güncellemesi:** `capabilities` objesine yeni değerler:
+  - `signOut`: `'live'` (isAuthReady true) | `'no-op'` (false). Eski
+    sabit `'dry-run'` kaldırıldı.
+  - `sessionBridge: 'available'` (yeni alan, alpha.13).
+  - `logoutBridge: 'available'` (yeni alan, bu faz).
+  `mode`, `signIn`, `onChange`, `currentUser` capability değerleri
+  değişmedi.
+- **signIn / createSessionFromResult / onChange / currentUser değişmedi.**
+  Mock harness regression doğrulandı:
+  - `signIn` placeholder ve ready phase'lerinde aynı sonuç + session
+    auto-write yok.
+  - `createSessionFromResult` valid input ile session yazıyor, invalid
+    inputlarda yazmıyor.
+  - `onChange` ready iken `ready-no-execute` simulated; callback
+    tetiklenmiyor.
+  - `currentUser` her durumda `null`.
+- **Davranış matrisi (signOut):**
+  | Faz | `isAuthReady` | `signOut()` | SDK signOut | Session |
+  |---|---|---|---|---|
+  | Default repo | false | `ok:false, reason:'placeholder'` | 0 | unchanged |
+  | Ready + success | true | `ok:true, provider:'firebase-auth'` | 1 | unchanged (manuel bridge gerekli) |
+  | Ready + reject | true | `ok:false, reason:err.code, message` | 1 | unchanged |
+- **Side-effect kontrolü:** mock harness Phase A/B/C boyunca her
+  wrapper'ı çağırdı. SDK call sayaçları doğru:
+  - `signOut` SDK: yalnızca live + tüm guard'ları geçen çağrı sayısı kadar.
+  - `firebase.auth()`: yalnızca live signIn/signOut çağrısı sayısı kadar.
+  - `onAuthStateChanged`: **0** (callback tetiklenme: 0).
+  - 7 invalid clearSessionAfterSignOut input testinde 0 session
+    değişikliği.
+- **Mevcut `MV.auth` API bit-identical:** `isAuthed`, `getUser`,
+  `devLogin`, `requireAdmin`, `logout` davranışı, `SESSION_KEY`
+  (`'mv_admin_session'`), `SESSION_TTL_MS` (8 saat), redirect path,
+  sessionStorage payload şekli değişmedi. Mock harness devLogin →
+  isAuthed → logout zinciri eski sonuçları üretti.
+- Admin login formu ve dashboard logout akışı **henüz Firebase'e
+  bağlanmadı**. Hiçbir HTML değişmedi. Wrapper aktivasyonu devtools'tan
+  veya gelecek bir commit'ten gelir.
+- `shared/config/firebase.js`, `shared/config/site.js`,
+  `shared/config/firebase.local.example.js`, `.gitignore`, admin HTML
+  dosyaları, `admin/borc/index.html`, `borc.html`, `index.html` ve
+  diğer `shared/js/*` dosyaları **değişmedi**. Firestore SDK, CRUD,
+  `onAuthStateChanged`, gerçek Firebase config commit edilmedi. Gerçek
+  apiKey / projectId / appId / UID / email repo'ya girmedi.
+
 ## [v12.0.0-alpha.13] — Firebase Session Bridge
 
 - `MV.auth.firebase.createSessionFromResult(result)` helper'ı eklendi.
