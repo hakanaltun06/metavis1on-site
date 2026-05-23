@@ -60,8 +60,15 @@ Geçiş öncesi repo fotoğrafı (v11.3.1 itibarıyla):
     "kullanıcı bir form doldurmuş" sinyali üretir. Migration hedefi bu
     fonksiyonu Firebase Auth wrapper'ına dönüştürmektir.
 - **Firebase** — Bu doküman fazında aktif entegrasyon **yoktur**.
-  `shared/config/firebase.js`, `firebase.json`, `.firebaserc` repo'da
-  mevcut değildir; herhangi bir SDK script tag'i yoktur.
+  `firebase.json`, `.firebaserc` repo'da mevcut değildir; herhangi bir
+  SDK script tag'i yoktur. **`shared/config/firebase.js` dosyası ise
+  v10.0-alpha'dan beri repo'da dormant placeholder olarak mevcuttur;**
+  yalnız `window.MV_FIREBASE = { configured: false, config: null, ... }`
+  global'i set eder, hiçbir HTML tarafından yüklenmediği için runtime
+  etkisi yoktur. Borç paneli kendi inline `firebaseConfig` yapısını
+  kullanır (bkz. [`debt-panel-audit.md`](./debt-panel-audit.md) §1.5).
+  v12.0.0-alpha'da bu placeholder yeni baştan yazılmak yerine safe
+  loader haline genişletilebilir.
 
 ---
 

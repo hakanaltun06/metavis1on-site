@@ -78,7 +78,7 @@
 
 Bu fazda **yapılabilecekler:**
 
-- **Firebase config şablonu hazırlanabilir** (`shared/config/firebase.js` placeholder; gerçek `apiKey` enjekte edilmez, "boş şablon → env'den" pattern'i).
+- **Firebase config şablonu genişletilebilir** — `shared/config/firebase.js` v10.0-alpha'dan beri dormant placeholder olarak mevcut (no-op IIFE; hiçbir HTML yüklemiyor). v12.0.0-alpha'da bu dosya safe loader haline getirilebilir; placeholder `apiKey` ise init etme, gerçek `apiKey` enjekte edilmez ("boş şablon → env'den" pattern'i).
 - **Firebase Auth foundation kurulabilir** — `firebase-app` + `firebase-auth` SDK script tag'leri **yalnız admin sayfalarında** (public site etkilenmez).
 - **Admin login akışı Firebase Auth wrapper'a hazırlanabilir** — `MV.auth.devLogin` → `signInWithEmailAndPassword` köprüsü; mevcut form alanları korunur.
 - **Dev gate production'da sınırlandırılabilir** — `MV.auth.devLogin`'in format-only davranışı yalnız emulator flag'i altına alınır.
@@ -119,7 +119,7 @@ Aşağıdakiler **v12.0.0-alpha kapsamında kesinlikle yok;** kendi fazlarına b
 | `admin/index.html` | 🟡 İleride | Auth foundation tamamlanınca login form `signInWithEmailAndPassword` çağrısına bağlanır; form layout korunur. |
 | `admin/dashboard.html` | ❌ Hayır | Sadece auth state'den UID gösterme gibi mikro etkileşim sonradan; bu fazda dokunmamak tercih. |
 | `shared/js/auth.js` | 🟡 İleride | Firebase Auth wrapper eklenir; mevcut API yüzeyi (`isAuthed`, `requireAdmin`, `logout`) korunur. |
-| `shared/config/firebase.js` | 🆕 Yeni | Placeholder / safe loader şablonu. Gerçek `apiKey` enjekte edilmez. |
+| `shared/config/firebase.js` | 🟡 Mevcut dormant placeholder genişletilecek | **Yeni dosya değil** — v10.0-alpha'dan beri repo'da no-op IIFE olarak duruyor, hiçbir HTML yüklemiyor. v12.0.0-alpha'da safe loader / Firebase config wrapper haline getirilebilir; runtime'a bağlanması ayrı ve kontrollü adımdır. Gerçek `apiKey` enjekte edilmez. |
 | `index.html` | ❌ Hayır | Public site bu fazda Firebase'e bağlanmıyor. |
 | `shared/config/site.js` | ❌ Hayır | `MV_SITE` v12.2.0'a kadar tek kaynak; bu fazda dokunulmaz. |
 | `admin/borc/index.html` | ❌ Hayır | **Borç paneli v12.0 – v12.5 boyunca kod düzeyinde dokunulmaz** ([`firebase-transition-plan.md`](./firebase-transition-plan.md) §12). |
@@ -158,7 +158,7 @@ v12.0.0-alpha açılmadan önce **tüm** maddeler doğrulanmalıdır.
 Önerilen küçük, **revert-friendly** adımlar. Her commit bağımsız olarak geri alınabilir.
 
 1. **Firebase config placeholder / safe loader planı.**
-   `shared/config/firebase.js` yeni dosya, içinde **placeholder** `apiKey: "YOUR_API_KEY"` ve init guard (placeholder ise init etme). Gerçek config dev/staging/prod için ayrı enjekte edilir.
+   `shared/config/firebase.js` **yeni dosya değil** — v10.0-alpha'dan beri dormant placeholder olarak mevcut. Mevcut no-op IIFE, **placeholder** `apiKey: "YOUR_API_KEY"` ve init guard (placeholder ise init etme) içerecek şekilde genişletilir. Gerçek config dev/staging/prod için ayrı enjekte edilir; bu fazda yazılmaz.
 
 2. **Auth wrapper tasarımı.**
    `shared/js/auth.js` içinde Firebase Auth wrapper'ı eklenir; mevcut `MV.auth.isAuthed` / `requireAdmin` / `logout` API'si dış görünüm olarak değişmez, içeride Firebase Auth state'e bağlanır.

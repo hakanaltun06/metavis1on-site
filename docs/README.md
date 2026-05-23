@@ -29,6 +29,12 @@ zemin hazırlayan referans dokümanlardır.
   v12.0.0-alpha Firebase Auth foundation öncesi tamamlanan hazırlıkları,
   kapsam dışı maddeleri, runtime dokunma matrisini ve geçiş kriterlerini
   özetler. v12.0.0-alpha PR'ı için karar ve kapsam dokümanıdır.
+- **[Firebase Project Setup Checklist](./firebase-project-setup.md)**
+  v12.0.0-alpha öncesi staging/production Firebase project hazırlığı,
+  Auth provider, alias plan, config policy, admin whitelist bootstrap
+  ve borç paneli özel notlarını içerir. Firebase Console tarafındaki
+  manuel kontrol listesidir; gerçek project ID/API key/UID/e-mail
+  dokümana yazılmaz.
 
 ## Planned Documents
 

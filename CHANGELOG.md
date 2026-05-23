@@ -7,6 +7,36 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v11.6.1] — Firebase Project Setup Checklist
+
+- `docs/firebase-project-setup.md` eklendi.
+- v12.0.0-alpha öncesi staging / production Firebase project hazırlığı
+  belgelendi (project strategy, Console setup, Auth, Firestore, App
+  Check checklists).
+- Alias plan (`staging` / `prod`), config policy (client config secret
+  değil, Rules + Auth + App Check güvenliktir), admin whitelist
+  bootstrap planı ve "what must not be committed" listesi yazıldı.
+- Borç paneli özel setup notları eklendi (mevcut Firebase project
+  paylaşımı / izolasyonu, gerçek borç verisi staging'e taşınmaz).
+- v12.0.0-alpha pre-flight checklist eklendi.
+- **Dokümantasyon tutarsızlığı düzeltildi:**
+  `shared/config/firebase.js` dosyası v10.0-alpha'dan beri repo'da
+  dormant placeholder olarak mevcut (no-op IIFE; hiçbir HTML yüklemiyor;
+  runtime etkisi yok). Önceki dokümanlar "mevcut değildir" / "yeni
+  dosya" diyordu — yanlış. `docs/firebase-transition-plan.md` §1 ve
+  `docs/v12-readiness.md` §3 / §5 / §7 ifadeleri "var olan placeholder
+  v12.0.0-alpha'da safe loader olarak genişletilebilir" olarak
+  güncellendi.
+- `docs/README.md` güncellendi: yeni setup dokümanı Current Documents
+  altına eklendi.
+- Runtime dosyalara dokunulmadı (`shared/config/firebase.js` dahil —
+  yalnız var olduğu doğru kayda alındı).
+- Firebase SDK / config / kod eklenmedi.
+- `firebase.json`, `.firebaserc`, `firestore.rules`,
+  `firestore.indexes.json` oluşturulmadı.
+- Gerçek Firebase project ID / API key / UID / e-mail / secret
+  dokümana yazılmadı; yalnız placeholder kullanıldı.
+
 ## [v11.6.0] — v12 Readiness Summary
 
 - `docs/v12-readiness.md` eklendi.
