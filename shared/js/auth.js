@@ -39,25 +39,22 @@
   }
 
   /* ----------------------------------------------------------------------
-     MV.auth.firebase — passive Firebase Auth wrapper (DRY-RUN).
+     MV.auth.firebase — partially-live Firebase Auth wrapper.
      ----------------------------------------------------------------------
-     This namespace prepares a future Firebase-backed auth flow. In this
-     phase every wrapper below is deliberately side-effect-free:
-       - never calls firebase.auth()
-       - never calls signInWithEmailAndPassword / signOut /
-         onAuthStateChanged
-       - never opens a network request
-       - never touches DOM, sessionStorage, or localStorage
-       - never alters the existing sessionStorage-based MV.auth gate
-     Behavior split by Firebase Auth readiness (MV_FIREBASE.isAuthReady()):
-       - unready (placeholder / missing-loader / disabled / error):
-           returns { enabled: false, reason: '<status>' }
-       - ready (real config loaded, app initialized, SDK present):
-           returns { enabled: true, simulated: true,
-                     reason: 'ready-no-execute' }
-     Even in the ready branch the wrapper bodies stay dry-run — no SDK
-     call. inspect() exposes a structured snapshot for sanity-checking
-     wiring before alpha.12 flips this to real sign-in execution.
+     Per-method execution mode (alpha.12):
+       signIn      → LIVE when MV_FIREBASE.isAuthReady() is true; otherwise
+                     no-op. Calls firebase.auth().signInWithEmailAndPassword
+                     ONLY after readiness + credential validation pass.
+       signOut     → dry-run; never calls firebase.auth().signOut.
+       onChange    → dry-run; never calls onAuthStateChanged.
+       currentUser → dry-run; never reads firebase.auth().currentUser.
+     The wrapper still never touches DOM, sessionStorage, or localStorage,
+     and the existing sessionStorage-based MV.auth gate (devLogin / logout
+     / requireAdmin / 8h TTL) is unchanged. No admin page calls signIn
+     automatically — activation comes from devtools or a future commit.
+     Repo default leaves MV_FIREBASE in placeholder state, so signIn stays
+     a no-op until real config is supplied via the alpha.9/10 channels.
+     inspect() reports the per-method capability map.
      ---------------------------------------------------------------------- */
   function getFirebaseAuthReadiness() {
     const mvfb = (typeof window !== 'undefined') ? window.MV_FIREBASE : null;
@@ -103,8 +100,75 @@
       isAuthReady: isAuthReady,
       hasProvider: hasProvider,
       localConfig: localConfig,
-      mode: 'dry-run'
+      mode: isAuthReady ? 'partial-live' : 'dry-run',
+      capabilities: {
+        signIn: isAuthReady ? 'live' : 'no-op',
+        signOut: 'dry-run',
+        onChange: 'dry-run',
+        currentUser: 'dry-run'
+      }
     };
+  }
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function firebaseSignIn(email, password) {
+    const r = getFirebaseAuthReadiness();
+    if (!r.enabled) {
+      return Promise.resolve({ enabled: false, ok: false, reason: r.reason });
+    }
+    if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
+      return Promise.resolve({ enabled: true, ok: false, reason: 'missing-credentials' });
+    }
+    const e = email.trim();
+    if (!EMAIL_RE.test(e)) {
+      return Promise.resolve({ enabled: true, ok: false, reason: 'invalid-email' });
+    }
+    if (password.length < 6) {
+      return Promise.resolve({ enabled: true, ok: false, reason: 'invalid-password' });
+    }
+    const mvfb = window.MV_FIREBASE;
+    const provider = (mvfb && typeof mvfb.getAuthProvider === 'function')
+      ? mvfb.getAuthProvider()
+      : null;
+    if (!provider || typeof provider.auth !== 'function') {
+      return Promise.resolve({ enabled: true, ok: false, reason: 'no-provider' });
+    }
+    let authInstance;
+    try {
+      authInstance = provider.auth();
+    } catch (err) {
+      return Promise.resolve({
+        enabled: true, ok: false,
+        reason: (err && err.code) || 'auth-init-error',
+        message: (err && err.message) || 'Failed to acquire Auth instance.'
+      });
+    }
+    if (!authInstance || typeof authInstance.signInWithEmailAndPassword !== 'function') {
+      return Promise.resolve({ enabled: true, ok: false, reason: 'no-sign-in-method' });
+    }
+    return Promise.resolve()
+      .then(function () {
+        return authInstance.signInWithEmailAndPassword(e, password);
+      })
+      .then(function (credential) {
+        const user = credential && credential.user ? credential.user : null;
+        return {
+          enabled: true,
+          ok: true,
+          uid: user ? user.uid : null,
+          email: user ? user.email : e,
+          provider: 'firebase-auth'
+        };
+      })
+      .catch(function (err) {
+        return {
+          enabled: true,
+          ok: false,
+          reason: (err && err.code) || 'firebase-auth-error',
+          message: (err && err.message) || 'Firebase sign-in failed.'
+        };
+      });
   }
 
   const auth = {
@@ -163,11 +227,10 @@
       return false;
     },
 
-    /* Passive Firebase Auth wrapper namespace (DRY-RUN). See comment
-       block above getFirebaseAuthReadiness(). Wrappers stay side-effect
-       free even when readiness reports true; the ready branch returns
-       a 'ready-no-execute' marker so call-sites can be validated before
-       alpha.12 enables real SDK execution. */
+    /* Firebase Auth wrapper namespace — signIn is LIVE behind a double
+       guard; signOut / onChange / currentUser remain dry-run. See the
+       comment block above firebaseSignIn() for per-method semantics and
+       guard order. */
     firebase: {
       isReady: function () {
         return getFirebaseAuthReadiness();
@@ -177,8 +240,8 @@
         return inspectFirebaseAuth();
       },
 
-      signIn: function (/* email, password */) {
-        return Promise.resolve(dryRunResult());
+      signIn: function (email, password) {
+        return firebaseSignIn(email, password);
       },
 
       signOut: function () {

@@ -7,6 +7,80 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.12] — Guarded Firebase signIn Wrapper
+
+- `MV.auth.firebase.signIn(email, password)` **LIVE** moduna geçirildi
+  ama double-guard arkasında: yalnızca `MV_FIREBASE.isAuthReady() === true`
+  iken gerçek `firebase.auth().signInWithEmailAndPassword(...)` çağrılır.
+  Default repo placeholder config ile çalıştığı için **default'ta hâlâ
+  no-op davranır.**
+- **Guard sırası** (sıralı, ilk reddeden döner):
+  1. `getFirebaseAuthReadiness().enabled === false` →
+     `{ enabled:false, ok:false, reason:'<status>' }`. Reason değerleri:
+     `'missing-loader'` | `'disabled'` | `'placeholder'` | `'error'`.
+  2. email veya password string değil / boş →
+     `{ enabled:true, ok:false, reason:'missing-credentials' }`.
+  3. Email basic regex (`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`) geçmezse →
+     `{ enabled:true, ok:false, reason:'invalid-email' }`.
+  4. password < 6 karakter →
+     `{ enabled:true, ok:false, reason:'invalid-password' }`.
+  5. `getAuthProvider()` null veya `.auth` function değil →
+     `{ enabled:true, ok:false, reason:'no-provider' }`.
+  6. `provider.auth()` throw → `{ enabled:true, ok:false, reason:err.code
+     || 'auth-init-error', message }`.
+  7. Auth instance'da `signInWithEmailAndPassword` function değil →
+     `{ enabled:true, ok:false, reason:'no-sign-in-method' }`.
+- **Başarı dönüşü:**
+  ```
+  { enabled:true, ok:true, uid, email, provider:'firebase-auth' }
+  ```
+- **Hata dönüşü** (SDK Promise reject):
+  ```
+  { enabled:true, ok:false, reason: err.code || 'firebase-auth-error',
+    message: err.message || 'Firebase sign-in failed.' }
+  ```
+  `auth/wrong-password`, `auth/user-not-found`, `auth/too-many-requests`
+  gibi Firebase Auth error code'ları olduğu gibi forward edilir.
+- `signOut()`, `onChange()`, `currentUser()` **hâlâ dry-run**. Ready
+  iken `signOut` ve `onChange` `{ enabled:true, simulated:true,
+  reason:'ready-no-execute' }` döner; `currentUser()` her durumda
+  `null`. Bu metodlar hiçbir koşulda gerçek SDK çağırmaz.
+- `inspect()` güncellendi: yeni alanlar `mode` ve `capabilities`.
+  - `mode`: `'dry-run'` (isAuthReady false) | `'partial-live'`
+    (isAuthReady true; signIn live, gerisi dry-run).
+  - `capabilities`: `{ signIn: 'live'|'no-op', signOut: 'dry-run',
+    onChange: 'dry-run', currentUser: 'dry-run' }`.
+- **Mevcut `MV.auth` API bit-identical:** `isAuthed`, `getUser`,
+  `devLogin`, `requireAdmin`, `logout` davranışı, `SESSION_KEY`
+  (`'mv_admin_session'`), 8 saat TTL, redirect path değişmedi. Mock
+  harness'ta dev login → isAuthed → logout zinciri aynı sonucu üretti.
+- **Side-effect kontrolü:** mock harness Phase A/B/C boyunca her
+  wrapper'ı çağırdı. SDK call sayaçları:
+  - `signInWithEmailAndPassword`: yalnızca live + tüm guard'ları geçen
+    çağrı sayısı kadar (validation guard'lar SDK'yı tetiklemedi).
+  - `firebase.auth()`: yalnızca live signIn çağrısı sayısı kadar.
+  - `signOut`: **0**, `onAuthStateChanged`: **0**, callback
+    tetiklenme: **0**.
+  - `sessionStorage`: clean — `signIn` mevcut session gate'ine
+    dokunmuyor (caller, sonuçtaki `uid` ile devLogin/sessionStorage
+    akışını ayrı bağlayacak).
+- **Davranış matrisi:**
+  | Faz | `isAuthReady` | `signIn(valid)` | SDK çağrısı |
+  |---|---|---|---|
+  | Default repo | false | `ok:false, reason:'placeholder'` | 0 |
+  | Local config + opt-in (alpha.10) | true | `ok:true, uid, email` veya `ok:false, reason:err.code` | 1 / call |
+- **Admin sayfaları bu wrapper'ı çağırmıyor.** Hiçbir HTML değişmedi;
+  login formu hâlâ `MV.auth.devLogin` üzerinden sessionStorage gate
+  kullanıyor. Wrapper aktivasyonu devtools'tan veya gelecek bir
+  commit'ten gelir.
+- `shared/config/firebase.js` (alpha.10 loader), `shared/config/site.js`,
+  `shared/config/firebase.local.example.js`, `.gitignore`, admin HTML
+  dosyaları, `admin/borc/index.html`, `borc.html`, `index.html` ve
+  diğer `shared/js/*` dosyaları **değişmedi**. Firestore SDK, CRUD,
+  deploy, emulator veya gerçek Firebase config commit edilmedi. Gerçek
+  apiKey / projectId / appId / measurementId / UID / email repo'ya
+  girmedi.
+
 ## [v12.0.0-alpha.11] — Firebase Auth Dry-run Inspection
 
 - `MV.auth.firebase` namespace'i **dry-run** moduna geçirildi. Wrapper'lar
