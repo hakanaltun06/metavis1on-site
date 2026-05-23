@@ -7,6 +7,25 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v11.5.4] — Deployment Checklist
+
+- `docs/deployment-checklist.md` eklendi.
+- Environment strategy (local / emulator-staging / production)
+  belgelendi; veri akış kuralı ve production verisi izolasyonu
+  netleştirildi.
+- Firebase / Auth / Firestore Rules / App Check / debt panel
+  deployment kontrolleri belgelendi.
+- Pre-deployment, smoke test, rollback ve Go/No-Go karar şablonları
+  eklendi.
+- Deployment log template şablonu yazıldı.
+- `docs/README.md` güncellendi: yeni checklist dokümanı Current
+  Documents altına taşındı; planlanan listeden çıkarıldı.
+- Runtime dosyalara dokunulmadı.
+- Firebase SDK / config / kod eklenmedi.
+- `firebase.json`, `.firebaserc`, `firestore.rules`,
+  `firestore.indexes.json` oluşturulmadı; deploy komutu
+  çalıştırılmadı; emulator kurulmadı.
+
 ## [v11.5.3] — Firebase Rules Test Plan
 
 - `docs/firebase-rules-test-plan.md` eklendi.

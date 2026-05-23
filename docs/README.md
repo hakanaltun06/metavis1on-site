@@ -20,6 +20,11 @@ zemin hazırlayan referans dokümanlardır.
   senaryolarını, borç paneli özel testlerini ve deployment gate
   kurallarını içerir. Aktif rules dosyası değildir; v12.1.0 Firestore
   Rules foundation fazına hazırlıktır.
+- **[Deployment Checklist](./deployment-checklist.md)**
+  v12 Firebase ve admin değişiklikleri production'a alınmadan önce
+  uygulanacak staging, deploy, smoke test ve rollback kontrol listesini
+  içerir. Aktif deploy script'i değildir; operasyon kontrol
+  dokümanıdır.
 
 ## Planned Documents
 
@@ -32,8 +37,6 @@ ihtiyaç doğdukça eklenecek:
 - **Admin Module CRUD Plan** — v12.3 sonrası announcements/events/apps
   modülleri için create/update/delete akışları, validation kuralları,
   paired adminLogs write desenleri.
-- **Deployment Checklist** — Staging ve production'a deploy adımları,
-  Firebase project ayrımı, env değişkenleri, App Check enforcement.
 
 ## Documentation Rules
 
