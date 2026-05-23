@@ -4,7 +4,7 @@
 > doğrulama rehberidir.** Aktif kod değildir; admin Auth altyapısının
 > güvenli geçişi için referans dokümandır.
 >
-> Belge sürümü: v12.0.0-beta.3 · Hedef faz: v12.0.0-beta.4+
+> Belge sürümü: v12.1.0-pre.1 · Hedef faz: v12.1.0+
 >
 > Bağlantılı dokümanlar:
 > - [`firebase-transition-plan.md`](./firebase-transition-plan.md) — Genel mimari ve faz roadmap'i.
@@ -18,7 +18,7 @@
 
 1. [Purpose](#1-purpose)
 2. [Current Scope](#2-current-scope)
-3. [Phase Log: alpha.6 → beta.3](#3-phase-log-alpha6--beta3)
+3. [Phase Log: alpha.6 → v12.1.0-pre.1](#3-phase-log-alpha6--v1210-pre1)
 4. [Local Config File](#4-local-config-file)
 5. [Activation Paths](#5-activation-paths)
 6. [DevTools Inspection](#6-devtools-inspection)
@@ -28,9 +28,10 @@
 10. [Manual onChange Listener Example](#10-manual-onchange-listener-example)
 11. [Admin Login/Logout Trial Walkthrough](#11-admin-loginlogout-trial-walkthrough)
 12. [Trial Persistence and Production devLogin Guard](#12-trial-persistence-and-production-devlogin-guard)
-13. [Troubleshooting](#13-troubleshooting)
-14. [Security Notes](#14-security-notes)
-15. [Next Roadmap](#15-next-roadmap)
+13. [Firestore Passive SDK Readiness Layer](#13-firestore-passive-sdk-readiness-layer)
+14. [Troubleshooting](#14-troubleshooting)
+15. [Security Notes](#15-security-notes)
+16. [Next Roadmap](#16-next-roadmap)
 
 ---
 
@@ -55,7 +56,7 @@ Bu doküman **yalnızca** v12 admin Auth foundation geçişini kapsar:
 
 ## 2. Current Scope
 
-v12.0.0-beta.3 itibarıyla durum:
+v12.1.0-pre.1 itibarıyla durum:
 
 - **Firebase App SDK** admin sayfalarında **pasif şekilde yüklü**
   (alpha.5). Public site etkilenmez.
@@ -108,11 +109,20 @@ v12.0.0-beta.3 itibarıyla durum:
   true ise küçük "Firebase Trial Aktif" göstergesi çıkar; default
   modda görünmez. Salt operatör görünürlüğüdür — güvenlik sınırı
   değildir.
-- **Firestore SDK / read / write / CRUD** başlamadı.
+- **Firestore passive SDK readiness layer available**
+  (v12.1.0-pre.1). 6 admin sayfasına `firebase-firestore-compat.js`
+  pasif olarak eklendi; `MV_FIREBASE` üzerine `hasFirestoreSdk` /
+  `isFirestoreReady` / `getFirestoreProvider` / `inspectFirestore`
+  helper'ları eklendi. **Hiçbir read / write / CRUD / collection /
+  doc / onSnapshot çağrısı yok.** Sadece readiness probe ediliyor;
+  ne wrapper'da ne admin sayfalarında `firebase.firestore()` çağrısı
+  yapılmıyor. Detay §13.
+- **Firestore read / write / CRUD** başlamadı. v12.2+ (read) ve
+  v12.3+ (write) fazlarına bırakıldı.
 
 ---
 
-## 3. Phase Log: alpha.6 → beta.3
+## 3. Phase Log: alpha.6 → v12.1.0-pre.1
 
 | Faz | Commit | Özet |
 |---|---|---|
@@ -132,7 +142,8 @@ v12.0.0-beta.3 itibarıyla durum:
 | v12.0.0-alpha.19 | `8b58ad6` | Opt-in Firebase admin login trial on `admin/index.html`; default `devLogin` bit-identical. |
 | v12.0.0-beta.1 | `b0cb84b` | Opt-in Firebase admin logout trial on `admin/dashboard.html`; trial bundle tamamlandı, docs senkronize edildi. |
 | v12.0.0-beta.2 | `2711ce9` | Trial flag `sessionStorage` persistence (login + dashboard) + production `devLogin` guard scaffold (`MV_ENFORCE_FIREBASE_AUTH`, default OFF). |
-| v12.0.0-beta.3 | _bu commit_ | Trial status UX (operator-visible "Firebase Trial Aktif" göstergesi) + production enforce checklist dokümante edildi. Runtime auth davranışı değişmedi. |
+| v12.0.0-beta.3 | `e6b269b` | Trial status UX (operator-visible "Firebase Trial Aktif" göstergesi) + production enforce checklist dokümante edildi. Runtime auth davranışı değişmedi. |
+| v12.1.0-pre.1 | _bu commit_ | Passive Firestore SDK readiness layer — 6 admin sayfasına `firebase-firestore-compat.js` pasif yüklendi + `MV_FIREBASE` üzerine `hasFirestoreSdk` / `isFirestoreReady` / `getFirestoreProvider` / `inspectFirestore` helper'ları eklendi. Hiçbir read/write/CRUD çağrısı yok. |
 
 > Notlar:
 > - alpha.6 / alpha.7 / alpha.8 hash'leri local git log'dan
@@ -325,6 +336,10 @@ gösterir (form/handler hâlâ devLogin/logout zincirinde).
 | Trial flag persistence | available | Dev hostta `?mvFirebaseLogin=1/true` → `sessionStorage 'mv_firebase_login_trial'='1'`; `?mvFirebaseLogin=0/false` temizler. Login → dashboard navigasyonu boyunca trial korunur. Production'da query param no-op (beta.2). |
 | Production devLogin guard scaffold | available, enforce pending | `shared/js/auth.js` içinde scaffold mevcut; `MV_ENFORCE_FIREBASE_AUTH === true` set edilmedikçe production'da `MV.auth.devLogin` hâlâ format-only davranışıyla açık. Enforce eşik koşulları §12.4'te (beta.2 scaffold, beta.3 checklist). |
 | Trial status UX | available | `admin/index.html` ve `admin/dashboard.html` üzerinde `#firebaseTrialIndicator` elementi `isFirebaseLoginTrialEnabled()` true ise "Firebase Trial Aktif" gösterir; default modda hiç görünmez. Operatör görünürlüğüdür, güvenlik sınırı değil (beta.3). |
+| Firestore SDK passive load | available | 6 admin sayfasına `firebase-firestore-compat.js` `firebase-auth-compat.js`'ten sonra, `shared/config/firebase.js`'den önce yüklendi. Public site / borç paneli etkilenmedi. Yalnız SDK script — `firebase.firestore()` çağrısı yapılmıyor (v12.1.0-pre.1). |
+| Firestore readiness helpers | available, passive only | `MV_FIREBASE.hasFirestoreSdk` / `isFirestoreReady` / `getFirestoreProvider` / `inspectFirestore`. Side-effect-free; sadece probe ve report. Provider getter ready iken namespace döner ama wrapper hiçbir method invoke etmez (v12.1.0-pre.1). |
+| Firestore read | pending | v12.2.0+ Read-only admin modules Firebase read fazına bırakıldı. |
+| Firestore write / CRUD | pending | v12.3.0+ CRUD fazına bırakıldı; modül başına create/update/delete + `adminLogs` write desenleri. |
 | Firestore | not started | Firestore SDK admin sayfalarına eklenmedi. |
 | CRUD | not started | announcements / events / apps modülleri read-only. |
 | Debt panel migration | out of scope | `admin/borc/index.html` v12.0 – v12.5 boyunca dokunulmaz. |
@@ -548,7 +563,7 @@ görünür hale gelir (login üstünde `.admin-auth-badge`, dashboard
 - Bit-identical alpha.19 / beta.1 öncesi davranış; sessionStorage
   payload'unda `provider:'dev-session'`.
 
-### Güvenlik notları (bkz. §14)
+### Güvenlik notları (bkz. §15)
 
 - Firebase ready + credential/signOut failure durumunda **silent
   downgrade asla yapılmaz**.
@@ -834,7 +849,132 @@ kapatılırsa kayıt yok.
 
 ---
 
-## 13. Troubleshooting
+## 13. Firestore Passive SDK Readiness Layer
+
+v12.1.0-pre.1 Firestore tarafına geçişin **ilk pasif altyapısını**
+kurdu. Bu bölüm SDK script yüklenmesini, `MV_FIREBASE` üzerine
+eklenen readiness helper'larını ve bu fazda yapılmayanları açıkça
+listeler.
+
+### 13.1 Bu Fazda Yapılmayanlar (kritik)
+
+- **Hiçbir `firebase.firestore()` çağrısı yapılmıyor.** Ne loader
+  içinde, ne `MV.auth.firebase` wrapper'ında, ne admin sayfalarında.
+- **Hiçbir read** yok: `collection()` / `doc()` / `getDoc()` /
+  `getDocs()` / `onSnapshot()` / `query()` / `where()` /
+  `orderBy()` / `limit()` çağrısı 0.
+- **Hiçbir write** yok: `setDoc()` / `updateDoc()` / `deleteDoc()` /
+  `addDoc()` / `writeBatch()` / `runTransaction()` çağrısı 0.
+- **Hiçbir CRUD** açılmadı. announcements / events / apps modülleri
+  hâlâ read-only static; logs modülü hâlâ statik özet.
+- **Firestore network** açılmadı. SDK script CDN'den yüklense bile
+  `firebase.firestore()` invoke edilmediği için tek bir Firestore
+  istek paketi gönderilmiyor.
+
+### 13.2 SDK Script Yükleme
+
+Aşağıdaki 6 admin sayfasına `firebase-firestore-compat.js`
+`firebase-auth-compat.js`'ten **sonra**, `shared/config/firebase.js`'den
+**önce** eklendi:
+
+- `admin/index.html`
+- `admin/dashboard.html`
+- `admin/announcements.html`
+- `admin/events.html`
+- `admin/apps.html`
+- `admin/logs.html`
+
+Script tag sırası (her sayfada):
+
+```html
+<script src="../shared/config/site.js"></script>
+<script src=".../firebase-app-compat.js"></script>
+<script src=".../firebase-auth-compat.js"></script>
+<script src=".../firebase-firestore-compat.js"></script>  <!-- v12.1.0-pre.1 -->
+<script src="../shared/config/firebase.js"></script>
+<script src="../shared/js/core.js"></script>
+<script src="../shared/js/theme.js"></script>
+<script src="../shared/js/auth.js"></script>
+```
+
+**Dokunulmayan sayfalar:**
+- `index.html` (public site) — Firebase SDK hiç yüklenmiyor.
+- `borc.html` — yalnız meta-refresh / JS redirect.
+- `admin/borc/index.html` — kendi inline `firebaseConfig`'iyle
+  izole çalışır; v12 wrapper'ı ile karışmaz.
+
+### 13.3 Readiness Helper API'si
+
+`MV_FIREBASE` üzerine 4 yeni helper eklendi. Auth tarafındaki
+(`hasAuthSdk` / `isAuthReady` / `getAuthProvider`) helper'larıyla
+**simetrik**; tamamı side-effect-free, hiçbir method invoke etmiyor.
+
+| Helper | Görev |
+|---|---|
+| `hasFirestoreSdk()` | Captured namespace'in `firestore` property'si callable mı? SDK presence probe'u. |
+| `isFirestoreReady()` | `isAvailable() && hasFirestoreSdk()` — app init + SDK presence birlikte mi? |
+| `getFirestoreProvider()` | Ready ise namespace döner, değilse `null`. Caller `.firestore()`'u kendisi çağırır (bu fazda kimse çağırmıyor). |
+| `inspectFirestore()` | Structured snapshot — `enabled`, `reason`, `status`, `hasFirestoreSdk`, `isFirestoreReady`, `hasProvider`, `mode:'passive'`, `capabilities: { read:'no-op', write:'no-op', crud:'no-op' }`. |
+
+### 13.4 DevTools Doğrulama
+
+**Default repo (placeholder config, opt-in flag yok):**
+
+```js
+MV_FIREBASE.hasFirestoreSdk();   // true  — SDK script yüklendi
+MV_FIREBASE.isFirestoreReady();  // false — config placeholder, app init yok
+MV_FIREBASE.getFirestoreProvider(); // null
+MV_FIREBASE.inspectFirestore();
+// → {
+//     enabled: false,
+//     reason: 'placeholder',
+//     status: 'placeholder',
+//     hasLoader: true,
+//     hasFirestoreSdk: true,
+//     isFirestoreReady: false,
+//     hasProvider: false,
+//     mode: 'passive',
+//     capabilities: { read:'no-op', write:'no-op', crud:'no-op', sdkPresent:'yes' }
+//   }
+```
+
+**Local config ready (Path B, gerçek `firebase.local.js` yüklü):**
+
+```js
+MV_FIREBASE.isFirestoreReady(); // true
+MV_FIREBASE.getFirestoreProvider() === window.firebase; // true (namespace, NOT instance)
+MV_FIREBASE.inspectFirestore().mode; // 'passive' (CRUD hâlâ kapalı)
+MV_FIREBASE.inspectFirestore().capabilities; // read/write/crud hepsi 'no-op'
+```
+
+Mode ready iken bile **`'passive'`** kalır — bu, wrapper'da hiçbir
+read/write surface açılmadığını sinyalize eder. Bunu değiştiren
+faz v12.2+ olacak.
+
+### 13.5 Garantiler
+
+- `getFirestoreProvider()` ready iken namespace'i (window.firebase)
+  döner; **Firestore instance'ı dönmez**. Caller'lar `.firestore()`'u
+  kendileri invoke etmek zorunda — bu fazda hiçbir caller bunu
+  yapmıyor.
+- Yeni helper'lar mevcut API yüzeyini bozmaz: `init`, `getStatus`,
+  `getConfig`, `isConfigured`, `isAvailable`, `isEnabled`,
+  `hasAuthSdk`, `isAuthReady`, `getAuthProvider`,
+  `hasExternalConfig`, `getExternalConfig`, `resolveConfig`,
+  `isLocalConfigLoadEnabled`, `getLocalConfigStatus`,
+  `loadLocalConfig`, `getLastError`, `getApp` — hepsi
+  **bit-identical**.
+- `MV.auth` ve `MV.auth.firebase.*` wrapper davranışı **bit-identical**.
+- Admin login/logout trial davranışı, trial persistence, trial
+  status indicator — hepsi **bit-identical**.
+- `MV_ENFORCE_FIREBASE_AUTH` guard scaffold davranışı **bit-identical**.
+- Borç paneli, public site, shared/css, assets, firebase.json,
+  .firebaserc, firestore.rules, firestore.indexes.json,
+  .gitignore — **dokunulmadı**.
+
+---
+
+## 14. Troubleshooting
 
 Aşağıdaki tablo wrapper'dan dönen anormal durumların yorumudur.
 
@@ -869,7 +1009,7 @@ Aşağıdaki tablo wrapper'dan dönen anormal durumların yorumudur.
 
 ---
 
-## 14. Security Notes
+## 15. Security Notes
 
 - **Client Firebase config secret değildir** ama yine de repo'ya
   gerçek değer commitlenmez. Bu policy iki nedenden değerli:
@@ -911,7 +1051,7 @@ Aşağıdaki tablo wrapper'dan dönen anormal durumların yorumudur.
 
 ---
 
-## 15. Next Roadmap
+## 16. Next Roadmap
 
 Tamamlanan adımlar (referans):
 
@@ -923,14 +1063,16 @@ Tamamlanan adımlar (referans):
 | Admin login opt-in Firebase trial | v12.0.0-alpha.19 | ✅ Tamamlandı (`8b58ad6`). |
 | Admin logout opt-in trial + docs sync | v12.0.0-beta.1 | ✅ Tamamlandı (`b0cb84b`). |
 | Trial persistence + production devLogin guard scaffold | v12.0.0-beta.2 | ✅ Tamamlandı (`2711ce9`). |
-| Trial status UX + production enforce checklist | v12.0.0-beta.3 | ✅ Mevcut faz. |
+| Trial status UX + production enforce checklist | v12.0.0-beta.3 | ✅ Tamamlandı (`e6b269b`). |
+| Production auth enforcement readiness audit | v12.0.0-beta.4 | ✅ Tamamlandı (read-only audit; kod yok, commit yok). Karar B — kısmen hazır; canlı production smoke test öncesi enforce açılmaz. |
+| Passive Firestore SDK readiness layer | v12.1.0-pre.1 | ✅ Mevcut faz. |
 
 Önerilen sonraki sıra (her adım atomik commit):
 
 | Adım | Hedef faz | Açıklama |
 |---|---|---|
-| Production devLogin guard enforce | v12.0.0-beta.4 | §12.4 checklist'i tamamlandıktan sonra `MV_ENFORCE_FIREBASE_AUTH` operasyonel olarak true'ya alınır. beta.2 scaffold'unu canlı moda alır; HTML touch yok (sadece deployment/config tarafı). |
-| Firestore rules foundation | v12.1.0 | Firestore SDK admin sayfalarına eklenir, rules emulator testleri koşulur, deploy gate açılır. Hâlâ write yok. |
+| Production devLogin guard enforce | v12.0.0-beta.5+ | §12.4 checklist'i ve beta.4 audit'inde listelenen operasyonel ön koşullar tamamlandıktan sonra `MV_ENFORCE_FIREBASE_AUTH` true'ya alınır. HTML touch yok; deploy zinciri tarafı. |
+| Firestore rules foundation | v12.1.0 | Firestore Security Rules taslakları + emulator testleri + deploy gate. SDK zaten yüklü (pre.1); bu adım rules + ilk gerçek `firebase.firestore()` çağrılarına izin verir ama hâlâ write yok. |
 | Read-only admin modules Firebase read | v12.2.0 | announcements / events / apps modülleri Firestore'dan read yapar (write hâlâ yok). |
 | CRUD | v12.3.0+ | Modül başına create/update/delete; paired `adminLogs` write desenleri. |
 
@@ -949,3 +1091,4 @@ yürütülür.
 | v12.0.0-beta.1 | 2026-05-23 | Admin auth trial bundle tamamlandı: dashboard logout opt-in trial (`admin/dashboard.html`) eklendi; alpha.19 login trial ile aynı flag/host pattern paylaşılır. Phase log alpha.18 + alpha.19 + beta.1 satırlarıyla genişletildi; başlık `alpha.6 → beta.1`. Current Scope login/logout trial bullet'larıyla güncellendi. Capability Matrix iki satır "opt-in trial available" + production devLogin guard "pending" satırı ile yenilendi. Yeni §11 "Admin Login/Logout Trial Walkthrough" eklendi (TOC: §11/§12/§13 → §12/§13/§14). Troubleshooting tablosu 4 yeni satırla genişletildi (trial flag debug, session payload, signOut failure). Next Roadmap beta.2 devLogin guard + Firestore foundation sırasına güncellendi. Runtime davranışı değişmedi; default flag-off path bit-identical kaldı. |
 | v12.0.0-beta.2 | 2026-05-23 | Trial flag persistence + production devLogin guard scaffold ile doküman tazelendi. Belge sürümü v12.0.0-beta.1 → beta.2, hedef faz beta.3+. Phase log beta.1 hash'i `b0cb84b` olarak doğrulandı ve beta.2 satırı eklendi; başlık `alpha.6 → beta.2`. Current Scope `Trial flag persistence available` + `Production devLogin guard scaffold available` bullet'ları eklendi. Capability Matrix iki yeni satırla genişletildi (trial flag persistence available; production devLogin guard scaffold available, enforce pending). Yeni §12 "Trial Persistence and Production devLogin Guard" bölümü eklendi (§12.1 persistence rules + helpers + devtools doğrulama, §12.2 enforce koşulları + dönüş matrisi + helper garantileri, §12.3 beta.3 enforce eşik koşulları). Troubleshooting tablosu 4 yeni satırla genişletildi (persistence kayıp, `=0` çalışmadı, production enforce çalışmadı, dev hostta enforce etkisiz). Security Notes maddesi enforce flag policy'siyle güncellendi. Next Roadmap beta.3 enforce hedefiyle yenilendi. Runtime davranışı değişmedi; default flag-off path + default enforce-off path bit-identical kaldı. |
 | v12.0.0-beta.3 | 2026-05-23 | Trial status UX + production enforce checklist ile doküman tazelendi. Belge sürümü beta.2 → beta.3, hedef faz beta.4+. Phase Log beta.2 hash'i `2711ce9` olarak doğrulandı ve beta.3 satırı eklendi; başlık `alpha.6 → beta.3`. Current Scope `Trial status UX available` bullet'ı eklendi. Capability Matrix'e "Trial status UX — available" satırı eklendi. §12 yeniden yapılandırıldı: yeni §12.3 "Operator Visibility (Trial Status UX)" (HTML element konumları, davranış garantileri, DevTools doğrulama) + §12.4 "Production Enforce Checklist" (7 adımlı sıralı doğrulama bloğu) + erken enforce risk notu. §11 walkthrough'a indicator referansı eklendi. Troubleshooting tablosu 3 yeni satırla genişletildi (indicator default modda görünüyor, indicator trial aktifken görünmüyor, indicator CSS ile gizleme). Next Roadmap beta.4 enforce hedefiyle yenilendi; beta.2 hash'i `2711ce9` olarak doğrulandı. Runtime auth davranışı değişmedi; yeni şey yalnız iki sayfaya inline-styled, default-hidden indicator + bir `updateFirebaseTrialIndicator()` helper. |
+| v12.1.0-pre.1 | 2026-05-24 | Passive Firestore SDK readiness layer ile doküman tazelendi. Belge sürümü beta.3 → v12.1.0-pre.1, hedef faz v12.1.0+. Phase Log beta.3 hash'i `e6b269b` olarak doğrulandı + beta.4 (audit, kod yok) ve v12.1.0-pre.1 satırları eklendi; başlık `alpha.6 → v12.1.0-pre.1`. Current Scope `Firestore passive SDK readiness layer available` bullet'ı eklendi; "Firestore SDK / read / write / CRUD başlamadı" satırı v12.2/v12.3 sırasına göre revize edildi. Capability Matrix'e 4 yeni satır eklendi (Firestore SDK passive load, Firestore readiness helpers, Firestore read pending, Firestore write/CRUD pending). Yeni §13 "Firestore Passive SDK Readiness Layer" bölümü (§13.1 bu fazda yapılmayanlar, §13.2 SDK script yükleme + 6 admin sayfa listesi + script tag sırası, §13.3 readiness helper API tablosu, §13.4 DevTools doğrulama placeholder/ready ayrımı, §13.5 garantiler). TOC: §13 Troubleshooting → §14, §14 Security Notes → §15, §15 Next Roadmap → §16. §11 walkthrough Security Notes referansı `bkz. §14` → `bkz. §15`. Next Roadmap'e beta.5 enforce + v12.1.0 rules foundation sıraları eklendi. Runtime auth davranışı değişmedi; admin sayfalarında ek bir CDN script + `MV_FIREBASE` üzerinde 4 passive helper. Hiçbir Firestore read/write/CRUD/`firebase.firestore()` çağrısı yok. |

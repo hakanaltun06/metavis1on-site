@@ -280,18 +280,37 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
   shape'leri yeniden kullanıldı. Operatör görünürlüğüdür, güvenlik
   sınırı değildir. Detay:
   [`firebase-local-setup.md`](./firebase-local-setup.md) §12.3.
-- **Production enforce checklist: documented** (beta.3, _bu commit_).
-  beta.4 enforce öncesi 7 adımlı sıralı doğrulama bloğu
+- **Production enforce checklist: documented** (beta.3, `e6b269b`).
+  beta.5+ enforce öncesi 7 adımlı sıralı doğrulama bloğu
   [`firebase-local-setup.md`](./firebase-local-setup.md) §12.4'te.
   Checklist tek başına flag'i flip etmez; yalnız enforce'a geçmek
   için gereken ön doğrulamayı listeler.
-- **Firestore: pending.** Firestore SDK admin sayfalarına
-  eklenmedi; read / write / CRUD yok. v12.1.0 Firestore Rules
-  foundation fazından sonra açılır.
+- **Production auth enforcement readiness audit: complete**
+  (beta.4, kod yok / commit yok). Karar B — kısmen hazır:
+  kod tarafı tamamlanmış, ama gerçek production Firebase config
+  + gerçek admin Auth kullanıcısı + canlı login/logout smoke test
+  + backup admin kanalı + rollback prosedürü tamamlanmadan
+  enforce açılmaz.
+- **Firestore SDK passive layer: available** (v12.1.0-pre.1,
+  _bu commit_). 6 admin sayfasına `firebase-firestore-compat.js`
+  pasif olarak eklendi; `MV_FIREBASE` üzerine `hasFirestoreSdk` /
+  `isFirestoreReady` / `getFirestoreProvider` / `inspectFirestore`
+  helper'ları eklendi. **Hiçbir read / write / CRUD / `firebase.firestore()`
+  çağrısı yok.** Wrapper sadece readiness probe ediliyor; provider
+  getter ready iken namespace döner ama hiçbir caller `.firestore()`
+  invoke etmiyor. Detay:
+  [`firebase-local-setup.md`](./firebase-local-setup.md) §13.
+- **Firestore rules: pending.** v12.1.0 Firestore Rules
+  foundation fazına bırakıldı. SDK zaten yüklü (pre.1); rules +
+  ilk gerçek `firebase.firestore()` çağrılarına izin v12.1.0'da
+  açılacak.
+- **Firestore reads: pending.** v12.2.0+ Read-only admin modules
+  Firebase read fazına bırakıldı.
+- **CRUD: pending.** v12.3.0+ fazına bırakıldı.
 - **Debt panel: out of scope.** Borç paneli
   (`admin/borc/index.html`) kendi inline `firebaseConfig`'i ile
   izole çalışır; v12 Auth wrapper'ı ile karışmaz. v12.0 – v12.5
-  boyunca kod düzeyinde dokunulmaz.
+  boyunca kod düzeyinde dokunulmaz (v12.1.0-pre.1 dahil).
 
 ---
 
@@ -305,6 +324,8 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
 | v12.0.0-beta.1 | 2026-05-23 | Admin auth trial bundle tamamlandı. Admin login opt-in trial (alpha.19, `8b58ad6`) ve dashboard logout opt-in trial (beta.1) bullet'ları "available" olarak işaretlendi; aynı paylaşılan flag pattern. Production devLogin guard beta.2 fazına yönlendirildi. Detay: [`firebase-local-setup.md`](./firebase-local-setup.md) §11 Trial Walkthrough. |
 | v12.0.0-beta.2 | 2026-05-23 | Trial flag persistence + production devLogin guard scaffold available olarak işaretlendi. Login → dashboard navigasyonu query string'i kaybetse bile dev hostta `sessionStorage` key (`mv_firebase_login_trial`) ile trial aktif kalır; production'da query param no-op. `shared/js/auth.js` içine `MV_ENFORCE_FIREBASE_AUTH`-gated devLogin guard scaffold eklendi, default enforce OFF; beta.3+ enforce eşiği için ön koşullar (Firebase production config + allowlist + smoke test) belgelendi. beta.1 hash'i `b0cb84b` olarak doğrulandı. Detay: [`firebase-local-setup.md`](./firebase-local-setup.md) §12. |
 | v12.0.0-beta.3 | 2026-05-23 | Trial status UX + production enforce checklist available olarak işaretlendi. `admin/index.html` ve `admin/dashboard.html` üzerinde `#firebaseTrialIndicator` elementi `isFirebaseLoginTrialEnabled()` true ise "Firebase Trial Aktif" gösterir; default modda görünmez. beta.4 enforce öncesi 7 adımlı sıralı checklist [`firebase-local-setup.md`](./firebase-local-setup.md) §12.4'te dokümante edildi. beta.2 hash'i `2711ce9` olarak doğrulandı. `shared/js/auth.js` ve Firebase config dosyalarına dokunulmadı; runtime auth davranışı değişmedi. |
+| v12.0.0-beta.4 | 2026-05-24 | Production auth enforcement readiness audit (read-only, kod yok / commit yok). Karar B — kısmen hazır: kod tarafı tamamlanmış, ama gerçek production Firebase config + gerçek admin Auth kullanıcısı + canlı login/logout smoke test + backup admin kanalı + rollback prosedürü tamamlanmadan enforce açılmaz. `MV_ENFORCE_FIREBASE_AUTH` default OFF korundu. |
+| v12.1.0-pre.1 | 2026-05-24 | Passive Firestore SDK readiness layer eklendi olarak işaretlendi. 6 admin sayfasına `firebase-firestore-compat.js` pasif yüklendi; `MV_FIREBASE` üzerine `hasFirestoreSdk` / `isFirestoreReady` / `getFirestoreProvider` / `inspectFirestore` helper'ları eklendi. Hiçbir read/write/CRUD/`firebase.firestore()` çağrısı yok. Firestore rules / reads / CRUD pending sıraları (v12.1.0 / v12.2.0+ / v12.3.0+) güncellendi. beta.3 hash'i `e6b269b` olarak doğrulandı. Detay: [`firebase-local-setup.md`](./firebase-local-setup.md) §13. |
 
 Bu doküman v12.0.0-alpha PR açılana kadar canlı bir referanstır;
 PR description'ı için doğrudan referans olarak kullanılabilir. v12.0.0-alpha

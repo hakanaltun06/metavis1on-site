@@ -109,6 +109,12 @@
   <script src="../shared/config/site.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <!-- v12.1.0-pre.1: passive Firestore SDK load. NOT used for any
+       read/write in this phase. MV_FIREBASE.hasFirestoreSdk() /
+       isFirestoreReady() / getFirestoreProvider() / inspectFirestore()
+       only probe SDK + app readiness; no firebase.firestore()
+       instance is created here. CRUD lands in v12.2+/v12.3+. -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
   <script src="../shared/config/firebase.js"></script>
   <script src="../shared/js/core.js"></script>
   <script src="../shared/js/theme.js"></script>

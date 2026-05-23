@@ -7,6 +7,148 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.1.0-pre.1] — Passive Firestore SDK Readiness Layer
+
+- **Firestore compat SDK** 6 admin sayfasına pasif olarak eklendi:
+  - `admin/index.html`
+  - `admin/dashboard.html`
+  - `admin/announcements.html`
+  - `admin/events.html`
+  - `admin/apps.html`
+  - `admin/logs.html`
+- **Script tag sırası** her sayfada `firebase-auth-compat.js`'ten
+  **sonra**, `shared/config/firebase.js`'den **önce**:
+  ```
+  <script src=".../firebase-app-compat.js"></script>
+  <script src=".../firebase-auth-compat.js"></script>
+  <script src=".../firebase-firestore-compat.js"></script>  ← yeni
+  <script src="../shared/config/firebase.js"></script>
+  ```
+- **Yeni `MV_FIREBASE` readiness helper'ları** (`shared/config/firebase.js`,
+  auth tarafıyla simetrik, hepsi side-effect-free):
+  - `hasFirestoreSdk()` — captured namespace'in `firestore`
+    property'si callable mı (SDK presence probe).
+  - `isFirestoreReady()` — `isAvailable() && hasFirestoreSdk()`.
+  - `getFirestoreProvider()` — ready iken namespace, değilse `null`.
+    Caller `.firestore()`'u kendisi çağırır (bu fazda kimse çağırmıyor).
+  - `inspectFirestore()` — structured snapshot
+    `{ enabled, reason, status, hasLoader, hasFirestoreSdk,
+    isFirestoreReady, hasProvider, mode:'passive',
+    capabilities: { read:'no-op', write:'no-op', crud:'no-op',
+    sdkPresent } }`.
+- **`mode: 'passive'` her durumda.** Ready iken bile bu faz
+  hiçbir read/write surface açmadığı için mode değişmez. v12.2+
+  read fazından sonra `'partial-live'` veya benzeri bir mod
+  döndürmesi düşünülebilir.
+- **Hiçbir Firestore read / write / CRUD çağrısı yok:**
+  - `firebase.firestore()` çağrısı 0 — loader, wrapper, admin
+    HTML'leri, hiçbir yerde.
+  - `collection()` / `doc()` / `getDoc()` / `getDocs()` /
+    `onSnapshot()` / `query()` / `where()` / `orderBy()` /
+    `limit()` çağrısı 0.
+  - `setDoc()` / `updateDoc()` / `deleteDoc()` / `addDoc()` /
+    `writeBatch()` / `runTransaction()` çağrısı 0.
+  - Firestore SDK script CDN'den yüklense bile tek bir
+    Firestore istek paketi gönderilmiyor (instance hiç
+    yaratılmıyor).
+- **Karar matrisi (placeholder vs ready):**
+  | Durum | `hasFirestoreSdk` | `isFirestoreReady` | `getFirestoreProvider` | `inspectFirestore().reason` |
+  |---|---|---|---|---|
+  | Default repo (placeholder config) | `true` | `false` | `null` | `'placeholder'` |
+  | Local config ready (Path A/B) | `true` | `true` | namespace (window.firebase) | `'ready'` |
+  | Config var ama init error | `true` | `false` | `null` | `'error'` |
+  | Firebase SDK script yüklenmemiş (hipotetik) | `false` | `false` | `null` | `'no-firestore-sdk'` |
+- **Default repo davranışı bit-identical:**
+  - Placeholder config ile init zaten reddediyor (`getStatus() ===
+    'placeholder'`), bu yüzden Firestore tarafı default'ta no-op.
+  - Auth login / logout trial zinciri (alpha.19 + beta.1 + beta.2
+    + beta.3) **bit-identical**.
+  - `MV.auth` ve `MV.auth.firebase.*` API yüzeyi + davranışı
+    **bit-identical** (shared/js/auth.js dokunulmadı).
+  - `MV_ENFORCE_FIREBASE_AUTH` guard scaffold davranışı
+    **bit-identical** (beta.2 baseline'da, default OFF).
+  - Trial status indicator (beta.3) **bit-identical**.
+  - Trial flag persistence (beta.2) **bit-identical**.
+- **Mevcut `MV_FIREBASE` API yüzeyi bit-identical:** `init`,
+  `getStatus`, `getConfig`, `getApp`, `getLastError`,
+  `isConfigured`, `isAvailable`, `isEnabled`, `hasAuthSdk`,
+  `isAuthReady`, `getFirebaseNamespace`, `getAuthProvider`,
+  `hasExternalConfig`, `getExternalConfig`, `resolveConfig`,
+  `isLocalConfigLoadEnabled`, `getLocalConfigStatus`,
+  `loadLocalConfig` — hiçbiri değiştirilmedi.
+- **DevTools doğrulama (default repo):**
+  ```js
+  MV_FIREBASE.hasFirestoreSdk();    // true  — SDK script yüklendi
+  MV_FIREBASE.isFirestoreReady();   // false — placeholder config
+  MV_FIREBASE.getFirestoreProvider(); // null
+  MV_FIREBASE.inspectFirestore().mode; // 'passive'
+  MV_FIREBASE.inspectFirestore().capabilities;
+  // → { read:'no-op', write:'no-op', crud:'no-op', sdkPresent:'yes' }
+  ```
+- **Dokümantasyon güncellendi:**
+  - `docs/firebase-local-setup.md`:
+    - Belge sürümü beta.3 → v12.1.0-pre.1; hedef faz v12.1.0+.
+    - Phase Log'a v12.1.0-pre.1 satırı eklendi; beta.3 hash'i
+      `e6b269b` olarak doğrulandı; beta.4 audit (kod yok) satırı
+      eklendi; başlık "alpha.6 → v12.1.0-pre.1".
+    - Current Scope `Firestore passive SDK readiness layer
+      available` bullet'ı eklendi; "Firestore SDK / read / write /
+      CRUD başlamadı" satırı v12.2 / v12.3 sırasına göre revize
+      edildi.
+    - Capability Matrix'e 4 yeni satır (Firestore SDK passive
+      load — available; Firestore readiness helpers — available,
+      passive only; Firestore read — pending; Firestore
+      write/CRUD — pending).
+    - Yeni §13 "Firestore Passive SDK Readiness Layer" bölümü
+      (§13.1 bu fazda yapılmayanlar, §13.2 SDK script yükleme +
+      6 admin sayfa + script tag sırası + dokunulmayan sayfalar,
+      §13.3 readiness helper API tablosu, §13.4 DevTools
+      doğrulama placeholder/ready ayrımı, §13.5 garantiler).
+    - TOC: §13 Troubleshooting → §14, §14 Security Notes → §15,
+      §15 Next Roadmap → §16. §11 walkthrough Security Notes
+      referansı güncellendi.
+    - Next Roadmap beta.5 enforce + v12.1.0 rules foundation
+      sırasıyla yenilendi.
+    - Sürüm Notu satırı v12.1.0-pre.1 ile genişletildi.
+  - `docs/v12-readiness.md`:
+    - Auth Wrapper Layer Status'a "Production auth enforcement
+      readiness audit: complete (beta.4)" + "Firestore SDK
+      passive layer: available (v12.1.0-pre.1)" + Firestore
+      rules / reads / CRUD pending bullet'ları eklendi.
+    - Debt panel out of scope bullet'ı v12.1.0-pre.1 dahil
+      olarak güncellendi (önceki duplicate satırlar
+      konsolide edildi).
+    - beta.3 hash'i `e6b269b` olarak doğrulandı.
+    - Sürüm tablosuna beta.4 ve v12.1.0-pre.1 satırları eklendi.
+  - `docs/README.md`:
+    - Firebase Local Setup açıklaması "alpha.6 → **beta.3**" →
+      "alpha.6 → **v12.1.0-pre.1**" güncellendi; "passive
+      Firestore SDK readiness layer (hiçbir read/write/CRUD
+      yok)" ifadesi eklendi.
+- **Dokunulmayan dosyalar / kapsam dışı:**
+  - `shared/js/auth.js` **değişmedi** — `MV.auth` ve
+    `MV.auth.firebase.*` davranışı bit-identical.
+  - `shared/config/firebase.local.example.js` değişmedi.
+  - `shared/config/site.js` değişmedi.
+  - `admin/borc/index.html` (borç paneli) değişmedi —
+    Firestore SDK script tag'i eklenmedi; kendi izole zincirine
+    dokunulmadı.
+  - `borc.html` redirect (public) değişmedi.
+  - `index.html` (public site) değişmedi — Firebase SDK hiç
+    yüklenmiyor; pre.1 sadece admin sayfalarını etkiler.
+  - `shared/js/core.js`, `theme.js`, `apps.js`, `shared/css/*`,
+    `assets/*`, `firebase.json`, `.firebaserc`,
+    `firestore.rules`, `firestore.indexes.json`, `.gitignore`
+    değişmedi.
+  - `MV_ENFORCE_FIREBASE_AUTH` default OFF korundu;
+    `devLogin` production'da hâlâ açık (beta.2 guard scaffold
+    aktive edilmedi).
+  - `SESSION_KEY` (`'mv_admin_session'`), `SESSION_TTL_MS`
+    (8 saat), `mv_admin_session` payload, `mv_firebase_login_trial`
+    sessionStorage davranışı **bit-identical**.
+  - Gerçek Firebase config / apiKey / projectId / appId / UID /
+    email repo'ya girmedi.
+
 ## [v12.0.0-beta.3] — Firebase Auth Trial Status UX and Enforcement Checklist
 
 - **Trial status göstergesi eklendi.** `admin/index.html` ve

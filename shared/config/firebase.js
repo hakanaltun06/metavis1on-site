@@ -37,6 +37,25 @@
      getAuthProvider()      → namespace when isAuthReady() is true, else null;
                               callers must invoke `.auth()` themselves later
 
+   Firestore readiness helpers (v12.1.0-pre.1 — passive, symmetric with the
+   auth helpers above; never call firebase.firestore(), never hit the
+   network, never create a Firestore instance, never read/write any
+   document or collection). This phase ships the readiness layer only —
+   no CRUD surface, no collection/doc/onSnapshot/getDoc/getDocs/setDoc/
+   updateDoc/deleteDoc/addDoc plumbing lives here. Reads land in v12.2+,
+   writes/CRUD in v12.3+.
+     hasFirestoreSdk()      → true if the captured namespace's `firestore`
+                              property is callable; reflects SDK presence
+                              only, independent of init success
+     isFirestoreReady()     → true only when isAvailable() AND
+                              hasFirestoreSdk()
+     getFirestoreProvider() → namespace when isFirestoreReady() is true,
+                              else null; callers must invoke `.firestore()`
+                              themselves in a later phase
+     inspectFirestore()     → side-effect-free snapshot (status, sdk flag,
+                              ready flag, provider flag, mode='passive',
+                              capabilities = read/write/CRUD 'no-op')
+
    Gated config injection (opt-in, repo stays placeholder by default):
      A real per-environment config may be supplied through the global
      `window.MV_FIREBASE_CONFIG`. If that global is absent OR fails the
@@ -291,6 +310,59 @@
 
     getAuthProvider: function () {
       return api.isAuthReady() ? state.firebaseNamespace : null;
+    },
+
+    /* v12.1.0-pre.1: passive Firestore readiness helpers. Symmetric
+       with hasAuthSdk / isAuthReady / getAuthProvider above. None of
+       these methods invoke firebase.firestore() or any Firestore
+       read/write API. They only probe the captured namespace for SDK
+       presence and report readiness. CRUD wiring belongs to a later
+       phase (v12.2+ reads, v12.3+ writes). */
+    hasFirestoreSdk: function () {
+      var ns = state.firebaseNamespace;
+      return !!(ns && typeof ns.firestore === 'function');
+    },
+
+    isFirestoreReady: function () {
+      return api.isAvailable() && api.hasFirestoreSdk();
+    },
+
+    getFirestoreProvider: function () {
+      return api.isFirestoreReady() ? state.firebaseNamespace : null;
+    },
+
+    inspectFirestore: function () {
+      var hasSdk = api.hasFirestoreSdk();
+      var ready = api.isFirestoreReady();
+      var hasProvider = api.getFirestoreProvider() !== null;
+      var reason;
+      if (ready) {
+        reason = 'ready';
+      } else if (!hasSdk) {
+        reason = 'no-firestore-sdk';
+      } else if (state.status === 'placeholder') {
+        reason = 'placeholder';
+      } else if (state.status === 'error') {
+        reason = 'error';
+      } else {
+        reason = state.status || 'disabled';
+      }
+      return {
+        enabled: ready,
+        reason: reason,
+        status: state.status,
+        hasLoader: true,
+        hasFirestoreSdk: hasSdk,
+        isFirestoreReady: ready,
+        hasProvider: hasProvider,
+        mode: 'passive',
+        capabilities: {
+          read: 'no-op',
+          write: 'no-op',
+          crud: 'no-op',
+          sdkPresent: hasSdk ? 'yes' : 'no'
+        }
+      };
     },
 
     hasExternalConfig: function () {
