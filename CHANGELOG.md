@@ -7,6 +7,43 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.0.0-alpha.5] — Firebase App SDK Passive Load
+
+- Borç paneli dışındaki admin sayfalarına Firebase App **compat** SDK
+  script tag'i passive şekilde eklendi (10.8.1):
+  - `admin/index.html`
+  - `admin/dashboard.html`
+  - `admin/announcements.html`
+  - `admin/events.html`
+  - `admin/apps.html`
+  - `admin/logs.html`
+- SDK URL:
+  `https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js`
+  (borç paneli ile aynı SDK sürümü; borç paneli modular form kullanırken
+  admin sayfaları compat form kullanıyor — `window.firebase` global'i
+  için).
+- Konum: shared script bloğunda `site.js`'in hemen ardına,
+  `firebase.js` loader'ının **öncesine** eklendi → loader çalıştığında
+  `window.firebase` global'i hazır olur.
+- **Davranış:** admin sayfaları yüklendiğinde `window.firebase` artık
+  tanımlı; ancak `shared/config/firebase.js` loader'ı placeholder config
+  algılar ve **`initializeApp`'i çağırmaz**. `MV_FIREBASE.init()`
+  sessizce `false` döner, `getStatus()` `'placeholder'` olur.
+  Davranışsal etki sıfır.
+- **Network etkisi:** admin sayfaları artık her load'da
+  `firebase-app-compat.js` CDN dosyası için bir GET isteği atar
+  (~70 KB minified+gzip). Firebase backend'e (Auth, Firestore, Functions)
+  hiçbir istek atılmıyor.
+- Firebase Auth SDK, Firestore SDK, CRUD, deploy veya gerçek Firebase
+  config eklenmedi. Hiçbir `firebase.initializeApp(...)` doğrudan
+  çağrısı, `getAuth(...)`, `signInWithEmailAndPassword(...)`,
+  `getFirestore(...)`, `onAuthStateChanged(...)` yok.
+- `admin/borc/index.html`, `borc.html` ve public site (`index.html`)
+  dokunulmadı; borç paneli kendi modular Firebase setup'ını ve iki
+  katmanlı gate'ini korumaya devam ediyor.
+- Mevcut login, logout ve sessionStorage tabanlı admin gate davranışı
+  değiştirilmedi.
+
 ## [v12.0.0-alpha.4] — Firebase Init Call-site
 
 - Borç paneli dışındaki admin sayfalarına fail-safe
