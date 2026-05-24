@@ -7,6 +7,131 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.1.0-pre.5] — Opt-in Dashboard Allowlist Re-Verify
+
+- Dashboard açılışında opt-in allowlist re-verify eklendi.
+- Re-verify yalnız `mvAdminAllowlistGate` flag'i aktifken çalışır.
+- Allowlist başarısızsa session temizlenir ve kullanıcı login sayfasına yönlendirilir.
+- Default dashboard requireAdmin davranışı değiştirilmedi.
+- Dashboard logout davranışı değiştirilmedi.
+- Firestore write/CRUD eklenmedi.
+- Borç paneli ve public site etkilenmedi.
+
+### Detaylar
+
+- **`admin/dashboard.html` requireAdmin sonrasına opt-in allowlist
+  re-verify eklendi.** Re-verify default kapalıdır; flag-off davranışı
+  beta.3 dashboard zinciri **bit-identical**.
+- **Aynı opt-in flag, yeni flag yok (pre.4 ile birebir simetrik):**
+  - URL query: `?mvAdminAllowlistGate=1` veya `?mvAdminAllowlistGate=true`
+    (yalnız dev host: `localhost` / `127.0.0.1` / `0.0.0.0` / `file:`).
+  - sessionStorage key: `mv_admin_allowlist_gate_trial = '1'` — pre.4
+    login sayfasının yazdığı persistence dashboard'da aynen okunur;
+    `?mvAdminAllowlistGate=0` / `=false` ile silinir.
+  - Explicit global: `window.MV_ADMIN_ALLOWLIST_GATE === true`
+    (her host'ta çalışır, bilinçli production override).
+  - Production hostta query param fully no-op (no read, no write).
+- **Yeni helper'lar (`admin/dashboard.html` IIFE içinde):**
+  - `getAdminAllowlistGateParam()`
+  - `persistAdminAllowlistGateIfRequested()` (requireAdmin redirect'inden
+    önce çalışır; aksi halde session'sız ziyaretçi için yazım atlanırdı)
+  - `isAdminAllowlistGatePersisted()`
+  - `isAdminAllowlistGateEnabled()` (üç kanal OR'ı)
+  - `hasAdminAllowlistGateWrapper()` (probeAdminAccess presence check)
+  - `allowlistGateDenyMessage(verdict)` (reason → Türkçe friendly text)
+  - `tryFirebaseSignOutCleanup()` (best-effort, debug-only fail)
+  - `runAllowlistDenyRedirect(message)` (signOut + logout + toast +
+    700ms redirect)
+  - `runDashboardAllowlistReverify()` (gate ON ise probe → branch)
+  - `updateAdminAllowlistGateIndicator()` (badge toggle)
+- **Akış (gate ON iken):**
+  - `persistAdminAllowlistGateIfRequested()` — IIFE üstünde.
+  - `requireAdmin('./index.html')` — mevcut bit-identical kontrol.
+  - Dashboard render edilir + init işlemleri biter.
+  - `updateAdminAllowlistGateIndicator()` ile rozet toggle.
+  - `runDashboardAllowlistReverify()` →
+    - flag OFF → no-op (probe çağrılmaz, Firestore read 0).
+    - flag ON + helper missing → fail-closed.
+    - flag ON + probe `allowed:true` → no-op (dashboard'da kal).
+    - flag ON + aksi durum → fail-closed.
+- **Fail-closed davranışı:**
+  - best-effort `MV.auth.firebase.signOut()` (tab-level Firebase Auth
+    state temizlenir; başarısız olsa bile redirect ertelenmez).
+  - `MV.auth.logout()` (mv_admin_session silinir).
+  - Türkçe friendly toast (`error` severity, 2500ms).
+  - 700ms sonra `window.location.replace('./index.html')`.
+- **Deny mesajları (`allowlistGateDenyMessage()`):**
+  - `admin-doc-missing` → "Bu hesap artık admin allowlist içinde değil."
+    (pre.4 login mesajından "artık" eki ile farklı; dashboard
+    bağlamında canlı düşüşü işaret eder).
+  - `inactive-admin` → "Bu admin hesabı devre dışı bırakılmış."
+  - `invalid-role` → "Bu admin hesabının rol bilgisi geçersiz."
+  - `permission-denied` → "Admin yetki kontrolü için izin alınamadı."
+  - `firestore-not-ready` / `auth-not-ready` → "Admin yetki kontrolü
+    şu anda hazır değil."
+  - `no-current-user` → "Firebase oturumu doğrulanamadı."
+  - Helper missing → "Admin yetki kontrolü için altyapı eksik."
+  - Diğer → "Admin yetki kontrolü başarısız oldu."
+- **HTML rozeti.** `#adminAllowlistGateIndicator` — yeşil accent,
+  default `display:none`, `.adm-pill` shape, üst bardaki
+  `firebaseTrialIndicator`'ın yanında. Yeni CSS class eklenmedi.
+  Sadece operatör görünürlüğüdür; re-verify kararı bağımsızdır.
+- **`mv_admin_session` payload bit-identical.** Re-verify
+  `createSessionFromResult` çağırmaz; payload'a hiçbir alan
+  eklenmez. Role alanı payload'a hâlâ yazılmaz.
+- **Etkilenmeyen surface'ler (bit-identical):**
+  - `MV.auth.requireAdmin` — değişmedi.
+  - `MV.auth.logout` / `isAuthed` / `getUser` / `devLogin` — değişmedi.
+  - Dashboard logout butonu click handler (beta.1 trial zinciri) —
+    değişmedi.
+  - `MV.auth.firebase.{signIn, signOut, currentUser, onChange,
+    createSessionFromResult, clearSessionAfterSignOut,
+    probeAdminAccess}` wrapper davranışı — değişmedi.
+  - `admin/index.html` login akışı (pre.4 gate dahil) — değişmedi.
+  - `MV_ENFORCE_FIREBASE_AUTH` flag scaffold (default OFF) —
+    değişmedi.
+  - Trial flag persistence (Firebase trial flag bağımsız) — değişmedi.
+  - Firebase trial status indicator (beta.3) — değişmedi.
+- **onChange allowlist watchdog hâlâ pending.** Re-verify yalnız
+  **load anında** çalışır; sayfa açıkken canlı düşüşler bu fazda
+  yakalanmaz. Sayfa yeniden yüklendiğinde fail-closed davranır.
+  Watchdog ayrı paket faz olarak değerlendirilecek.
+- **Firestore write/CRUD yok.**
+  - `setDoc` / `updateDoc` / `deleteDoc` / `addDoc` / `writeBatch` /
+    `runTransaction` çağrısı 0.
+  - Tek read deseni hâlâ `probeAdminAccess()` body'sindeki
+    `collection('admins').doc(uid).get()`; pre.3+ aynı.
+- **Yalnız runtime dosya: `admin/dashboard.html`.** `shared/js/auth.js`,
+  `shared/config/firebase.js`, `firestore.rules`,
+  `admin/index.html`, `admin/announcements.html`,
+  `admin/events.html`, `admin/apps.html`, `admin/logs.html`,
+  `admin/borc/index.html`, `borc.html`, `index.html` **dokunulmadı**.
+- **Dokümantasyon güncellendi.**
+  - `docs/firebase-admin-authorization.md`: yeni §9.9 "Opt-in
+    Dashboard Re-Verify" (akış, deny mesajları, fail-closed davranışı,
+    etkilenmeyen surface'ler, watchdog limit notu, DevTools doğrulama)
+    + sürüm notu pre.5.
+  - `docs/firebase-rules-test-plan.md`: yeni §1.4 "`admin/dashboard.html`
+    opt-in re-verify senaryoları" (H-01 … H-20) + sürüm notu pre.5.
+  - `docs/v12-readiness.md`: Auth Wrapper Layer Status'a 1 yeni
+    bullet (opt-in dashboard re-verify available) + revised pending
+    bullet'lar (default requireAdmin enforcement / onChange watchdog /
+    production enforce / Firestore CRUD) + sürüm notu pre.5.
+  - `docs/firebase-local-setup.md`: yeni "Opt-in dashboard allowlist
+    re-verify örneği" alt bölümü (aktivasyon URL'i + allowlist düşüş
+    senaryosu + flag-off doğrulaması + DevTools komutları + watchdog
+    limit notu) + Capability Matrix 2 yeni satır + Phase Log pre.4
+    hash doğrulaması + pre.5 satırı + sürüm notu pre.5.
+  - `docs/README.md`: Firebase Admin Authorization Contract
+    entry'sine pre.5 §9.9 referansı.
+- **Borç paneli ve public site etkilenmedi.**
+  `admin/borc/index.html`, `borc.html`, `index.html` dokunulmadı.
+- **Gerçek credential / UID / email kontrolü.**
+  Yeni içerikte gerçek apiKey / projectId / appId / admin UID /
+  e-posta yok. Tüm örnekler placeholder.
+
+---
+
 ## [v12.1.0-pre.4] — Opt-in Admin Allowlist Login Gate
 
 - **`admin/index.html` Firebase login trial akışına opt-in admin

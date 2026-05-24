@@ -6,7 +6,7 @@
 > belirlemez (**authorization**). Bu boşluk, `admins/{uid}` Firestore
 > koleksiyonu üzerinden bir allowlist ile kapatılır.
 >
-> Belge sürümü: v12.1.0-pre.4 · Hedef faz: v12.1.0+
+> Belge sürümü: v12.1.0-pre.5 · Hedef faz: v12.1.0+
 >
 > Bağlantılı dokümanlar:
 > - [`firebase-transition-plan.md`](./firebase-transition-plan.md) §4 (Auth Planı) ve §6.5 (admins şeması).
@@ -607,6 +607,148 @@ window.location.href = './index.html?mvAdminAllowlistGate=0';
 sessionStorage.getItem('mv_admin_allowlist_gate_trial'); // → null
 ```
 
+### 9.9 Opt-in Dashboard Re-Verify (v12.1.0-pre.5)
+
+pre.4 login submit anında allowlist'i opt-in olarak doğruladı.
+pre.5 aynı flag arkasında **dashboard açılışında** ikinci bir
+doğrulama daha ekledi. Bu kontrol login gate'in **yerine geçmez**;
+operatör login sonrası `admins/{uid}` doc'unda kapatılmış veya
+allowlist'ten silinmiş olsa bile dashboard yeniden açıldığında
+gate fail-closed davranır.
+
+**Aynı flag, aynı persistence.** pre.5 yeni bir flag tanıtmaz;
+pre.4 ile birebir aynı üç kanal kullanılır:
+
+```
+1. window.MV_ADMIN_ALLOWLIST_GATE === true (her host, bilinçli override)
+2. Dev host + ?mvAdminAllowlistGate=1 veya =true (immediate aktivasyon
+   + sessionStorage yazımı)
+3. sessionStorage 'mv_admin_allowlist_gate_trial' === '1'
+   (genellikle pre.4 login sayfası yazmış olur; dashboard'a
+   persist olur)
+```
+
+`admin/dashboard.html` IIFE'si üstünde
+`persistAdminAllowlistGateIfRequested()` çağırır; bu çağrı
+`requireAdmin` redirect'inden **önce** çalışır. Aksi halde dashboard
+session'sız ziyaretçi için login'e bouncing yaparken
+sessionStorage yazımı atlanırdı.
+
+**Akış (gate ON iken):**
+
+```
+1) Dashboard yüklenir.
+2) requireAdmin('./index.html') — mevcut bit-identical kontrol.
+   ├─ session yok → login redirect (eski davranış, değişmedi).
+   └─ session var → dashboard render edilir (kullanıcı label, saat,
+      logout handler, hepsi normal).
+3) Tüm normal init işlemleri biter.
+4) isAdminAllowlistGateEnabled() false → reverify atlanır (no-op).
+   true → runDashboardAllowlistReverify() çalışır:
+      ├─ hasAdminAllowlistGateWrapper() false → fail closed
+      │   (probe yüzeyi yoksa contract gereği session sonlandırılır).
+      └─ probeAdminAccess() çağrılır:
+         ├─ allowed:true → hiçbir şey yapılmaz; dashboard'da kal.
+         └─ aksi durum  → runAllowlistDenyRedirect:
+             - best-effort Firebase signOut
+             - MV.auth.logout (mv_admin_session silinir)
+             - Türkçe friendly toast
+             - 700ms sonra login redirect
+```
+
+**Bu kontrol requireAdmin'in yerine geçmez.** requireAdmin
+`mv_admin_session` cookie/storage gate'idir ve değişmedi. Re-verify
+gate'i yalnız Firestore allowlist'inin **canlı** durumunu kontrol
+eder; opt-in additive katmandır.
+
+**Deny mesajları** — pre.4 ile simetrik mapping; tek fark
+`admin-doc-missing` metni "Bu hesap artık admin allowlist içinde
+değil." şeklinde (dashboard bağlamında "artık" eki operatöre
+durumun değiştiğini sezdirir):
+
+| reason | Mesaj |
+|---|---|
+| `admin-doc-missing` | "Bu hesap artık admin allowlist içinde değil." |
+| `inactive-admin` | "Bu admin hesabı devre dışı bırakılmış." |
+| `invalid-role` | "Bu admin hesabının rol bilgisi geçersiz." |
+| `permission-denied` | "Admin yetki kontrolü için izin alınamadı." |
+| `firestore-not-ready` / `auth-not-ready` | "Admin yetki kontrolü şu anda hazır değil." |
+| `no-current-user` | "Firebase oturumu doğrulanamadı." |
+| Helper missing | "Admin yetki kontrolü için altyapı eksik." |
+| Diğer | "Admin yetki kontrolü başarısız oldu." |
+
+**Fail-closed davranışı.** Probe başarısız olduğunda:
+
+- `mv_admin_session` `MV.auth.logout()` ile temizlenir.
+- Tab-level Firebase Auth state best-effort `signOut()` ile
+  temizlenir (başarısız olsa bile redirect ertelenmez).
+- Toast severity `'error'` (kırmızı).
+- 700ms sonra `window.location.replace('./index.html')` (mevcut
+  manuel logout zinciriyle aynı delay penceresi).
+
+**Etkilemediği surface'ler.** Re-verify yalnız dashboard load
+sonrası tek bir noktada çalışır. Şunlardan **hiçbiri etkilenmez**:
+
+- `MV.auth.requireAdmin` — değişmedi.
+- `MV.auth.logout` / `isAuthed` / `getUser` / `devLogin` — değişmedi.
+- Dashboard logout butonu click handler (beta.1 trial zinciri) —
+  değişmedi.
+- `MV.auth.firebase.*` wrapper helper'ları (`signIn`, `signOut`,
+  `currentUser`, `onChange`, `createSessionFromResult`,
+  `clearSessionAfterSignOut`, `probeAdminAccess`) — değişmedi.
+- `admin/index.html` login akışı (pre.4 gate dahil) — değişmedi.
+- `MV_ENFORCE_FIREBASE_AUTH` flag scaffold (default OFF) —
+  değişmedi.
+- onChange watchdog — eklenmedi; canlı `active:false` düşüşünü
+  yakalamak hâlâ pending (next-fazda değerlendirilecek).
+- `mv_admin_session` payload şeması (role hâlâ eklenmedi) —
+  değişmedi.
+- Trial flag persistence (Firebase trial flag bağımsız) — değişmedi.
+- Firebase trial indicator (beta.3) — değişmedi.
+
+**Allowlist gate indicator (dashboard).** Re-verify gate'i aktifken
+dashboard üst barında `#adminAllowlistGateIndicator` (`.adm-pill`
+shape + yeşil accent + "Allowlist Gate Aktif" metni) görünür.
+Default modda inline `display:none` ile ships eder; flash etmez.
+Yeni CSS class eklenmedi.
+
+**DevTools doğrulama (dev host):**
+
+```js
+// 1) Gate kapatma (default davranış doğrulaması)
+window.MV_ADMIN_ALLOWLIST_GATE = false;
+sessionStorage.removeItem('mv_admin_allowlist_gate_trial');
+// → Dashboard reload: probe çağrılmaz; Network panelinde admins read 0.
+//   Indicator hidden. requireAdmin sonrası normal dashboard.
+
+// 2) Gate açma (login + dashboard tam zincir)
+window.location.href = './index.html?mvFirebaseLogin=1&mvAdminAllowlistGate=1';
+// Login submit → pre.4 gate → bridge → dashboard.
+// Dashboard load sonrası: probe → allowed:true → kal.
+// Indicator visible ("Allowlist Gate Aktif").
+
+// 3) Allowlist'ten kapatma (operator simülasyonu)
+// Firebase Console'da admins/{uid}.active = false yap.
+// Dashboard reload:
+//   - probe → allowed:false, reason:'inactive-admin'
+//   - toast: "Bu admin hesabı devre dışı bırakılmış."
+//   - mv_admin_session silinir
+//   - 700ms sonra login redirect
+
+// 4) Allowlist'ten silme
+// Firebase Console'da admins/{uid} doc'unu sil.
+// Dashboard reload:
+//   - probe → allowed:false, reason:'admin-doc-missing'
+//   - toast: "Bu hesap artık admin allowlist içinde değil."
+//   - logout + redirect
+```
+
+**Önemli sınır.** Re-verify sayfa açılışında bir kerelik çalışır;
+sayfa açık kalırken operator allowlist'ten düşerse (örn. owner
+canlıda `active:false` yapar) o oturumda bu sayfa kendi başına
+kapanmaz. Bu boşluğu onChange watchdog ile sürekli izlemeye almak
+hâlâ pending; ayrı bir paket faz olarak ele alınacak.
+
 ---
 
 ## 10. Güvenlik Notları
@@ -643,4 +785,5 @@ sessionStorage.getItem('mv_admin_allowlist_gate_trial'); // → null
 |---|---|---|
 | v12.1.0-pre.2 | 2026-05-24 | İlk admin allowlist contract dokümanı. `admins/{uid}` doc şeması, dört seviyeli rol hiyerarşisi (owner/admin/editor/viewer), `active` soft-delete davranışı, ilk owner bootstrap prosedürü (gerçek UID/e-posta yok), enforce akışıyla ilişki ve runtime etkisi (bit-identical) belgelendi. Runtime kod değişmedi. `firestore.rules` foundation draft'ında allowlist helper'ları (`isSignedIn`, `isAdmin`, `isActiveAdmin`, `isOwner`) gerçeklendi; admins/{uid} self-read ve owner-write rules tarafına yansıdı. Content collection'ları (`announcements`/`events`/`apps`/`adminLogs`/`publicConfig`/`systemStatus`) bu fazda kapalı tutuldu. |
 | v12.1.0-pre.3 | 2026-05-24 | Yeni §9 "`probeAdminAccess()` — Manuel Allowlist Probe" eklendi. `shared/js/auth.js` içine `firebaseProbeAdminAccess()` helper'ı + `MV.auth.firebase.probeAdminAccess` yüzeyi + `inspect()` capability map'ine `adminAccessProbe: 'manual-probe' / 'unavailable'` eklendi. Probe: readiness zinciri (`auth-not-ready` → `firestore-not-ready` → `no-current-user`) + doc evaluation (`admin-doc-missing` / `inactive-admin` / `invalid-role` / `allowed:true`) + sanitization (yalnız `uid`/`email`/`role`/`active`/`provider`/`source`; `notes`/`createdAt`/`updatedAt`/`metadata`/token alanları **filtrelenir**). **Login gate, requireAdmin, sessionStorage payload, enforce flag bit-identical kaldı**; helper sayfa yüklenirken otomatik çağrılmaz, yalnız direkt invocation Firestore'a istek gönderir. Belge sürümü pre.2 → pre.3. |
+| v12.1.0-pre.5 | 2026-05-24 | Yeni §9.9 "Opt-in Dashboard Re-Verify" eklendi. `admin/dashboard.html` requireAdmin'den sonra opt-in allowlist re-verify eklendi: aynı `mvAdminAllowlistGate` flag (pre.4 ile birebir; yeni flag yok), `persistAdminAllowlistGateIfRequested()` requireAdmin redirect'inden önce çalışır, `runDashboardAllowlistReverify()` IIFE sonunda tetiklenir. allowed:true → no-op; aksi durumda fail-closed: best-effort Firebase signOut + `MV.auth.logout()` + Türkçe friendly toast + 700ms sonra `./index.html` redirect. Helper missing → "Admin yetki kontrolü için altyapı eksik." fail-closed. `admin-doc-missing` mesajı dashboard bağlamında "Bu hesap artık admin allowlist içinde değil." şeklinde (login gate'teki ile birinci kelime farklı; "artık" eki canlı düşüşü işaret eder). Yeni `#adminAllowlistGateIndicator` `.adm-pill` shape rozeti default `display:none`. **requireAdmin / dashboard logout click handler / shared/js/auth.js / mv_admin_session payload / MV_ENFORCE_FIREBASE_AUTH default OFF / Firebase trial indicator / pre.4 login gate akışı değişmedi**. onChange watchdog hâlâ pending — bu fazda eklenmedi; sayfa açıkken canlı düşüşü dinlemek ayrı paket. Belge sürümü pre.4 → pre.5. |
 | v12.1.0-pre.4 | 2026-05-24 | Yeni §9.8 "Opt-in Login Gate" eklendi. `admin/index.html` Firebase login trial akışına opt-in admin allowlist gate eklendi: yeni flag (`?mvAdminAllowlistGate=1` query / `sessionStorage mv_admin_allowlist_gate_trial` / `window.MV_ADMIN_ALLOWLIST_GATE === true`), helper'lar (`getAdminAllowlistGateParam`, `persistAdminAllowlistGateIfRequested`, `isAdminAllowlistGatePersisted`, `isAdminAllowlistGateEnabled`, `hasAdminAllowlistGateWrapper`, `allowlistGateMessage`, `tryFirebaseSignOutCleanup`, `runAdminAllowlistGate`, `bridgeAndRedirect`, `updateAdminAllowlistGateIndicator`), HTML'e `#adminAllowlistGateIndicator` rozeti. Gate ON + signIn ok:true → probe → allowed:true → bridge + redirect; aksi durumda mv_admin_session yazılmaz, dashboard redirect yapılmaz, devLogin fallback yok, best-effort Firebase signOut cleanup denenir. **Default flag-off davranışı bit-identical alpha.19+ Firebase trial zinciri**; devLogin path, requireAdmin, dashboard logout, session bridge davranışı, enforce flag, `mv_admin_session` payload şeması (role yazılmaz) tamamen değişmedi. Belge sürümü pre.3 → pre.4. |
