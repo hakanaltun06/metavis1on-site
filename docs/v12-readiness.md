@@ -300,10 +300,35 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
   getter ready iken namespace döner ama hiçbir caller `.firestore()`
   invoke etmiyor. Detay:
   [`firebase-local-setup.md`](./firebase-local-setup.md) §13.
-- **Firestore rules: pending.** v12.1.0 Firestore Rules
-  foundation fazına bırakıldı. SDK zaten yüklü (pre.1); rules +
-  ilk gerçek `firebase.firestore()` çağrılarına izin v12.1.0'da
-  açılacak.
+- **Admin allowlist contract: documented** (v12.1.0-pre.2,
+  _bu commit_). `admins/{uid}` doc şeması (`uid`, `email`,
+  `role`, `active`, `createdAt`, `updatedAt`, `notes`), dört seviyeli
+  rol hiyerarşisi (`owner` > `admin` > `editor` > `viewer`), `active`
+  soft-delete davranışı, ilk owner bootstrap prosedürü (gerçek
+  UID/e-posta yok) ve enforce akışıyla ilişkisi
+  [`firebase-admin-authorization.md`](./firebase-admin-authorization.md)
+  içinde belgelendi. **Runtime'da `admins/{uid}` okunmaz; sözleşme
+  yalnız docs + rules foundation seviyesinde.**
+- **Firestore data model: documented** (v12.1.0-pre.2, _bu commit_).
+  `admins` + `announcements` + `events` + `apps` + `adminLogs` +
+  `publicConfig` + `systemStatus` alan tabloları, status enum'ları,
+  timestamp yaklaşımı (`serverTimestamp()`), `createdBy`/`updatedBy`
+  UID konvansiyonu [`firestore-data-model.md`](./firestore-data-model.md)
+  içinde konsolide edildi. Şema sözleşmesi; runtime read/write yok.
+- **Firestore rules foundation draft: available, not deployed**
+  (v12.1.0-pre.2, _bu commit_). Repo köküne `firestore.rules`
+  eklendi: default deny + `admins/{uid}` self-read (kendi UID'i için)
+  + owner-managed allowlist write + content collection'ların topyekün
+  kapalılığı + catch-all `match /{document=**}` ile sızıntı koruması.
+  Helper'lar (`isSignedIn`, `isAdmin`, `isActiveAdmin`, `isOwner`)
+  rules tarafında allowlist'i evaluate eder. `firebase.json` /
+  `.firebaserc` / `firestore.indexes.json` hâlâ yok; deploy v12.1.0
+  fazına bırakıldı.
+- **Firestore rules deploy + emulator: pending.** v12.1.0 fazına
+  bırakıldı. Deploy öncesi
+  [`firebase-rules-test-plan.md`](./firebase-rules-test-plan.md) §11
+  Deployment Gate + yeni §1.1 foundation draft test kapsamı
+  (F-01 … F-12) PASS olmalı.
 - **Firestore reads: pending.** v12.2.0+ Read-only admin modules
   Firebase read fazına bırakıldı.
 - **CRUD: pending.** v12.3.0+ fazına bırakıldı.
@@ -326,6 +351,7 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
 | v12.0.0-beta.3 | 2026-05-23 | Trial status UX + production enforce checklist available olarak işaretlendi. `admin/index.html` ve `admin/dashboard.html` üzerinde `#firebaseTrialIndicator` elementi `isFirebaseLoginTrialEnabled()` true ise "Firebase Trial Aktif" gösterir; default modda görünmez. beta.4 enforce öncesi 7 adımlı sıralı checklist [`firebase-local-setup.md`](./firebase-local-setup.md) §12.4'te dokümante edildi. beta.2 hash'i `2711ce9` olarak doğrulandı. `shared/js/auth.js` ve Firebase config dosyalarına dokunulmadı; runtime auth davranışı değişmedi. |
 | v12.0.0-beta.4 | 2026-05-24 | Production auth enforcement readiness audit (read-only, kod yok / commit yok). Karar B — kısmen hazır: kod tarafı tamamlanmış, ama gerçek production Firebase config + gerçek admin Auth kullanıcısı + canlı login/logout smoke test + backup admin kanalı + rollback prosedürü tamamlanmadan enforce açılmaz. `MV_ENFORCE_FIREBASE_AUTH` default OFF korundu. |
 | v12.1.0-pre.1 | 2026-05-24 | Passive Firestore SDK readiness layer eklendi olarak işaretlendi. 6 admin sayfasına `firebase-firestore-compat.js` pasif yüklendi; `MV_FIREBASE` üzerine `hasFirestoreSdk` / `isFirestoreReady` / `getFirestoreProvider` / `inspectFirestore` helper'ları eklendi. Hiçbir read/write/CRUD/`firebase.firestore()` çağrısı yok. Firestore rules / reads / CRUD pending sıraları (v12.1.0 / v12.2.0+ / v12.3.0+) güncellendi. beta.3 hash'i `e6b269b` olarak doğrulandı. Detay: [`firebase-local-setup.md`](./firebase-local-setup.md) §13. |
+| v12.1.0-pre.2 | 2026-05-24 | Firebase admin authorization & rules contract dokümantasyonu. `admins/{uid}` allowlist sözleşmesi ([`firebase-admin-authorization.md`](./firebase-admin-authorization.md)) ve Firestore data model alan tabloları ([`firestore-data-model.md`](./firestore-data-model.md)) yeni docs olarak eklendi. Repo köküne `firestore.rules` foundation draft eklendi (default deny + `admins/{uid}` self-read + owner-managed write + content collection'lar kapalı + catch-all). [`firebase-rules-test-plan.md`](./firebase-rules-test-plan.md) §1 + §1.1 + §13 v12.1.0-pre.2'ye genişletildi; F-01 … F-12 foundation draft test setiyle. Auth Wrapper Layer Status'a 3 yeni bullet (allowlist contract documented, data model documented, foundation draft available not deployed) eklendi. Runtime kod değişmedi: admin/*.html, shared/js/auth.js, shared/config/firebase.js, shared/config/firebase.local.example.js, shared/config/site.js, admin/borc/*, borc.html, index.html dokunulmadı. Hiçbir `firebase.firestore()` / collection / doc / getDoc / getDocs / onSnapshot / setDoc / updateDoc / deleteDoc / addDoc çağrısı yok. `MV_ENFORCE_FIREBASE_AUTH` default OFF korundu; gerçek UID/email/apiKey/projectId hiçbir doc'a yazılmadı. pre.1 hash'i `d228823` olarak doğrulandı. |
 
 Bu doküman v12.0.0-alpha PR açılana kadar canlı bir referanstır;
 PR description'ı için doğrudan referans olarak kullanılabilir. v12.0.0-alpha

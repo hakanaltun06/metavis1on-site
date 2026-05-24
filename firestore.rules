@@ -1,0 +1,182 @@
+// ============================================================================
+// metavis1on — Firestore Security Rules (FOUNDATION DRAFT)
+// ----------------------------------------------------------------------------
+// Phase: v12.1.0-pre.2 — Firebase admin authorization & rules contract.
+//
+// SCOPE
+//   This file is the **foundation/contract draft**. It is NOT deployed in
+//   this phase. There is no `firebase.json` / `.firebaserc` / Firestore
+//   project wired to this repo as of v12.1.0-pre.2; deployment is a
+//   separate later phase (target v12.1.0).
+//
+// DESIGN PRINCIPLES
+//   1. Default deny — every read/write path that is not explicitly granted
+//      is denied. The catch-all `match /{document=**}` at the bottom locks
+//      anything not handled above.
+//   2. Authorization > Authentication — being signed in is necessary but
+//      NEVER sufficient. Every privileged path additionally checks the
+//      caller's `admins/{uid}` allowlist record via isActiveAdmin().
+//   3. Owner-only for admin management — only `role:'owner'` can read or
+//      write any other admin's `admins/{uid}` record. Regular admins
+//      cannot enumerate or modify the allowlist.
+//   4. Write minimization — until the CRUD phase (v12.3+) lands, ALL
+//      content collections (announcements/events/apps/adminLogs/
+//      publicConfig/systemStatus) are write-deny. Reads for active admins
+//      are also denied here; that surface opens in v12.1.0 when the
+//      first real `firebase.firestore()` calls land alongside an emulator
+//      test pass.
+//   5. Bridge contract preserved — `mv_admin_session` (the existing
+//      sessionStorage gate) is unrelated to these rules. Rules cannot
+//      see sessionStorage; they evaluate `request.auth` which Firebase
+//      Auth populates. Allowlist enforcement is the rules-side mirror of
+//      what an in-page admin allowlist check would do.
+//
+// WHAT THESE RULES DO NOT DO IN THIS PHASE
+//   - They do NOT grant any read access to announcements/events/apps/
+//     adminLogs/publicConfig/systemStatus. v12.1.0 will open read paths
+//     once the data model is migrated.
+//   - They do NOT grant any write access. CRUD lands in v12.3+.
+//   - They do NOT enforce App Check (monitor mode is a later decision).
+//   - They do NOT touch the debt panel collections. The debt panel is
+//     out-of-scope through v12.5 (see docs/debt-panel-audit.md).
+//
+// PATH NOTE
+//   `get()` and `exists()` paths must use the
+//   `/databases/$(database)/documents/...` prefix. Anything else fails
+//   silently (resolves to a deny). The helpers below use that prefix
+//   consistently; do not inline shorter paths.
+//
+// SEE ALSO
+//   - docs/firebase-admin-authorization.md — allowlist contract & rationale.
+//   - docs/firestore-data-model.md — collection schemas this file pairs with.
+//   - docs/firebase-rules-test-plan.md — role-based test scenarios.
+//   - docs/firebase-transition-plan.md §8 — original rules sketch this
+//     foundation derives from.
+// ============================================================================
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ------------------------------------------------------------------
+    // Helpers — authorization predicates.
+    //
+    // isSignedIn() — caller has a valid Firebase Auth UID. This alone is
+    //   never sufficient for admin actions.
+    // isAdmin() — caller has an `admins/{uid}` doc. Existence only;
+    //   does NOT check active flag or role.
+    // isActiveAdmin() — caller has an `admins/{uid}` doc with
+    //   `active: true`. This is the standard admin gate.
+    // isOwner() — caller has an `admins/{uid}` doc with `role: 'owner'`
+    //   AND `active: true`. Required for managing the allowlist itself.
+    //
+    // Each helper short-circuits on `request.auth == null` to avoid
+    // calling `get()` for unauthenticated requests.
+    // ------------------------------------------------------------------
+
+    function isSignedIn() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    function adminDoc() {
+      return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+          && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isActiveAdmin() {
+      return isAdmin() && adminDoc().active == true;
+    }
+
+    function isOwner() {
+      return isActiveAdmin() && adminDoc().role == 'owner';
+    }
+
+    // ------------------------------------------------------------------
+    // admins/{uid} — Admin allowlist.
+    //
+    // - Self-read: a signed-in user may read their OWN admins/{uid} doc.
+    //   This lets an admin app probe its own allowlist record without
+    //   exposing other admins. Reading another admin's doc requires
+    //   isOwner().
+    // - Write: owner only. Regular admins cannot grant, revoke or
+    //   modify allowlist membership.
+    // - First owner bootstrap is performed out-of-band through the
+    //   Firebase Console (see docs/firebase-admin-authorization.md §6).
+    //   No client-side write path creates the initial owner.
+    // ------------------------------------------------------------------
+
+    match /admins/{uid} {
+      allow get: if isSignedIn() && (request.auth.uid == uid || isOwner());
+      allow list: if isOwner();
+      allow create, update, delete: if isOwner();
+    }
+
+    // ------------------------------------------------------------------
+    // Content collections — locked down for v12.1.0-pre.2.
+    //
+    // Read paths for active admins open in v12.1.0 (rules foundation
+    // deploy + first real firestore.firestore() calls). Write paths
+    // open in v12.3+ (CRUD phase). Until then, default deny is the
+    // safe baseline.
+    // ------------------------------------------------------------------
+
+    match /announcements/{id} {
+      allow read, write: if false;
+    }
+
+    match /events/{id} {
+      allow read, write: if false;
+    }
+
+    match /apps/{id} {
+      allow read, write: if false;
+    }
+
+    // ------------------------------------------------------------------
+    // adminLogs — Audit trail.
+    //
+    // Locked down in this phase. Future shape (v12.3+):
+    //   - read: isActiveAdmin()
+    //   - create: isActiveAdmin() with required field validation
+    //   - update, delete: forever denied (logs are immutable)
+    // Server/admin-managed log paths (Cloud Functions writing on
+    // behalf of clients) are a v12.5+ consideration.
+    // ------------------------------------------------------------------
+
+    match /adminLogs/{id} {
+      allow read, write: if false;
+    }
+
+    // ------------------------------------------------------------------
+    // publicConfig/{key} and systemStatus/{key}
+    //
+    // Earmarked for public read + admin write once the public site
+    // begins consuming Firestore (v12.2+). Locked down in this phase.
+    // ------------------------------------------------------------------
+
+    match /publicConfig/{key} {
+      allow read, write: if false;
+    }
+
+    match /systemStatus/{key} {
+      allow read, write: if false;
+    }
+
+    // ------------------------------------------------------------------
+    // Catch-all — anything not handled above is denied.
+    //
+    // This deliberately includes any future collection name a typo
+    // might introduce. New collections must be wired up explicitly
+    // in a follow-up rules commit, with paired test-plan entries.
+    // ------------------------------------------------------------------
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

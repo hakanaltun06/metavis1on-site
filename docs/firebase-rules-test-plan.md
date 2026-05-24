@@ -2,14 +2,19 @@
 
 > Bu doküman, metavis1on projesinde Firebase / Firestore Security Rules
 > üretim ortamına alınmadan önce uygulanacak test stratejisini açıklar.
-> **Bu belge aktif rules dosyası değildir;** v12 Firebase fazları için
-> rol bazlı pozitif / negatif test senaryolarını ve deployment gate
-> kurallarını içerir.
+> **Aktif rules dosyası bu doküman değildir;** v12.1.0-pre.2 itibarıyla
+> repo köküne foundation draft olarak `firestore.rules` eklenmiştir
+> ([`../firestore.rules`](../firestore.rules)), henüz deploy
+> edilmemiştir. Bu doküman ise rol bazlı pozitif / negatif test
+> senaryolarını ve deployment gate kurallarını içerir.
 >
-> Belge sürümü: v11.5.3 · Hedef faz: v12.1.0 (Firestore Rules foundation)
+> Belge sürümü: v12.1.0-pre.2 · Hedef faz: v12.1.0 (Firestore Rules foundation deploy + emulator suite)
 >
 > Bağlantılı dokümanlar:
 > - [`firebase-transition-plan.md`](./firebase-transition-plan.md) — Genel mimari, §7 Read/Write Matrix ve §8 Rules Taslak Mantığı.
+> - [`firebase-admin-authorization.md`](./firebase-admin-authorization.md) — `admins/{uid}` allowlist sözleşmesi (v12.1.0-pre.2).
+> - [`firestore-data-model.md`](./firestore-data-model.md) — Koleksiyon alan tabloları (v12.1.0-pre.2).
+> - [`../firestore.rules`](../firestore.rules) — foundation draft (v12.1.0-pre.2; deploy edilmedi).
 > - [`debt-panel-audit.md`](./debt-panel-audit.md) — Borç paneli mevcut yapı, gate analizi ve risk haritası.
 
 ---
@@ -35,20 +40,47 @@
 ## 1. Scope
 
 - Bu doküman **Firestore Security Rules test stratejisidir.**
-- **Gerçek rules dosyası değildir;** kural mantığı için
-  [`firebase-transition-plan.md`](./firebase-transition-plan.md) §8
-  taslağına bakılır.
+- **Kural mantığı** için iki kaynak vardır:
+  - [`firebase-transition-plan.md`](./firebase-transition-plan.md) §8 — orijinal mantık taslağı.
+  - [`../firestore.rules`](../firestore.rules) — v12.1.0-pre.2'de eklenen **foundation draft** (deploy edilmedi; default deny + `admins/{uid}` self-read + owner-managed write + tüm content collection'ları kapalı).
 - **Emulator kurulumu bu fazda yapılmaz.** Bu fazda yalnız test planı
   belgelenir; gerçek emulator + test suite v12.1.0'da kurulur.
 - **Runtime kod değişikliği yoktur.** `index.html`, `admin/*.html`,
   `admin/borc/index.html`, `shared/js/*`, `shared/config/site.js` dahil
   hiçbir runtime dosyaya bu fazda dokunulmaz.
-- **Firebase SDK / config / rules dosyası eklenmemiştir.**
-  `firebase.json`, `.firebaserc`, `firestore.rules`,
-  `firestore.indexes.json` bu fazda oluşturulmaz.
+- **Firestore.rules eklendi, ama `firebase.json` / `.firebaserc` /
+  `firestore.indexes.json` hâlâ yok.** Rules dosyası foundation draft
+  olarak repo'da durur; hangi project'e deploy edileceği v12.1.0
+  fazında karara bağlanır.
 - Amaç, **v12.1.0 Firestore Rules foundation** fazına geçmeden önce
   pozitif / negatif test senaryolarını, test data taslağını ve
   deployment gate kurallarını yazılı hale getirmektir.
+
+### 1.1 Foundation draft test kapsamı (v12.1.0-pre.2)
+
+`firestore.rules` foundation draft'ı çok dar bir yüzey açar; aşağıdaki
+testler bu draft'ın **deploy edilmeden önce** kavramsal olarak
+geçerli olduğunu gösterir. Emulator ile gerçek koşturma v12.1.0
+fazında yapılacaktır.
+
+| Test ID | Rol | Aksiyon | Hedef | Beklenen | Notu |
+|---|---|---|---|---|---|
+| F-01 | anonymous | get | `admins/{anyUid}` | deny | İmzasız read kapalı. |
+| F-02 | authenticated non-admin | get | `admins/{ownUid}` | allow | Self-read açık (doc yoksa rules deny etmez ama yokluk read sonucudur). |
+| F-03 | authenticated non-admin | get | `admins/{otherUid}` | deny | Sadece owner başkasının doc'unu görür. |
+| F-04 | active admin (non-owner) | get | `admins/{ownUid}` | allow | Self-read aktif. |
+| F-05 | active admin (non-owner) | get | `admins/{otherUid}` | deny | `isOwner()` false; başkasını göremez. |
+| F-06 | owner | list | `admins/*` | allow | List op'u sadece owner için. |
+| F-07 | owner | create | `admins/{newUid}` | allow | Yeni allowlist üyesi sadece owner ekler. |
+| F-08 | active admin (non-owner) | create | `admins/{anyUid}` | deny | Admin allowlist'i değiştiremez. |
+| F-09 | disabled admin | get | `admins/{ownUid}` | allow | Self-read açık; ama isActiveAdmin gate hiçbir privileged path'te geçmez. |
+| F-10 | any role | read/write | `announcements`/`events`/`apps`/`adminLogs`/`publicConfig`/`systemStatus` | deny | Bu fazda content collection'ları topyekün kapalı. |
+| F-11 | any role | read/write | `/{anyUnknownCollection}/{id}` | deny | Catch-all `match /{document=**}` ile yakalanır. |
+| F-12 | wildcard probe | write | herhangi bir path | deny | Negatif sızıntı testi. |
+
+F-01 → F-12 testleri ileride §5–§6 ana test setine entegre edilir;
+şu anda foundation draft'ı evaluate etmek için ayrı bir bölüm
+olarak listelenir.
 
 ---
 
@@ -393,6 +425,7 @@ kaydedilir (bu doküman içine inline yazılmaz; rapor ayrı tutulur).
 | Sürüm | Tarih | Açıklama |
 |---|---|---|
 | v11.5.3 | 2026-05-23 | İlk test plan taslağı. Aktif rules yok; emulator yok. Rol matrisi, pozitif/negatif senaryolar, borç paneli özel testleri, deployment gate ve rollback planı belgelendi. |
+| v12.1.0-pre.2 | 2026-05-24 | `firestore.rules` foundation draft'ı eklendi; bu doküman foundation draft'a referansla güncellendi. §1 Scope'ta foundation draft'ın varlığı + sınırı (deploy edilmedi) belgelendi. Yeni §1.1 "Foundation draft test kapsamı" eklendi — F-01 … F-12 testleriyle default deny + `admins/{uid}` self-read + owner-managed write + content collection'ların topyekün kapalılığı + catch-all sızıntı kontrolleri tanımlandı. Bağlantılı dokümanlar listesine [`firebase-admin-authorization.md`](./firebase-admin-authorization.md), [`firestore-data-model.md`](./firestore-data-model.md) ve [`../firestore.rules`](../firestore.rules) eklendi. Belge sürümü v11.5.3 → v12.1.0-pre.2; hedef faz v12.1.0 (Firestore Rules foundation deploy + emulator suite). Runtime kod değişmedi; §2–§12 (rol matrisi, alanlar, read/write matrix, negatif/pozitif testler, borç paneli özel testleri, emulator stratejisi, test data plan, expected report template, deployment gate, rollback) aynen korundu. |
 
 Bu doküman canlı bir referanstır — v12.1.0 fazında emulator + test suite
 kurulduğunda her test sonucu için ayrı `firebase-rules-test-results-*.md`

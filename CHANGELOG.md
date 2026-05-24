@@ -7,6 +7,95 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.1.0-pre.2] — Firebase Admin Authorization and Firestore Rules Contract
+
+- **Firebase Auth sonrası admin yetkilendirme için `admins/{uid}`
+  allowlist sözleşmesi tanımlandı** ([`docs/firebase-admin-authorization.md`](docs/firebase-admin-authorization.md)).
+  - Doc şeması: `uid` + `email` + `role` + `active` + `createdAt` +
+    `updatedAt` + `notes`.
+  - Dört seviyeli rol hiyerarşisi: `owner` > `admin` > `editor` > `viewer`
+    (editor v12.1.0-pre.2 sözleşmesinde yeni).
+  - `active: false` → soft-delete; hard-delete tercih edilmez.
+  - İlk owner bootstrap prosedürü Firebase Console üzerinden tarif
+    edildi; **gerçek UID/e-posta repo'ya, doc'a, commit mesajına
+    yazılmaz.**
+- **Firestore veri modeli alan tabloları konsolide edildi**
+  ([`docs/firestore-data-model.md`](docs/firestore-data-model.md)).
+  - `admins` + `announcements` + `events` + `apps` + `adminLogs` +
+    `publicConfig/site` + `systemStatus/main` alan tabloları, status
+    enum'ları, timestamp (`serverTimestamp()`), `createdBy`/`updatedBy`
+    UID konvansiyonu.
+- **`firestore.rules` foundation draft repo köküne eklendi.**
+  - Default deny — `match /{document=**}` catch-all ile tüm hat kapalı.
+  - Helper'lar: `isSignedIn()`, `isAdmin()`, `isActiveAdmin()`, `isOwner()`.
+  - `admins/{uid}` self-read (kendi UID'i için) + owner-managed
+    list/create/update/delete.
+  - `announcements`, `events`, `apps`, `adminLogs`, `publicConfig`,
+    `systemStatus` koleksiyonları topyekün **kapalı** (read + write
+    deny). Reads v12.1.0+ rules deploy aşamasında, writes v12.3+
+    CRUD fazında açılacak.
+  - **Deploy edilmedi.** `firebase.json` / `.firebaserc` /
+    `firestore.indexes.json` hâlâ yok; rules dosyası sözleşme draft
+    olarak repo'da durur.
+- **[`docs/firebase-rules-test-plan.md`](docs/firebase-rules-test-plan.md)
+  güncellendi.**
+  - Belge sürümü v11.5.3 → v12.1.0-pre.2.
+  - §1 Scope foundation draft varlığını yansıtacak şekilde revize edildi.
+  - Yeni §1.1 "Foundation draft test kapsamı" eklendi (F-01 … F-12).
+  - Bağlantılı dokümanlar listesi yeni docs ile genişletildi.
+- **[`docs/v12-readiness.md`](docs/v12-readiness.md) güncellendi.**
+  - Auth Wrapper Layer Status'a 3 yeni bullet (allowlist contract
+    documented, data model documented, foundation draft available
+    not deployed).
+  - Sürüm Notu tablosuna v12.1.0-pre.2 satırı eklendi.
+- **[`docs/firebase-local-setup.md`](docs/firebase-local-setup.md)
+  güncellendi.**
+  - Belge sürümü pre.1 → pre.2; başlık `alpha.6 → v12.1.0-pre.2`.
+  - Phase Log v12.1.0-pre.1 hash'i `d228823` olarak doğrulandı + pre.2
+    satırı eklendi.
+  - Security Notes'a "Admin authorization gap — enforce için kritik
+    ön koşul" bullet'ı eklendi.
+  - Bağlantılı dokümanlar listesi yeni docs ile genişletildi.
+- **[`docs/README.md`](docs/README.md) güncellendi.**
+  - Current Documents listesine Firebase Admin Authorization Contract
+    ve Firestore Data Model entry'leri eklendi.
+- **Runtime davranışı bit-identical.**
+  - `admin/index.html`, `admin/dashboard.html`,
+    `admin/announcements.html`, `admin/events.html`, `admin/apps.html`,
+    `admin/logs.html`, `admin/borc/index.html`, `borc.html`,
+    `index.html` **dokunulmadı**.
+  - `shared/js/auth.js`, `shared/config/firebase.js`,
+    `shared/config/firebase.local.example.js`, `shared/config/site.js`,
+    `shared/js/core.js`, `shared/js/theme.js`, `shared/js/apps.js`,
+    `shared/css/*`, `assets/*`, `firebase.json` (yok), `.firebaserc`
+    (yok), `.gitignore` **dokunulmadı**.
+- **Firebase Auth & Firestore davranış garantileri.**
+  - `MV_FIREBASE.*`, `MV.auth.*`, `MV.auth.firebase.*` API yüzeyi ve
+    davranışı bit-identical.
+  - Trial flag persistence + trial status indicator + production
+    devLogin guard scaffold (default OFF) bit-identical.
+  - `MV_ENFORCE_FIREBASE_AUTH` true yapılmadı.
+  - Hiçbir `firebase.firestore()` çağrısı yok — loader, wrapper, admin
+    HTML'leri, yeni docs, hiçbir yerde.
+  - `collection()` / `doc()` / `getDoc()` / `getDocs()` / `onSnapshot()` /
+    `query()` / `where()` / `orderBy()` / `limit()` çağrısı 0.
+  - `setDoc()` / `updateDoc()` / `deleteDoc()` / `addDoc()` /
+    `writeBatch()` / `runTransaction()` çağrısı 0.
+- **Gerçek credential / UID / email kontrolü.**
+  - Hiçbir doc'a gerçek apiKey / projectId / appId yazılmadı.
+  - Hiçbir doc'a gerçek admin UID veya e-posta yazılmadı.
+  - Bootstrap prosedürü gerçek değerleri Firebase Console + repo-dışı
+    secrets store'a havale ediyor.
+- **Borç paneli ve public site etkilenmedi.**
+  - `admin/borc/index.html` kendi inline `firebaseConfig`'i ile izole
+    çalışır; foundation draft'taki herhangi bir kural borç paneli
+    path'lerine değmez (zaten match etmiyor — yalnız test edilen path'ler:
+    `admins`, `announcements`, `events`, `apps`, `adminLogs`,
+    `publicConfig`, `systemStatus` + catch-all).
+  - `index.html` Firebase SDK hiç yüklemiyor; etki yok.
+
+---
+
 ## [v12.1.0-pre.1] — Passive Firestore SDK Readiness Layer
 
 - **Firestore compat SDK** 6 admin sayfasına pasif olarak eklendi:

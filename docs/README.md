@@ -18,8 +18,23 @@ zemin hazırlayan referans dokümanlardır.
 - **[Firebase Rules Test Plan](./firebase-rules-test-plan.md)**
   Firestore Security Rules için rol bazlı pozitif/negatif test
   senaryolarını, borç paneli özel testlerini ve deployment gate
-  kurallarını içerir. Aktif rules dosyası değildir; v12.1.0 Firestore
-  Rules foundation fazına hazırlıktır.
+  kurallarını içerir. v12.1.0-pre.2'de [`../firestore.rules`](../firestore.rules)
+  foundation draft'a referansla genişletildi (yeni §1.1 F-01 … F-12
+  testleri); foundation draft hâlâ deploy edilmedi.
+- **[Firebase Admin Authorization Contract](./firebase-admin-authorization.md)**
+  v12.1.0-pre.2'de eklenen admin yetkilendirme sözleşmesi:
+  `admins/{uid}` doc şeması, dört seviyeli rol hiyerarşisi
+  (`owner`/`admin`/`editor`/`viewer`), `active` soft-delete davranışı,
+  ilk owner bootstrap prosedürü (gerçek UID/e-posta yok) ve enforce
+  akışıyla ilişkisi. Runtime'da `admins/{uid}` okunmaz; sözleşme
+  yalnız docs + `firestore.rules` foundation seviyesinde.
+- **[Firestore Data Model](./firestore-data-model.md)**
+  v12.1.0-pre.2'de eklenen Firestore koleksiyon alan tabloları:
+  `admins` + `announcements` + `events` + `apps` + `adminLogs` +
+  `publicConfig` + `systemStatus`. Status enum'ları, timestamp
+  yaklaşımı (`serverTimestamp()`), `createdBy`/`updatedBy` UID
+  konvansiyonu. Aktif runtime kod değildir; foundation rules ile
+  senkron şema sözleşmesidir.
 - **[Deployment Checklist](./deployment-checklist.md)**
   v12 Firebase ve admin değişiklikleri production'a alınmadan önce
   uygulanacak staging, deploy, smoke test ve rollback kontrol listesini
