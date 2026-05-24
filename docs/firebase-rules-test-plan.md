@@ -8,7 +8,7 @@
 > edilmemiştir. Bu doküman ise rol bazlı pozitif / negatif test
 > senaryolarını ve deployment gate kurallarını içerir.
 >
-> Belge sürümü: v12.1.0-pre.2 · Hedef faz: v12.1.0 (Firestore Rules foundation deploy + emulator suite)
+> Belge sürümü: v12.1.0-pre.3 · Hedef faz: v12.1.0 (Firestore Rules foundation deploy + emulator suite)
 >
 > Bağlantılı dokümanlar:
 > - [`firebase-transition-plan.md`](./firebase-transition-plan.md) — Genel mimari, §7 Read/Write Matrix ve §8 Rules Taslak Mantığı.
@@ -81,6 +81,41 @@ fazında yapılacaktır.
 F-01 → F-12 testleri ileride §5–§6 ana test setine entegre edilir;
 şu anda foundation draft'ı evaluate etmek için ayrı bir bölüm
 olarak listelenir.
+
+### 1.2 `probeAdminAccess()` runtime probe test kapsamı (v12.1.0-pre.3)
+
+`MV.auth.firebase.probeAdminAccess()` runtime tarafında `admins/{uid}`
+self-read için ilk manuel yüzeydir (bkz.
+[`firebase-admin-authorization.md`](./firebase-admin-authorization.md) §9).
+Aşağıdaki testler **probe'un kendi davranışını** (readiness zinciri,
+doc evaluation, sanitization) doğrular. Rules tarafı henüz deploy
+edilmediği için bu testler iki kanalda koşulabilir:
+
+- **DevTools manual** — gerçek `firebase.local.js` ready iken devtools
+  console üzerinden `await MV.auth.firebase.probeAdminAccess()` ile.
+- **Emulator (v12.1.0)** — emulator suite kurulduktan sonra otomatik.
+
+| Test ID | Önkoşul | Beklenen probe dönüşü |
+|---|---|---|
+| R-01 | `MV_FIREBASE.isAuthReady()` false (placeholder config) | `{ enabled:false, ok:false, reason:'auth-not-ready' }` |
+| R-02 | Auth ready, Firestore SDK yok (hipotetik) | `{ enabled:false, ok:false, reason:'firestore-not-ready' }` |
+| R-03 | Auth + Firestore ready, signed-out (no currentUser) | `{ enabled:true, ok:false, reason:'no-current-user' }` |
+| R-04 | Auth + Firestore ready, signed-in, `admins/{uid}` doc yok | `{ enabled:true, ok:true, allowed:false, reason:'admin-doc-missing' }` |
+| R-05 | Doc var, `active: false`, role: `'admin'` | `{ allowed:false, reason:'inactive-admin' }` |
+| R-06 | Doc var, `active: true`, role: `'superuser'` (set dışı) | `{ allowed:false, reason:'invalid-role' }` |
+| R-07 | Doc var, `active: true`, role: `'viewer'` | `{ allowed:true, role:'viewer' }` |
+| R-08 | Doc var, `active: true`, role: `'editor'` | `{ allowed:true, role:'editor' }` |
+| R-09 | Doc var, `active: true`, role: `'admin'` | `{ allowed:true, role:'admin' }` |
+| R-10 | Doc var, `active: true`, role: `'owner'` | `{ allowed:true, role:'owner' }` |
+| R-11 | Auth + Firestore ready, signed-in, rules deny (örn. wrong UID hedef gibi hipotetik bypass) | `{ enabled:true, ok:false, allowed:false, reason:'permission-denied' }` |
+| R-12 | Doc'ta `notes`, `createdAt`, `updatedAt`, `metadata` alanları mevcut | Dönüş objesinde **hiçbiri** yok — yalnız `uid`/`email`/`role`/`active`/`provider`/`source` (+`enabled`/`ok`/`allowed`/`reason`/`message`). |
+| R-13 | Doc'ta `active: false` **ve** role `'superuser'` (set dışı) | `reason:'inactive-admin'` (active önce evaluate edilir; role değerlendirilmez). |
+| R-14 | Page load + 1 dakika idle (probe çağrılmadı) | Firestore'a 0 istek; `admins/*` koleksiyonuna 0 read. |
+| R-15 | `inspect()` çağrısı | `capabilities.adminAccessProbe` döner; **Firestore read yapmaz**. |
+
+R-12 ve R-14 **kritik**: ilki sanitization sızıntısını yakalar, ikincisi
+auto-wiring sızıntısını yakalar. Her ikisi de PR review checklist'inde
+ayrıca kontrol edilir.
 
 ---
 
@@ -426,6 +461,7 @@ kaydedilir (bu doküman içine inline yazılmaz; rapor ayrı tutulur).
 |---|---|---|
 | v11.5.3 | 2026-05-23 | İlk test plan taslağı. Aktif rules yok; emulator yok. Rol matrisi, pozitif/negatif senaryolar, borç paneli özel testleri, deployment gate ve rollback planı belgelendi. |
 | v12.1.0-pre.2 | 2026-05-24 | `firestore.rules` foundation draft'ı eklendi; bu doküman foundation draft'a referansla güncellendi. §1 Scope'ta foundation draft'ın varlığı + sınırı (deploy edilmedi) belgelendi. Yeni §1.1 "Foundation draft test kapsamı" eklendi — F-01 … F-12 testleriyle default deny + `admins/{uid}` self-read + owner-managed write + content collection'ların topyekün kapalılığı + catch-all sızıntı kontrolleri tanımlandı. Bağlantılı dokümanlar listesine [`firebase-admin-authorization.md`](./firebase-admin-authorization.md), [`firestore-data-model.md`](./firestore-data-model.md) ve [`../firestore.rules`](../firestore.rules) eklendi. Belge sürümü v11.5.3 → v12.1.0-pre.2; hedef faz v12.1.0 (Firestore Rules foundation deploy + emulator suite). Runtime kod değişmedi; §2–§12 (rol matrisi, alanlar, read/write matrix, negatif/pozitif testler, borç paneli özel testleri, emulator stratejisi, test data plan, expected report template, deployment gate, rollback) aynen korundu. |
+| v12.1.0-pre.3 | 2026-05-24 | Yeni §1.2 "`probeAdminAccess()` runtime probe test kapsamı" eklendi — R-01 … R-15 testleri readiness zinciri (auth-not-ready / firestore-not-ready / no-current-user), doc evaluation (admin-doc-missing / inactive-admin / invalid-role / allowed:true tüm 4 rol) + öncelik kontrolü (R-13 active-önce-role) + sanitization sızıntısı (R-12 notes/timestamps/metadata) + auto-wiring sızıntısı (R-14 page load idle) + `inspect()` no-read garantisi (R-15) için. Belge sürümü pre.2 → pre.3. Foundation draft test kapsamı (§1.1, F-01 … F-12) ve §2–§12 ana test seti aynen korundu. Rules dosyası değişmedi. |
 
 Bu doküman canlı bir referanstır — v12.1.0 fazında emulator + test suite
 kurulduğunda her test sonucu için ayrı `firebase-rules-test-results-*.md`

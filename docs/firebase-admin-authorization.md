@@ -6,7 +6,7 @@
 > belirlemez (**authorization**). Bu boşluk, `admins/{uid}` Firestore
 > koleksiyonu üzerinden bir allowlist ile kapatılır.
 >
-> Belge sürümü: v12.1.0-pre.2 · Hedef faz: v12.1.0+
+> Belge sürümü: v12.1.0-pre.3 · Hedef faz: v12.1.0+
 >
 > Bağlantılı dokümanlar:
 > - [`firebase-transition-plan.md`](./firebase-transition-plan.md) §4 (Auth Planı) ve §6.5 (admins şeması).
@@ -27,8 +27,9 @@
 6. [İlk Owner Bootstrap Prosedürü](#6-i̇lk-owner-bootstrap-prosedürü)
 7. [Enforce Akışı ile İlişki](#7-enforce-akışı-ile-i̇lişki)
 8. [Runtime Etkisi (Bu Fazda)](#8-runtime-etkisi-bu-fazda)
-9. [Güvenlik Notları](#9-güvenlik-notları)
-10. [Sürüm Notu](#10-sürüm-notu)
+9. [`probeAdminAccess()` — Manuel Allowlist Probe (v12.1.0-pre.3)](#9-probeadminaccess--manuel-allowlist-probe-v1210-pre3)
+10. [Güvenlik Notları](#10-güvenlik-notları)
+11. [Sürüm Notu](#11-sürüm-notu)
 
 ---
 
@@ -337,9 +338,172 @@ v12.1.0-pre.2 commit'inden sonra runtime davranışı **bit-identical**:
 Bu fazda runtime'a tek dokunulan yer: yok. Bütün değişim docs +
 `firestore.rules` (foundation draft) seviyesinde.
 
+> **Güncelleme (v12.1.0-pre.3).** Bu fazda eklenen
+> `MV.auth.firebase.probeAdminAccess()` helper'ı manuel okuma için
+> bir yüzeydir; otomatik runtime gate değildir. Davranış garantileri
+> §9'da. Hâlâ: login gate, requireAdmin, sessionStorage payload,
+> enforce flag bit-identical kalır; yalnız helper çağrıldığında
+> Firestore'a tek bir `admins/{uid}.get()` isteği gider.
+
 ---
 
-## 9. Güvenlik Notları
+## 9. `probeAdminAccess()` — Manuel Allowlist Probe (v12.1.0-pre.3)
+
+`MV.auth.firebase.probeAdminAccess()` runtime tarafında allowlist'in
+**manuel** okunabildiği ilk yüzeydir. Tek görevi: aktif Firebase Auth
+kullanıcısının `admins/{uid}` doc'unu okuyup sanitize edilmiş bir
+"yetkili mi?" verdict'i döndürmektir.
+
+### 9.1 Bu helper **gate değildir**
+
+- Sayfa yüklenirken **otomatik çağrılmaz.** Hiçbir admin HTML, hiçbir
+  IIFE, hiçbir bridge bu helper'ı tetiklemez.
+- `MV.auth.requireAdmin` ile bağlantısı yok; davranışı aynen kalır.
+- `createSessionFromResult` zinciri probe'u çağırmaz; `mv_admin_session`
+  payload'una `role` alanı eklenmez.
+- `MV_ENFORCE_FIREBASE_AUTH` flag'i ile bağlantısı yok.
+- Login form submit, dashboard logout butonu, trial flag persistence —
+  hepsi bit-identical.
+
+Bu sınırlama bilinçlidir: allowlist'i gate'e bağlamak (login sonrası
+probe → reddetme veya `mv_admin_session.role` enrichment) ayrı bir
+faz olarak yapılacaktır (v12.1.0+). pre.3 yalnız helper yüzeyini açar.
+
+### 9.2 Readiness zinciri
+
+Probe aşağıdaki üç koşulu sırayla kontrol eder; herhangi biri
+başarısız olursa Firestore'a istek **gönderilmez** ve dokümante
+edilmiş kısa devre nedeni döner.
+
+| Adım | Kontrol | Başarısızlık dönüşü |
+|---|---|---|
+| 1 | `MV_FIREBASE.isAuthReady()` | `{ enabled:false, ok:false, reason:'auth-not-ready' }` |
+| 2 | `MV_FIREBASE.isFirestoreReady()` | `{ enabled:false, ok:false, reason:'firestore-not-ready' }` |
+| 3 | `currentUser().uid` mevcut | `{ enabled:true, ok:false, reason:'no-current-user' }` |
+
+### 9.3 Doc evaluation kuralları
+
+Üç readiness adımı geçer + `admins/{uid}.get()` başarılı olursa,
+doc içeriği aşağıdaki sırayla değerlendirilir:
+
+| Sıra | Koşul | Dönüş |
+|---|---|---|
+| A | Doc yok (`snap.exists === false`) | `allowed:false, reason:'admin-doc-missing'` |
+| B | `data.active !== true` | `allowed:false, reason:'inactive-admin'` |
+| C | `data.role` ∉ `['owner','admin','editor','viewer']` | `allowed:false, reason:'invalid-role'` |
+| D | Tümü PASS | `allowed:true` + sanitized fields |
+
+İkili öncelik (active önce, role sonra) bilinçlidir: kapatılmış bir
+admin'in eski rolü tartışılmadan önce "disabled" sinyali tek başına
+yeterlidir.
+
+### 9.4 Dönüş şekli
+
+**Success (allowed:true)**
+
+```json
+{
+  "enabled": true,
+  "ok": true,
+  "allowed": true,
+  "uid": "<auth uid>",
+  "email": "<admin doc email veya auth email>",
+  "role": "owner | admin | editor | viewer",
+  "active": true,
+  "provider": "firebase-auth",
+  "source": "firestore-admins"
+}
+```
+
+**Deny (allowed:false)**
+
+```json
+{
+  "enabled": true,
+  "ok": true,
+  "allowed": false,
+  "reason": "admin-doc-missing | inactive-admin | invalid-role",
+  "uid": "<auth uid>",
+  "email": "<admin doc email veya auth email>",
+  "provider": "firebase-auth",
+  "source": "firestore-admins"
+}
+```
+
+**Error (Firestore tarafı hata)**
+
+```json
+{
+  "enabled": true,
+  "ok": false,
+  "allowed": false,
+  "reason": "permission-denied | <firebase error code>",
+  "message": "<insanca okunabilir hata>",
+  "uid": "<auth uid>",
+  "email": "<auth email>",
+  "provider": "firebase-auth",
+  "source": "firestore-admins"
+}
+```
+
+**Erken çıkış (readiness fail)** — `allowed` alanı yoktur:
+
+```json
+{ "enabled": false, "ok": false, "reason": "auth-not-ready" }
+{ "enabled": false, "ok": false, "reason": "firestore-not-ready" }
+{ "enabled": true,  "ok": false, "reason": "no-current-user" }
+```
+
+### 9.5 Sanitization garantileri
+
+Dönüş objesi **sadece** şu alanları içerebilir: `enabled`, `ok`,
+`allowed`, `reason`, `message`, `uid`, `email`, `role`, `active`,
+`provider`, `source`. Raw Firestore doc objesi caller'a hiçbir
+koşulda verilmez. Aşağıdaki alanlar Firestore doc'unda olsa bile
+**filtrelenir**:
+
+- `notes`
+- `createdAt`, `updatedAt`
+- `metadata` ve diğer ad-hoc alanlar
+- Firebase Auth tarafından gelen `token`, `refreshToken`, `accessToken`,
+  `getIdToken`, `providerData`, `phoneNumber`, `photoURL`, `tenantId`,
+  `stsTokenManager`
+
+`role` ve `active` rules contract (§3) ile birebir aynı küme + tipte;
+geçersiz değer → `invalid-role` / `inactive-admin`.
+
+### 9.6 DevTools kullanım örneği
+
+```js
+// 1) Beklenti: signed in + Firestore ready + admins/{uid} doc mevcut.
+const result = await MV.auth.firebase.probeAdminAccess();
+result;
+// Olası dönüşler — bkz. §9.4
+
+// 2) Yalnız capability bakmak için (Firestore read yapmaz):
+MV.auth.firebase.inspect().capabilities.adminAccessProbe;
+// → 'manual-probe' (auth + Firestore ready) veya 'unavailable'
+```
+
+### 9.7 Garantiler (tek tek)
+
+- `inspect()` çağrısı Firestore read **yapmaz** — yalnız capability
+  raporu üretir.
+- `probeAdminAccess()` çağrısı, readiness adımları geçmedikçe
+  Firestore'a istek **göndermez** (network sessiz).
+- Probe `mv_admin_session`'a **yazmaz** ve **silmez**.
+- Probe `MV.auth.requireAdmin`, `MV.auth.isAuthed`, `MV.auth.logout`,
+  `MV.auth.devLogin`, `MV.auth.getUser` davranışını değiştirmez.
+- Probe `MV.auth.firebase.signIn / signOut / currentUser / onChange`
+  davranışını değiştirmez.
+- Promise her zaman **resolve eder** (hiçbir koşulda reject etmez);
+  Firebase tarafı hata kodu `reason` alanına forward edilir.
+- Probe başka admin'lerin doc'larını okumaz — yalnız caller'ın kendi
+  UID'sini hedefler (rules-side self-read garantisiyle uyumlu).
+
+---
+
+## 10. Güvenlik Notları
 
 - **Allowlist Firestore'da yaşar; rules onu evaluate eder.** Client-side
   bir allowlist check (`if (knownAdmins.includes(email))` gibi)
@@ -367,8 +531,9 @@ Bu fazda runtime'a tek dokunulan yer: yok. Bütün değişim docs +
 
 ---
 
-## 10. Sürüm Notu
+## 11. Sürüm Notu
 
 | Sürüm | Tarih | Açıklama |
 |---|---|---|
 | v12.1.0-pre.2 | 2026-05-24 | İlk admin allowlist contract dokümanı. `admins/{uid}` doc şeması, dört seviyeli rol hiyerarşisi (owner/admin/editor/viewer), `active` soft-delete davranışı, ilk owner bootstrap prosedürü (gerçek UID/e-posta yok), enforce akışıyla ilişki ve runtime etkisi (bit-identical) belgelendi. Runtime kod değişmedi. `firestore.rules` foundation draft'ında allowlist helper'ları (`isSignedIn`, `isAdmin`, `isActiveAdmin`, `isOwner`) gerçeklendi; admins/{uid} self-read ve owner-write rules tarafına yansıdı. Content collection'ları (`announcements`/`events`/`apps`/`adminLogs`/`publicConfig`/`systemStatus`) bu fazda kapalı tutuldu. |
+| v12.1.0-pre.3 | 2026-05-24 | Yeni §9 "`probeAdminAccess()` — Manuel Allowlist Probe" eklendi. `shared/js/auth.js` içine `firebaseProbeAdminAccess()` helper'ı + `MV.auth.firebase.probeAdminAccess` yüzeyi + `inspect()` capability map'ine `adminAccessProbe: 'manual-probe' / 'unavailable'` eklendi. Probe: readiness zinciri (`auth-not-ready` → `firestore-not-ready` → `no-current-user`) + doc evaluation (`admin-doc-missing` / `inactive-admin` / `invalid-role` / `allowed:true`) + sanitization (yalnız `uid`/`email`/`role`/`active`/`provider`/`source`; `notes`/`createdAt`/`updatedAt`/`metadata`/token alanları **filtrelenir**). **Login gate, requireAdmin, sessionStorage payload, enforce flag bit-identical kaldı**; helper sayfa yüklenirken otomatik çağrılmaz, yalnız direkt invocation Firestore'a istek gönderir. Belge sürümü pre.2 → pre.3. |

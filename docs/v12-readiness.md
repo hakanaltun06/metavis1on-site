@@ -329,6 +329,25 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
   [`firebase-rules-test-plan.md`](./firebase-rules-test-plan.md) §11
   Deployment Gate + yeni §1.1 foundation draft test kapsamı
   (F-01 … F-12) PASS olmalı.
+- **Admin allowlist runtime probe: available, manual-only**
+  (v12.1.0-pre.3, _bu commit_). `MV.auth.firebase.probeAdminAccess()`
+  helper'ı eklendi: aktif Firebase Auth kullanıcısının `admins/{uid}`
+  doc'unu okuyup sanitized verdict döner (`allowed:true` + uid/email/
+  role/active veya `admin-doc-missing` / `inactive-admin` /
+  `invalid-role` / `auth-not-ready` / `firestore-not-ready` /
+  `no-current-user`). `notes`/`createdAt`/`updatedAt`/`metadata` ve
+  token alanları filtrelenir; raw doc caller'a verilmez. `inspect()`
+  capability map'ine `adminAccessProbe: 'manual-probe' | 'unavailable'`
+  eklendi (no-read). Detay:
+  [`firebase-admin-authorization.md`](./firebase-admin-authorization.md)
+  §9; test kapsamı
+  [`firebase-rules-test-plan.md`](./firebase-rules-test-plan.md) §1.2
+  (R-01 … R-15).
+- **Login gate enforcement: pending.** Probe henüz gate'e bağlı değil.
+  Login form submit, `createSessionFromResult`, `requireAdmin`,
+  `mv_admin_session` payload (`role` alanı dahil **yok**),
+  `MV_ENFORCE_FIREBASE_AUTH` flag scaffold davranışı bit-identical.
+  Allowlist'i gate'e bağlamak v12.1.0+ ayrı paket faz.
 - **Firestore reads: pending.** v12.2.0+ Read-only admin modules
   Firebase read fazına bırakıldı.
 - **CRUD: pending.** v12.3.0+ fazına bırakıldı.
@@ -352,6 +371,7 @@ Tek bir Hold satırı bile varsa v12.0.0-alpha **açılmaz**; blocker giderilene
 | v12.0.0-beta.4 | 2026-05-24 | Production auth enforcement readiness audit (read-only, kod yok / commit yok). Karar B — kısmen hazır: kod tarafı tamamlanmış, ama gerçek production Firebase config + gerçek admin Auth kullanıcısı + canlı login/logout smoke test + backup admin kanalı + rollback prosedürü tamamlanmadan enforce açılmaz. `MV_ENFORCE_FIREBASE_AUTH` default OFF korundu. |
 | v12.1.0-pre.1 | 2026-05-24 | Passive Firestore SDK readiness layer eklendi olarak işaretlendi. 6 admin sayfasına `firebase-firestore-compat.js` pasif yüklendi; `MV_FIREBASE` üzerine `hasFirestoreSdk` / `isFirestoreReady` / `getFirestoreProvider` / `inspectFirestore` helper'ları eklendi. Hiçbir read/write/CRUD/`firebase.firestore()` çağrısı yok. Firestore rules / reads / CRUD pending sıraları (v12.1.0 / v12.2.0+ / v12.3.0+) güncellendi. beta.3 hash'i `e6b269b` olarak doğrulandı. Detay: [`firebase-local-setup.md`](./firebase-local-setup.md) §13. |
 | v12.1.0-pre.2 | 2026-05-24 | Firebase admin authorization & rules contract dokümantasyonu. `admins/{uid}` allowlist sözleşmesi ([`firebase-admin-authorization.md`](./firebase-admin-authorization.md)) ve Firestore data model alan tabloları ([`firestore-data-model.md`](./firestore-data-model.md)) yeni docs olarak eklendi. Repo köküne `firestore.rules` foundation draft eklendi (default deny + `admins/{uid}` self-read + owner-managed write + content collection'lar kapalı + catch-all). [`firebase-rules-test-plan.md`](./firebase-rules-test-plan.md) §1 + §1.1 + §13 v12.1.0-pre.2'ye genişletildi; F-01 … F-12 foundation draft test setiyle. Auth Wrapper Layer Status'a 3 yeni bullet (allowlist contract documented, data model documented, foundation draft available not deployed) eklendi. Runtime kod değişmedi: admin/*.html, shared/js/auth.js, shared/config/firebase.js, shared/config/firebase.local.example.js, shared/config/site.js, admin/borc/*, borc.html, index.html dokunulmadı. Hiçbir `firebase.firestore()` / collection / doc / getDoc / getDocs / onSnapshot / setDoc / updateDoc / deleteDoc / addDoc çağrısı yok. `MV_ENFORCE_FIREBASE_AUTH` default OFF korundu; gerçek UID/email/apiKey/projectId hiçbir doc'a yazılmadı. pre.1 hash'i `d228823` olarak doğrulandı. |
+| v12.1.0-pre.3 | 2026-05-24 | Guarded admin allowlist runtime probe — `shared/js/auth.js` içine `firebaseProbeAdminAccess()` helper'ı + `MV.auth.firebase.probeAdminAccess` yüzeyi + `inspect()` capability map'ine `adminAccessProbe: 'manual-probe' / 'unavailable'` eklendi. Readiness zinciri (auth-not-ready / firestore-not-ready / no-current-user) + doc evaluation (admin-doc-missing / inactive-admin / invalid-role / allowed:true) + sanitization (notes/timestamps/metadata/token filtrelenir). Auth Wrapper Layer Status'a 2 yeni bullet eklendi (allowlist runtime probe available manual-only; login gate enforcement pending). [`firebase-admin-authorization.md`](./firebase-admin-authorization.md) §9 + [`firebase-rules-test-plan.md`](./firebase-rules-test-plan.md) §1.2 (R-01 … R-15) ile senkron. **Login gate, requireAdmin, sessionStorage payload, enforce flag bit-identical**; sayfa yüklenirken otomatik Firestore read yok. admin/*.html, shared/config/firebase.js, shared/config/firebase.local.example.js, firestore.rules dokunulmadı. Borç paneli + public site etkilenmedi. Gerçek UID/email/apiKey yazılmadı. pre.2 hash'i `e526ad8` olarak doğrulandı. |
 
 Bu doküman v12.0.0-alpha PR açılana kadar canlı bir referanstır;
 PR description'ı için doğrudan referans olarak kullanılabilir. v12.0.0-alpha

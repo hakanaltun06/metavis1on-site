@@ -80,7 +80,7 @@
   /* ----------------------------------------------------------------------
      MV.auth.firebase — partially-live Firebase Auth wrapper.
      ----------------------------------------------------------------------
-     Per-method execution mode (alpha.17):
+     Per-method execution mode (alpha.17 / v12.1.0-pre.3):
        signIn      → LIVE when MV_FIREBASE.isAuthReady() is true; otherwise
                      no-op. Calls firebase.auth().signInWithEmailAndPassword
                      ONLY after readiness + credential validation pass.
@@ -101,17 +101,43 @@
                      property only; no listener, no network, no
                      sessionStorage access, no DOM access. Returns a
                      sanitized, serializable snapshot or null.
+       probeAdminAccess
+                   → MANUAL FIRESTORE READ when MV_FIREBASE.isAuthReady()
+                     AND MV_FIREBASE.isFirestoreReady() are both true AND
+                     a currentUser exists; otherwise documented short-circuit
+                     reason (`auth-not-ready` / `firestore-not-ready` /
+                     `no-current-user`). Calls
+                     firebase.firestore().collection('admins').doc(uid).get()
+                     ONLY when invoked — never on page load, never from
+                     other wrapper methods. Returns a sanitized verdict
+                     with allowed/uid/email/role/active or a deny reason
+                     (`admin-doc-missing` / `inactive-admin` /
+                     `invalid-role`). Never writes sessionStorage, never
+                     touches DOM, never modifies requireAdmin behavior.
      Neither signIn nor signOut writes/clears the sessionStorage admin
      gate by itself. createSessionFromResult and clearSessionAfterSignOut
      are explicit bridges the caller invokes after a successful SDK call.
      onChange never invokes either bridge; it is observation-only.
+
+     probeAdminAccess (v12.1.0-pre.3) is a MANUAL admin allowlist probe.
+     It reads admins/{currentUser.uid} from Firestore ONLY when invoked,
+     returns a sanitized verdict (uid/email/role/active/provider/source)
+     when allowed, or a reason code when denied/blocked. It is NOT a
+     gate: it never modifies sessionStorage, never affects requireAdmin,
+     never blocks login, never enriches the mv_admin_session payload.
+     Auto-invocation is forbidden in this phase; no admin HTML page and
+     no other wrapper method calls probeAdminAccess on its own. Page
+     load never triggers a Firestore read because the probe is the only
+     surface that reaches Firestore at all, and it is opt-in.
+
      The existing sessionStorage-based MV.auth gate (devLogin / logout /
      requireAdmin / 8h TTL) is unchanged. No admin page calls these
      wrappers automatically — activation comes from devtools or a future
      commit. Repo default leaves MV_FIREBASE in placeholder state, so
-     signIn/signOut/currentUser/onChange stay no-ops until real config
-     is supplied via the alpha.9/10 channels. inspect() reports the
-     per-method capability map.
+     signIn/signOut/currentUser/onChange/probeAdminAccess stay no-ops
+     until real config is supplied via the alpha.9/10 channels. inspect()
+     reports the per-method capability map, including the new
+     adminAccessProbe capability.
      ---------------------------------------------------------------------- */
   function getFirebaseAuthReadiness() {
     const mvfb = (typeof window !== 'undefined') ? window.MV_FIREBASE : null;
@@ -140,6 +166,7 @@
         ? mvfb.getLocalConfigStatus()
         : 'unavailable'
     };
+    const isFirestoreReady = !!(mvfb && typeof mvfb.isFirestoreReady === 'function' && mvfb.isFirestoreReady());
     return {
       enabled: r.enabled,
       reason: r.reason,
@@ -148,6 +175,7 @@
       hasAuthSdk: hasAuthSdk,
       isAuthReady: isAuthReady,
       hasProvider: hasProvider,
+      isFirestoreReady: isFirestoreReady,
       localConfig: localConfig,
       mode: isAuthReady ? 'partial-live' : 'dry-run',
       capabilities: {
@@ -156,7 +184,8 @@
         onChange: isAuthReady ? 'live-listener' : 'no-op',
         currentUser: isAuthReady ? 'live-read' : 'no-op',
         sessionBridge: 'available',
-        logoutBridge: 'available'
+        logoutBridge: 'available',
+        adminAccessProbe: (isAuthReady && isFirestoreReady) ? 'manual-probe' : 'unavailable'
       }
     };
   }
@@ -469,6 +498,148 @@
     };
   }
 
+  /* Guarded admin allowlist probe (v12.1.0-pre.3).
+     ----------------------------------------------------------------
+     Manual probe of the active Firebase Auth user's admins/{uid}
+     Firestore document. This is NOT a gate — it never blocks login,
+     never modifies sessionStorage, never touches DOM, never affects
+     requireAdmin. It only reads the allowlist record on demand and
+     returns a sanitized verdict.
+     Readiness chain (each step short-circuits with the documented
+     reason if it fails; no network call is made until all steps
+     pass):
+       1) Firebase Auth ready (MV_FIREBASE.isAuthReady())
+          → fail returns { enabled:false, ok:false,
+                           reason:'auth-not-ready' }.
+       2) Firestore ready (MV_FIREBASE.isFirestoreReady())
+          → fail returns { enabled:false, ok:false,
+                           reason:'firestore-not-ready' }.
+       3) firebaseCurrentUser() must yield a non-null uid
+          → fail returns { enabled:true, ok:false,
+                           reason:'no-current-user' }.
+     Doc evaluation (after a successful Firestore read):
+       - doc missing       → allowed:false, reason:'admin-doc-missing'
+       - active !== true   → allowed:false, reason:'inactive-admin'
+       - role not in
+         ['owner','admin','editor','viewer']
+                           → allowed:false, reason:'invalid-role'
+       - all guards pass   → allowed:true with sanitized fields
+     Sanitization (only these fields can appear on the success path):
+       uid, email, role, active, provider:'firebase-auth',
+       source:'firestore-admins'.
+     Notes / createdAt / updatedAt / metadata / token / providerData /
+     refreshToken / any other admin doc field is NEVER returned. The
+     raw Firestore document is never exposed to the caller.
+     This helper is not auto-invoked anywhere — no admin HTML calls
+     it, no bridge calls it, sayfa load akışında otomatik bir
+     Firestore okuma yok. Only direct devtools / future-callsite
+     invocations trigger the network read.
+     ---------------------------------------------------------------- */
+  function firebaseProbeAdminAccess() {
+    const mvfb = (typeof window !== 'undefined') ? window.MV_FIREBASE : null;
+    if (!mvfb) {
+      return Promise.resolve({ enabled: false, ok: false, reason: 'auth-not-ready' });
+    }
+    const r = getFirebaseAuthReadiness();
+    if (!r.enabled) {
+      return Promise.resolve({ enabled: false, ok: false, reason: 'auth-not-ready' });
+    }
+    if (typeof mvfb.isFirestoreReady !== 'function' || !mvfb.isFirestoreReady()) {
+      return Promise.resolve({ enabled: false, ok: false, reason: 'firestore-not-ready' });
+    }
+    const user = firebaseCurrentUser();
+    if (!user || !user.uid) {
+      return Promise.resolve({ enabled: true, ok: false, reason: 'no-current-user' });
+    }
+    const uid = user.uid;
+    const authEmail = user.email || null;
+    const provider = (typeof mvfb.getFirestoreProvider === 'function')
+      ? mvfb.getFirestoreProvider()
+      : null;
+    if (!provider || typeof provider.firestore !== 'function') {
+      return Promise.resolve({ enabled: false, ok: false, reason: 'firestore-not-ready' });
+    }
+    let fsInstance;
+    try {
+      fsInstance = provider.firestore();
+    } catch (err) {
+      return Promise.resolve({
+        enabled: true, ok: false, allowed: false,
+        reason: (err && err.code) || 'firestore-init-error',
+        message: (err && err.message) || 'Failed to acquire Firestore instance.',
+        uid: uid, email: authEmail,
+        provider: 'firebase-auth',
+        source: 'firestore-admins'
+      });
+    }
+    if (!fsInstance || typeof fsInstance.collection !== 'function') {
+      return Promise.resolve({
+        enabled: true, ok: false, allowed: false,
+        reason: 'no-firestore-api',
+        uid: uid, email: authEmail,
+        provider: 'firebase-auth',
+        source: 'firestore-admins'
+      });
+    }
+    const VALID_ROLES = ['owner', 'admin', 'editor', 'viewer'];
+    return Promise.resolve()
+      .then(function () {
+        return fsInstance.collection('admins').doc(uid).get();
+      })
+      .then(function (snap) {
+        if (!snap || !snap.exists) {
+          return {
+            enabled: true, ok: true, allowed: false,
+            reason: 'admin-doc-missing',
+            uid: uid, email: authEmail,
+            provider: 'firebase-auth',
+            source: 'firestore-admins'
+          };
+        }
+        const data = (typeof snap.data === 'function') ? (snap.data() || {}) : {};
+        const docEmail = (typeof data.email === 'string' && data.email) ? data.email : authEmail;
+        const role = (typeof data.role === 'string') ? data.role : null;
+        const active = data.active === true;
+        if (!active) {
+          return {
+            enabled: true, ok: true, allowed: false,
+            reason: 'inactive-admin',
+            uid: uid, email: docEmail,
+            provider: 'firebase-auth',
+            source: 'firestore-admins'
+          };
+        }
+        if (VALID_ROLES.indexOf(role) === -1) {
+          return {
+            enabled: true, ok: true, allowed: false,
+            reason: 'invalid-role',
+            uid: uid, email: docEmail,
+            provider: 'firebase-auth',
+            source: 'firestore-admins'
+          };
+        }
+        return {
+          enabled: true, ok: true, allowed: true,
+          uid: uid,
+          email: docEmail,
+          role: role,
+          active: true,
+          provider: 'firebase-auth',
+          source: 'firestore-admins'
+        };
+      })
+      .catch(function (err) {
+        return {
+          enabled: true, ok: false, allowed: false,
+          reason: (err && err.code) || 'firestore-error',
+          message: (err && err.message) || 'Firestore read failed.',
+          uid: uid, email: authEmail,
+          provider: 'firebase-auth',
+          source: 'firestore-admins'
+        };
+      });
+  }
+
   /* Bridge from a successful firebaseSignOut() result to the existing
      sessionStorage admin gate. Strictly validated; clears nothing on
      malformed input. Inlines the same removeItem/try-catch pattern as
@@ -563,10 +734,15 @@
        counterpart — the two stages stay independently testable. onChange
        observes only: no bridge invocation, no sessionStorage touch, no
        DOM access, no redirect; its callback receives the same sanitized
-       5-field shape that currentUser() returns. See firebaseSignIn(),
-       firebaseSignOut(), firebaseCurrentUser(), firebaseOnChange(),
-       createSessionFromFirebaseResult(), and
-       clearSessionFromFirebaseSignOutResult() for per-method semantics. */
+       5-field shape that currentUser() returns. probeAdminAccess
+       (v12.1.0-pre.3) is a manual allowlist probe: it reads the active
+       user's admins/{uid} document only when invoked, returns a
+       sanitized verdict, and never modifies sessionStorage or affects
+       login gate behavior. See firebaseSignIn(), firebaseSignOut(),
+       firebaseCurrentUser(), firebaseOnChange(),
+       firebaseProbeAdminAccess(), createSessionFromFirebaseResult(),
+       and clearSessionFromFirebaseSignOutResult() for per-method
+       semantics. */
     firebase: {
       isReady: function () {
         return getFirebaseAuthReadiness();
@@ -598,6 +774,10 @@
 
       currentUser: function () {
         return firebaseCurrentUser();
+      },
+
+      probeAdminAccess: function () {
+        return firebaseProbeAdminAccess();
       }
     }
   };

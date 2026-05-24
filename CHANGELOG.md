@@ -7,6 +7,85 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.1.0-pre.3] — Guarded Admin Allowlist Runtime Probe
+
+- **`MV.auth.firebase.probeAdminAccess()` manual helper eklendi.**
+  - `shared/js/auth.js` içine `firebaseProbeAdminAccess()` private
+    function'ı + `MV.auth.firebase.probeAdminAccess` public method'u.
+  - Aktif Firebase Auth kullanıcısının `admins/{uid}` dokümanını
+    güvenli şekilde okur ve sanitized verdict döner.
+  - Promise her zaman resolve eder; hiçbir koşulda reject etmez.
+- **Readiness zinciri (sırayla, kısa devre).**
+  - `MV_FIREBASE.isAuthReady()` false → `{ enabled:false, ok:false, reason:'auth-not-ready' }`
+  - `MV_FIREBASE.isFirestoreReady()` false → `{ enabled:false, ok:false, reason:'firestore-not-ready' }`
+  - `currentUser` yok → `{ enabled:true, ok:false, reason:'no-current-user' }`
+  - Firestore'a istek yalnız üç adım da PASS olduğunda gönderilir.
+- **Doc evaluation (öncelik: missing → inactive → invalid-role → allowed).**
+  - Doc yok → `{ allowed:false, reason:'admin-doc-missing' }`
+  - `active !== true` → `{ allowed:false, reason:'inactive-admin' }`
+  - `role ∉ ['owner','admin','editor','viewer']` → `{ allowed:false, reason:'invalid-role' }`
+  - Tümü PASS → `{ allowed:true, uid, email, role, active:true, provider:'firebase-auth', source:'firestore-admins' }`
+- **Sanitization garantileri.**
+  - Dönüş objesi yalnız şu alanları içerebilir: `enabled`, `ok`,
+    `allowed`, `reason`, `message`, `uid`, `email`, `role`,
+    `active`, `provider`, `source`.
+  - `notes` / `createdAt` / `updatedAt` / `metadata` / token / providerData /
+    refreshToken / accessToken / phoneNumber / photoURL / tenantId /
+    stsTokenManager **filtrelenir**.
+  - Raw Firestore document caller'a hiçbir koşulda verilmez.
+- **`inspect()` capability map'i genişledi.**
+  - `capabilities.adminAccessProbe`: `'manual-probe'` (Auth + Firestore
+    ready) veya `'unavailable'`. `inspect()` Firestore read **yapmaz**.
+  - `isFirestoreReady` bayrağı snapshot'a eklendi.
+- **Auto-wiring yok (kritik).**
+  - Sayfa yüklenirken otomatik Firestore read yok.
+  - `createSessionFromResult`, `clearSessionAfterSignOut`,
+    `signIn`, `signOut`, `currentUser`, `onChange` hiçbir koşulda
+    `probeAdminAccess`'i çağırmaz.
+  - Hiçbir admin HTML (`admin/index.html`, `admin/dashboard.html`,
+    `admin/announcements.html`, `admin/events.html`, `admin/apps.html`,
+    `admin/logs.html`) bu fazda dokunulmadı; submit/click handler'lar
+    bit-identical.
+  - `mv_admin_session` payload şeması bit-identical; `role` alanı
+    eklenmedi.
+  - `MV.auth.requireAdmin`, `MV.auth.isAuthed`, `MV.auth.logout`,
+    `MV.auth.devLogin`, `MV.auth.getUser` davranışı bit-identical.
+  - `MV_ENFORCE_FIREBASE_AUTH` flag scaffold default OFF korundu.
+- **Firestore write/CRUD eklenmedi.**
+  - `setDoc` / `updateDoc` / `deleteDoc` / `addDoc` / `writeBatch` /
+    `runTransaction` çağrısı 0.
+  - Yalnız 1 read pattern: `provider.firestore().collection('admins').doc(uid).get()`,
+    sadece `probeAdminAccess()` doğrudan çağrıldığında.
+- **Dokümantasyon güncellendi.**
+  - `docs/firebase-admin-authorization.md`: yeni §9
+    "`probeAdminAccess()` — Manuel Allowlist Probe" + sürüm notu
+    pre.3.
+  - `docs/firebase-rules-test-plan.md`: yeni §1.2
+    "`probeAdminAccess()` runtime probe test kapsamı" (R-01 … R-15)
+    + sürüm notu pre.3.
+  - `docs/v12-readiness.md`: Auth Wrapper Layer Status'a 2 yeni bullet
+    (allowlist runtime probe available manual-only; login gate
+    enforcement pending) + sürüm notu pre.3.
+  - `docs/firebase-local-setup.md`: §6 DevTools Inspection ready
+    tablosuna `adminAccessProbe` satırı + "Manual allowlist probe
+    örneği" alt bölümü + Capability Matrix satırı + Phase Log pre.2
+    hash doğrulaması + pre.3 satırı + sürüm notu pre.3.
+  - `docs/README.md`: Firebase Admin Authorization Contract entry'sine
+    probe referansı.
+- **`shared/config/firebase.js` ve `firestore.rules` değişmedi.**
+  Mevcut Firestore readiness helper'ları (`isFirestoreReady` /
+  `getFirestoreProvider`) yeterli; rules foundation draft'ı `admins/{uid}`
+  self-read'i zaten allow ediyor (deploy edildiğinde bu probe doğru
+  çalışır).
+- **Borç paneli ve public site etkilenmedi.**
+  `admin/borc/index.html`, `borc.html`, `index.html` dokunulmadı.
+- **Gerçek credential / UID / email kontrolü.**
+  Yeni dosyalarda gerçek apiKey / projectId / appId / admin UID /
+  e-posta yok. Tüm örnekler placeholder (`admin@example.com`,
+  `PLACEHOLDER_PASSWORD`, `<auth uid>`).
+
+---
+
 ## [v12.1.0-pre.2] — Firebase Admin Authorization and Firestore Rules Contract
 
 - **Firebase Auth sonrası admin yetkilendirme için `admins/{uid}`

@@ -22,12 +22,13 @@ zemin hazırlayan referans dokümanlardır.
   foundation draft'a referansla genişletildi (yeni §1.1 F-01 … F-12
   testleri); foundation draft hâlâ deploy edilmedi.
 - **[Firebase Admin Authorization Contract](./firebase-admin-authorization.md)**
-  v12.1.0-pre.2'de eklenen admin yetkilendirme sözleşmesi:
-  `admins/{uid}` doc şeması, dört seviyeli rol hiyerarşisi
-  (`owner`/`admin`/`editor`/`viewer`), `active` soft-delete davranışı,
-  ilk owner bootstrap prosedürü (gerçek UID/e-posta yok) ve enforce
-  akışıyla ilişkisi. Runtime'da `admins/{uid}` okunmaz; sözleşme
-  yalnız docs + `firestore.rules` foundation seviyesinde.
+  Admin yetkilendirme sözleşmesi: `admins/{uid}` doc şeması, dört
+  seviyeli rol hiyerarşisi (`owner`/`admin`/`editor`/`viewer`),
+  `active` soft-delete davranışı, ilk owner bootstrap prosedürü
+  (gerçek UID/e-posta yok), enforce akışıyla ilişkisi ve
+  v12.1.0-pre.3'te eklenen `MV.auth.firebase.probeAdminAccess()`
+  manuel runtime probe'unun davranış garantileri (§9). Probe
+  gate değildir; helper sayfa load akışında otomatik çağrılmaz.
 - **[Firestore Data Model](./firestore-data-model.md)**
   v12.1.0-pre.2'de eklenen Firestore koleksiyon alan tabloları:
   `admins` + `announcements` + `events` + `apps` + `adminLogs` +
