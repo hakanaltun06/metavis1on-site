@@ -6,7 +6,7 @@
 > belirlemez (**authorization**). Bu boşluk, `admins/{uid}` Firestore
 > koleksiyonu üzerinden bir allowlist ile kapatılır.
 >
-> Belge sürümü: v12.1.0-pre.3 · Hedef faz: v12.1.0+
+> Belge sürümü: v12.1.0-pre.4 · Hedef faz: v12.1.0+
 >
 > Bağlantılı dokümanlar:
 > - [`firebase-transition-plan.md`](./firebase-transition-plan.md) §4 (Auth Planı) ve §6.5 (admins şeması).
@@ -501,6 +501,112 @@ MV.auth.firebase.inspect().capabilities.adminAccessProbe;
 - Probe başka admin'lerin doc'larını okumaz — yalnız caller'ın kendi
   UID'sini hedefler (rules-side self-read garantisiyle uyumlu).
 
+### 9.8 Opt-in Login Gate (v12.1.0-pre.4)
+
+pre.3'te eklenen `probeAdminAccess()` helper'ı pre.4'te ilk gerçek
+caller'ını buldu: `admin/index.html` Firebase login trial akışına
+**opt-in bir allowlist gate** eklendi. Default flag-off davranışı
+bit-identical alpha.19+ Firebase trial zinciri olarak kalır;
+yalnız flag açıkken probe gate olarak devreye girer.
+
+**Opt-in kanalları** (Firebase login trial flag pattern'iyle simetrik):
+
+```
+1. window.MV_ADMIN_ALLOWLIST_GATE === true (her host, bilinçli override)
+2. Dev host + ?mvAdminAllowlistGate=1 veya =true (immediate aktivasyon
+   + sessionStorage yazımı)
+3. sessionStorage 'mv_admin_allowlist_gate_trial' === '1' (channel #2
+   tarafından yazıldıysa, navigasyon boyunca korunur)
+```
+
+Production hostta `?mvAdminAllowlistGate` query param **no-op**
+kalır (yazılmaz, okunmaz). Stray URL ile production'da gate açılmaz;
+sadece explicit global flag her hostta çalışır.
+
+**Akış (gate ON iken, Firebase login trial da ON):**
+
+```
+1) form submit → signIn(email, password)
+2) signIn ok:true ise:
+   ├─ isAdminAllowlistGateEnabled() false  → bridgeAndRedirect (legacy)
+   ├─ isAdminAllowlistGateEnabled() true, helper missing
+   │                                       → fail closed; session yazılmaz
+   └─ isAdminAllowlistGateEnabled() true   → probeAdminAccess()
+      ├─ allowed:true   → bridgeAndRedirect (mv_admin_session yazılır)
+      └─ aksi durum     → friendly Türkçe error
+                          → best-effort Firebase signOut cleanup
+                          → mv_admin_session yazılmaz
+                          → redirect YOK
+                          → devLogin fallback YOK
+```
+
+**Deny mesajları** — verdict reason kodu → Türkçe metin eşlemesi
+(`allowlistGateMessage()` helper'ı):
+
+| reason | Mesaj |
+|---|---|
+| `admin-doc-missing` | "Bu Firebase kullanıcısı admin allowlist içinde değil." |
+| `inactive-admin` | "Bu admin hesabı devre dışı bırakılmış." |
+| `invalid-role` | "Bu admin hesabının rol bilgisi geçersiz." |
+| `permission-denied` | "Admin yetki kontrolü için izin alınamadı." |
+| `firestore-not-ready` / `auth-not-ready` | "Admin yetki kontrolü şu anda hazır değil." |
+| `no-current-user` | "Firebase oturumu doğrulanamadı." |
+| Diğer | "Admin yetki kontrolü başarısız oldu." |
+
+**Best-effort signOut cleanup.** Gate deny olursa `mv_admin_session`
+zaten yazılmaz; admin gate (`requireAdmin`) kapalı kalır. Ek olarak
+Firebase Auth tarafında tab-level state'i temizlemek için
+`MV.auth.firebase.signOut()` çağrılır (best-effort). Hata olursa
+user-facing mesaj **bozulmaz** — yalnız `MV_DEBUG_AUTH` true ise
+console'a debug log düşer. Bu cleanup otomatik bir fallback değildir;
+deny verdict'inin sonucunu değiştirmez.
+
+**Session payload bit-identical.** `bridgeAndRedirect()` →
+`createSessionFromResult` yolu pre.3 ile aynı; `mv_admin_session`
+payload şeması (`authed/username/email/uid/loginAt/provider:'firebase-auth'`)
+değişmedi. Role alanı **bu fazda payload'a yazılmaz**. Bu bilinçli
+bir karardır: `requireAdmin` rolü henüz değerlendirmiyor; payload'a
+rol eklemek tüketici tarafında tutarsızlığa yol açabilir. Role
+session'a yazılması ayrı bir paket faz olarak ele alınır.
+
+**Etkilemediği surface'ler.** Gate yalnız `admin/index.html` submit
+zincirinde + `runFirebaseLogin` dalında çalışır. Şunlardan **hiçbiri
+etkilenmez**:
+
+- `MV.auth.devLogin` — gate flag'i bu yolu görmez; devLogin bit-identical.
+- `MV.auth.requireAdmin` / `isAuthed` / `logout` / `getUser`
+- `admin/dashboard.html` logout butonu (beta.1 trial zinciri)
+- `admin/dashboard.html` requireAdmin gate
+- `MV.auth.firebase.signIn` / `signOut` / `currentUser` / `onChange`
+  wrapper davranışı (ham helper bit-identical)
+- `MV.auth.firebase.createSessionFromResult` /
+  `clearSessionAfterSignOut` bridge davranışı
+- `MV_ENFORCE_FIREBASE_AUTH` flag scaffold (default OFF)
+- Trial flag persistence (Firebase trial flag bağımsız)
+- Trial status UX (Firebase trial indicator bağımsız; pre.4 kendi
+  indicator'ını ekler)
+
+**DevTools doğrulama:**
+
+```js
+// 1) Gate kapatma (clean state)
+window.MV_ADMIN_ALLOWLIST_GATE = false;
+sessionStorage.removeItem('mv_admin_allowlist_gate_trial');
+// → Firebase login trial flag açıksa pre.3 davranışı bit-identical.
+
+// 2) Gate açma (dev host)
+window.location.href = './index.html?mvFirebaseLogin=1&mvAdminAllowlistGate=1';
+sessionStorage.getItem('mv_admin_allowlist_gate_trial'); // → '1'
+// Login formundan gerçek admin ile dene:
+//   admins/{uid} doc yoksa → "Bu Firebase kullanıcısı admin allowlist içinde değil."
+//   active:false ise        → "Bu admin hesabı devre dışı bırakılmış."
+//   geçerli role + active:true → bridge + dashboard redirect.
+
+// 3) Gate kapatma (dev host)
+window.location.href = './index.html?mvAdminAllowlistGate=0';
+sessionStorage.getItem('mv_admin_allowlist_gate_trial'); // → null
+```
+
 ---
 
 ## 10. Güvenlik Notları
@@ -537,3 +643,4 @@ MV.auth.firebase.inspect().capabilities.adminAccessProbe;
 |---|---|---|
 | v12.1.0-pre.2 | 2026-05-24 | İlk admin allowlist contract dokümanı. `admins/{uid}` doc şeması, dört seviyeli rol hiyerarşisi (owner/admin/editor/viewer), `active` soft-delete davranışı, ilk owner bootstrap prosedürü (gerçek UID/e-posta yok), enforce akışıyla ilişki ve runtime etkisi (bit-identical) belgelendi. Runtime kod değişmedi. `firestore.rules` foundation draft'ında allowlist helper'ları (`isSignedIn`, `isAdmin`, `isActiveAdmin`, `isOwner`) gerçeklendi; admins/{uid} self-read ve owner-write rules tarafına yansıdı. Content collection'ları (`announcements`/`events`/`apps`/`adminLogs`/`publicConfig`/`systemStatus`) bu fazda kapalı tutuldu. |
 | v12.1.0-pre.3 | 2026-05-24 | Yeni §9 "`probeAdminAccess()` — Manuel Allowlist Probe" eklendi. `shared/js/auth.js` içine `firebaseProbeAdminAccess()` helper'ı + `MV.auth.firebase.probeAdminAccess` yüzeyi + `inspect()` capability map'ine `adminAccessProbe: 'manual-probe' / 'unavailable'` eklendi. Probe: readiness zinciri (`auth-not-ready` → `firestore-not-ready` → `no-current-user`) + doc evaluation (`admin-doc-missing` / `inactive-admin` / `invalid-role` / `allowed:true`) + sanitization (yalnız `uid`/`email`/`role`/`active`/`provider`/`source`; `notes`/`createdAt`/`updatedAt`/`metadata`/token alanları **filtrelenir**). **Login gate, requireAdmin, sessionStorage payload, enforce flag bit-identical kaldı**; helper sayfa yüklenirken otomatik çağrılmaz, yalnız direkt invocation Firestore'a istek gönderir. Belge sürümü pre.2 → pre.3. |
+| v12.1.0-pre.4 | 2026-05-24 | Yeni §9.8 "Opt-in Login Gate" eklendi. `admin/index.html` Firebase login trial akışına opt-in admin allowlist gate eklendi: yeni flag (`?mvAdminAllowlistGate=1` query / `sessionStorage mv_admin_allowlist_gate_trial` / `window.MV_ADMIN_ALLOWLIST_GATE === true`), helper'lar (`getAdminAllowlistGateParam`, `persistAdminAllowlistGateIfRequested`, `isAdminAllowlistGatePersisted`, `isAdminAllowlistGateEnabled`, `hasAdminAllowlistGateWrapper`, `allowlistGateMessage`, `tryFirebaseSignOutCleanup`, `runAdminAllowlistGate`, `bridgeAndRedirect`, `updateAdminAllowlistGateIndicator`), HTML'e `#adminAllowlistGateIndicator` rozeti. Gate ON + signIn ok:true → probe → allowed:true → bridge + redirect; aksi durumda mv_admin_session yazılmaz, dashboard redirect yapılmaz, devLogin fallback yok, best-effort Firebase signOut cleanup denenir. **Default flag-off davranışı bit-identical alpha.19+ Firebase trial zinciri**; devLogin path, requireAdmin, dashboard logout, session bridge davranışı, enforce flag, `mv_admin_session` payload şeması (role yazılmaz) tamamen değişmedi. Belge sürümü pre.3 → pre.4. |

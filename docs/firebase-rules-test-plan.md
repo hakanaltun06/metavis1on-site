@@ -8,7 +8,7 @@
 > edilmemiştir. Bu doküman ise rol bazlı pozitif / negatif test
 > senaryolarını ve deployment gate kurallarını içerir.
 >
-> Belge sürümü: v12.1.0-pre.3 · Hedef faz: v12.1.0 (Firestore Rules foundation deploy + emulator suite)
+> Belge sürümü: v12.1.0-pre.4 · Hedef faz: v12.1.0 (Firestore Rules foundation deploy + emulator suite)
 >
 > Bağlantılı dokümanlar:
 > - [`firebase-transition-plan.md`](./firebase-transition-plan.md) — Genel mimari, §7 Read/Write Matrix ve §8 Rules Taslak Mantığı.
@@ -116,6 +116,43 @@ edilmediği için bu testler iki kanalda koşulabilir:
 R-12 ve R-14 **kritik**: ilki sanitization sızıntısını yakalar, ikincisi
 auto-wiring sızıntısını yakalar. Her ikisi de PR review checklist'inde
 ayrıca kontrol edilir.
+
+### 1.3 `admin/index.html` opt-in allowlist gate senaryoları (v12.1.0-pre.4)
+
+pre.4 Firebase login trial akışına opt-in bir allowlist gate ekledi
+(bkz. [`firebase-admin-authorization.md`](./firebase-admin-authorization.md) §9.8).
+Aşağıdaki testler **end-to-end login akışını** kapsar: form submit →
+signIn → (gate ON ise) probe → bridge veya deny. Default flag-off
+davranışı bit-identical alpha.19+ olarak kalmalıdır.
+
+| Test ID | Durum (flags) | Önkoşul | Beklenen |
+|---|---|---|---|
+| G-01 | gate OFF, firebase trial OFF | — | submit → devLogin → mv_admin_session yazılır (provider:'dev-session'); dashboard redirect. **Allowlist read 0.** |
+| G-02 | gate OFF, firebase trial ON | Firebase ready | submit → signIn → bridge → dashboard. **Allowlist read 0.** Bit-identical alpha.19. |
+| G-03 | gate ON, firebase trial OFF | — | devLogin path — gate flag etkisiz (sadece runFirebaseLogin'de okunur). G-01 ile aynı dönüş. Indicator görünür ama gate ateşlenmez. |
+| G-04 | gate ON, firebase trial ON, Firebase not ready | placeholder config | signIn → `enabled:false` → devLogin fallback (mevcut davranış). **Allowlist read 0.** Gate ateşlenmez. |
+| G-05 | gate ON, signIn ok:false (wrong-password) | Firebase ready | "E-posta veya şifre hatalı." Allowlist gate ateşlenmez (signIn dalı yetersiz). **Allowlist read 0.** |
+| G-06 | gate ON, signIn ok:true, `admins/{uid}` doc yok | Firebase ready, signed-in user yeni | probe → `admin-doc-missing` → "Bu Firebase kullanıcısı admin allowlist içinde değil." **mv_admin_session yazılmaz, redirect yok.** best-effort signOut cleanup denenir. |
+| G-07 | gate ON, signIn ok:true, `active:false` | Firebase ready | probe → `inactive-admin` → "Bu admin hesabı devre dışı bırakılmış." **mv_admin_session yazılmaz, redirect yok.** |
+| G-08 | gate ON, signIn ok:true, role:'superuser' (set dışı) | Firebase ready | probe → `invalid-role` → "Bu admin hesabının rol bilgisi geçersiz." **mv_admin_session yazılmaz, redirect yok.** |
+| G-09 | gate ON, signIn ok:true, rules `admins/{uid}` deny | Firebase ready, rules deploy edilmiş | probe → `permission-denied` veya `firestore-error` → "Admin yetki kontrolü için izin alınamadı." **mv_admin_session yazılmaz, redirect yok.** |
+| G-10 | gate ON, signIn ok:true, role:'viewer', active:true | Firebase ready | probe → `allowed:true` → bridge → dashboard redirect. mv_admin_session payload bit-identical (role alanı YOK). |
+| G-11 | gate ON, signIn ok:true, role:'editor', active:true | Firebase ready | G-10 ile aynı pattern (`allowed:true`). |
+| G-12 | gate ON, signIn ok:true, role:'admin', active:true | Firebase ready | G-10 ile aynı pattern. |
+| G-13 | gate ON, signIn ok:true, role:'owner', active:true | Firebase ready | G-10 ile aynı pattern. |
+| G-14 | gate ON, `probeAdminAccess` helper missing (hipotetik) | yapay olarak `MV.auth.firebase.probeAdminAccess = undefined` | "Admin yetki kontrolü için altyapı eksik." **Fail closed; bridge çağrılmaz.** |
+| G-15 | dev host, `?mvAdminAllowlistGate=1` → reload, sonra `?mvAdminAllowlistGate=0` | — | sessionStorage `mv_admin_allowlist_gate_trial` önce `'1'`, sonra silinir. Indicator önce visible, sonra hidden. |
+| G-16 | production host, `?mvAdminAllowlistGate=1` | — | sessionStorage'a **yazılmaz**; `window.MV_ADMIN_ALLOWLIST_GATE` set edilmedikçe gate kapalı. Indicator hidden. |
+| G-17 | gate ON, dashboard navigation sonrası geri dön | — | sessionStorage persistence sayesinde gate aktif kalır; bir sonraki login submit'inde tekrar tetiklenir. |
+
+**Kritik kontroller:**
+
+- G-01 / G-02 → flag-off davranış bit-identical.
+- G-06 / G-07 / G-08 / G-09 / G-14 → deny path'lerinin tümü
+  `mv_admin_session` yazmadığını ve redirect yapmadığını doğrular.
+- G-10 → G-13 → tüm geçerli rollerin gate'i geçtiğini doğrular.
+- G-16 → production host'ta stray URL'in gate'i tetikleyemediğini
+  doğrular.
 
 ---
 
@@ -462,6 +499,7 @@ kaydedilir (bu doküman içine inline yazılmaz; rapor ayrı tutulur).
 | v11.5.3 | 2026-05-23 | İlk test plan taslağı. Aktif rules yok; emulator yok. Rol matrisi, pozitif/negatif senaryolar, borç paneli özel testleri, deployment gate ve rollback planı belgelendi. |
 | v12.1.0-pre.2 | 2026-05-24 | `firestore.rules` foundation draft'ı eklendi; bu doküman foundation draft'a referansla güncellendi. §1 Scope'ta foundation draft'ın varlığı + sınırı (deploy edilmedi) belgelendi. Yeni §1.1 "Foundation draft test kapsamı" eklendi — F-01 … F-12 testleriyle default deny + `admins/{uid}` self-read + owner-managed write + content collection'ların topyekün kapalılığı + catch-all sızıntı kontrolleri tanımlandı. Bağlantılı dokümanlar listesine [`firebase-admin-authorization.md`](./firebase-admin-authorization.md), [`firestore-data-model.md`](./firestore-data-model.md) ve [`../firestore.rules`](../firestore.rules) eklendi. Belge sürümü v11.5.3 → v12.1.0-pre.2; hedef faz v12.1.0 (Firestore Rules foundation deploy + emulator suite). Runtime kod değişmedi; §2–§12 (rol matrisi, alanlar, read/write matrix, negatif/pozitif testler, borç paneli özel testleri, emulator stratejisi, test data plan, expected report template, deployment gate, rollback) aynen korundu. |
 | v12.1.0-pre.3 | 2026-05-24 | Yeni §1.2 "`probeAdminAccess()` runtime probe test kapsamı" eklendi — R-01 … R-15 testleri readiness zinciri (auth-not-ready / firestore-not-ready / no-current-user), doc evaluation (admin-doc-missing / inactive-admin / invalid-role / allowed:true tüm 4 rol) + öncelik kontrolü (R-13 active-önce-role) + sanitization sızıntısı (R-12 notes/timestamps/metadata) + auto-wiring sızıntısı (R-14 page load idle) + `inspect()` no-read garantisi (R-15) için. Belge sürümü pre.2 → pre.3. Foundation draft test kapsamı (§1.1, F-01 … F-12) ve §2–§12 ana test seti aynen korundu. Rules dosyası değişmedi. |
+| v12.1.0-pre.4 | 2026-05-24 | Yeni §1.3 "`admin/index.html` opt-in allowlist gate senaryoları" eklendi — G-01 … G-17 testleri flag-off bit-identical garantisi (G-01/G-02), gate ateşlenmemesi gereken yollar (G-03/G-04/G-05), deny path'leri (G-06/G-07/G-08/G-09/G-14) için "no session + no redirect" doğrulamaları, tüm 4 geçerli rol için allow (G-10 … G-13), persistence (G-15/G-17) ve production host no-op (G-16) için. Belge sürümü pre.3 → pre.4. Foundation draft + runtime probe test kapsamları (§1.1 + §1.2) ve §2–§12 ana test seti aynen korundu. Rules dosyası değişmedi. |
 
 Bu doküman canlı bir referanstır — v12.1.0 fazında emulator + test suite
 kurulduğunda her test sonucu için ayrı `firebase-rules-test-results-*.md`

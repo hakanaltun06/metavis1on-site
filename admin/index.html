@@ -93,6 +93,19 @@
           <span class="admin-auth-badge__dot"></span>
           Firebase Trial Aktif
         </span>
+        <!-- pre.4: opt-in admin allowlist gate indicator — operator-only
+             cue, mirrors the firebase trial badge shape so no CSS change
+             is required. Display toggled by updateAdminAllowlistGateIndicator()
+             based on isAdminAllowlistGateEnabled(). Hidden by default so
+             the flag-off page load never flashes the indicator. NOT a
+             security boundary — the submit handler decides allowlist
+             behavior independently of this badge. -->
+        <span id="adminAllowlistGateIndicator" class="admin-auth-badge"
+              style="display:none; margin-left:8px; background:rgba(34, 197, 94, 0.10); border-color:rgba(34, 197, 94, 0.35); color:#86efac;"
+              role="status" aria-live="polite">
+          <span class="admin-auth-badge__dot"></span>
+          Allowlist Gate Aktif
+        </span>
       </div>
 
       <div class="mv-auth-card__logo">
@@ -187,11 +200,14 @@
       'use strict';
 
       const FIREBASE_LOGIN_TRIAL_KEY = 'mv_firebase_login_trial';
+      const ADMIN_ALLOWLIST_GATE_KEY = 'mv_admin_allowlist_gate_trial';
 
-      // beta.2: trial flag persistence MUST run before any redirect /
-      // short-circuit so a freshly-arrived ?mvFirebaseLogin=1 (or =0)
-      // is honored even when MV.auth.isAuthed() bounces to dashboard.
+      // beta.2 + pre.4: flag persistence MUST run before any redirect /
+      // short-circuit so freshly-arrived ?mvFirebaseLogin=1 (or =0) and
+      // ?mvAdminAllowlistGate=1 (or =0) are honored even when
+      // MV.auth.isAuthed() bounces to dashboard.
       persistFirebaseLoginTrialIfRequested();
+      persistAdminAllowlistGateIfRequested();
 
       // Zaten giriş yapmışsa direkt dashboard'a yönlendir
       if (MV.auth.isAuthed()) {
@@ -299,6 +315,74 @@
         return isFirebaseLoginTrialPersisted();
       }
 
+      /* pre.4: opt-in admin allowlist gate flag. Mirrors the firebase
+         login trial flag pattern (beta.2) so the same three-channel
+         opt-in works: explicit global, dev-host query param, sessionStorage
+         persistence. The gate ONLY fires inside runFirebaseLogin after a
+         successful signIn — devLogin path is unaffected. When the gate
+         flag is OFF the Firebase login trial behaves bit-identical with
+         alpha.19 / beta.1 / pre.3.
+         Channels (any one is sufficient):
+           1) window.MV_ADMIN_ALLOWLIST_GATE === true (explicit, any host)
+           2) URL query ?mvAdminAllowlistGate=1 (or =true) on dev hosts only
+              (localhost / 127.0.0.1 / 0.0.0.0 / file:)
+           3) sessionStorage 'mv_admin_allowlist_gate_trial' === '1', written
+              by channel #2 on a prior visit so the gate survives an
+              in-session navigation that drops the query string.
+         On dev hosts ?mvAdminAllowlistGate=1/true also writes the
+         sessionStorage key; ?mvAdminAllowlistGate=0/false clears it. On
+         production hosts the query param is fully ignored (no read,
+         no write) so a stray URL cannot toggle the gate in prod. The
+         explicit global remains the only way to activate the gate in
+         production, kept as a deliberate override channel. */
+      function getAdminAllowlistGateParam() {
+        if (typeof window === 'undefined' || !window.location) return null;
+        try {
+          const q = new URLSearchParams(window.location.search || '');
+          if (!q.has('mvAdminAllowlistGate')) return null;
+          return q.get('mvAdminAllowlistGate');
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function persistAdminAllowlistGateIfRequested() {
+        // Production hosts: full no-op (no read, no write).
+        if (!isDevHost()) return;
+        const v = getAdminAllowlistGateParam();
+        if (v === null) return;
+        try {
+          if (v === '1' || v === 'true') {
+            sessionStorage.setItem(ADMIN_ALLOWLIST_GATE_KEY, '1');
+          } else if (v === '0' || v === 'false') {
+            sessionStorage.removeItem(ADMIN_ALLOWLIST_GATE_KEY);
+          }
+        } catch (e) { /* swallow */ }
+      }
+
+      function isAdminAllowlistGatePersisted() {
+        try {
+          return sessionStorage.getItem(ADMIN_ALLOWLIST_GATE_KEY) === '1';
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function isAdminAllowlistGateEnabled() {
+        if (typeof window === 'undefined') return false;
+        // 1) Explicit global flag (any host)
+        if (window.MV_ADMIN_ALLOWLIST_GATE === true) return true;
+        // 2) Dev host + valid query param (immediate activation;
+        //    persistence is also written by persistAdminAllowlistGateIfRequested
+        //    so the flag survives an in-session navigation).
+        if (isDevHost()) {
+          const v = getAdminAllowlistGateParam();
+          if (v === '1' || v === 'true') return true;
+        }
+        // 3) sessionStorage persistence
+        return isAdminAllowlistGatePersisted();
+      }
+
       /* beta.3: operator-visible trial mode hint.
          Renders the #firebaseTrialIndicator badge only when
          isFirebaseLoginTrialEnabled() is true. Hidden by default
@@ -315,10 +399,32 @@
         } catch (e) { /* swallow */ }
       }
 
+      /* pre.4: same shape + guarantees as updateFirebaseTrialIndicator
+         for the new allowlist gate badge. Inline display:none ships in
+         HTML so the indicator never flashes during a flag-off page
+         load. The badge mirrors the flag state, not effective behavior;
+         e.g. it shows on a devLogin-only path too if the operator set
+         the flag standalone. Operator interpretation. */
+      function updateAdminAllowlistGateIndicator() {
+        try {
+          const el = document.getElementById('adminAllowlistGateIndicator');
+          if (!el) return;
+          el.style.display = isAdminAllowlistGateEnabled() ? 'inline-flex' : 'none';
+        } catch (e) { /* swallow */ }
+      }
+
       function hasFirebaseLoginWrapper() {
         return !!(window.MV && window.MV.auth && window.MV.auth.firebase &&
                   typeof window.MV.auth.firebase.signIn === 'function' &&
                   typeof window.MV.auth.firebase.createSessionFromResult === 'function');
+      }
+
+      /* pre.4: probeAdminAccess helper presence check. The allowlist
+         gate fails closed when this helper is absent — see runFirebaseLogin
+         gate branch. */
+      function hasAdminAllowlistGateWrapper() {
+        return !!(window.MV && window.MV.auth && window.MV.auth.firebase &&
+                  typeof window.MV.auth.firebase.probeAdminAccess === 'function');
       }
 
       function firebaseErrorMessage(reason) {
@@ -350,6 +456,56 @@
         }
       }
 
+      /* pre.4: friendly Turkish messages for allowlist gate verdicts.
+         Mapped from MV.auth.firebase.probeAdminAccess() reason codes.
+         Unknown reason → generic fallback. Empty/null reason is treated
+         as the generic case so a malformed probe response cannot fall
+         through silently. */
+      function allowlistGateMessage(verdict) {
+        const reason = verdict && verdict.reason;
+        switch (reason) {
+          case 'admin-doc-missing':
+            return 'Bu Firebase kullanıcısı admin allowlist içinde değil.';
+          case 'inactive-admin':
+            return 'Bu admin hesabı devre dışı bırakılmış.';
+          case 'invalid-role':
+            return 'Bu admin hesabının rol bilgisi geçersiz.';
+          case 'permission-denied':
+            return 'Admin yetki kontrolü için izin alınamadı.';
+          case 'firestore-not-ready':
+          case 'auth-not-ready':
+            return 'Admin yetki kontrolü şu anda hazır değil.';
+          case 'no-current-user':
+            return 'Firebase oturumu doğrulanamadı.';
+          default:
+            return 'Admin yetki kontrolü başarısız oldu.';
+        }
+      }
+
+      /* pre.4: best-effort Firebase Auth signOut after an allowlist
+         deny. The local mv_admin_session is never written on a deny
+         path, so the admin gate (MV.auth.requireAdmin) stays closed
+         regardless of this cleanup. The signOut here only clears the
+         Firebase Auth tab-level state so a follow-up reload does not
+         present a stale currentUser. Failures are swallowed (debug
+         only); they MUST NOT overwrite the user-facing allowlist
+         message — that would mask the actual reason the operator
+         was rejected. */
+      function tryFirebaseSignOutCleanup() {
+        try {
+          if (!window.MV || !window.MV.auth || !window.MV.auth.firebase ||
+              typeof window.MV.auth.firebase.signOut !== 'function') {
+            return;
+          }
+          Promise.resolve()
+            .then(function () { return window.MV.auth.firebase.signOut(); })
+            .then(function (out) { debugLog('pre.4 cleanup signOut:', out); })
+            .catch(function (e) { debugLog('pre.4 cleanup signOut threw:', e); });
+        } catch (e) {
+          debugLog('pre.4 cleanup signOut sync error:', e);
+        }
+      }
+
       function debugLog() {
         if (window.MV_DEBUG_AUTH === true && window.console && typeof console.log === 'function') {
           const args = ['[alpha.19 login]'].concat([].slice.call(arguments));
@@ -373,6 +529,61 @@
         }, 350);
       }
 
+      /* pre.4: shared "bridge + redirect" tail used by both the legacy
+         signIn-only path and the allowlist-gated path. The bridge
+         payload shape stays bit-identical with alpha.19; role is NOT
+         written into mv_admin_session in this phase, so any downstream
+         consumer of getUser() / requireAdmin() sees the exact same
+         shape it always did. Adding role to the session payload is a
+         deliberately separate phase decision (see CHANGELOG). */
+      function bridgeAndRedirect(result) {
+        const bridge = MV.auth.firebase.createSessionFromResult(result);
+        debugLog('bridge result:', bridge);
+        if (bridge && bridge.ok === true) {
+          showInfo('Giriş başarılı, panel yükleniyor...');
+          setTimeout(function () {
+            window.location.replace('./dashboard.html');
+          }, 500);
+          return;
+        }
+        showError(firebaseErrorMessage(bridge && bridge.reason));
+        btn.disabled = false;
+        btn.textContent = 'Yönetim Paneline Gir';
+      }
+
+      /* pre.4: opt-in admin allowlist gate. Called from runFirebaseLogin
+         only when isAdminAllowlistGateEnabled() AND
+         hasAdminAllowlistGateWrapper() both hold. probeAdminAccess()
+         reads admins/{uid} via the pre.3 helper and returns a verdict.
+           allowed:true  → bridge + redirect (existing chain).
+           else (deny / error / readiness fail) → no bridge, no redirect,
+           no devLogin fallback. mv_admin_session is never written.
+           A best-effort Firebase Auth signOut is attempted to clear the
+           tab-level Auth state. */
+      function runAdminAllowlistGate(result) {
+        Promise.resolve()
+          .then(function () { return MV.auth.firebase.probeAdminAccess(); })
+          .then(function (verdict) {
+            debugLog('allowlist gate verdict:', verdict);
+            if (verdict && verdict.ok === true && verdict.allowed === true) {
+              bridgeAndRedirect(result);
+              return;
+            }
+            // Deny / error / readiness fail — fail closed.
+            showError(allowlistGateMessage(verdict));
+            tryFirebaseSignOutCleanup();
+            btn.disabled = false;
+            btn.textContent = 'Yönetim Paneline Gir';
+          })
+          .catch(function (err) {
+            debugLog('allowlist gate threw:', err);
+            showError('Admin yetki kontrolü başarısız oldu.');
+            tryFirebaseSignOutCleanup();
+            btn.disabled = false;
+            btn.textContent = 'Yönetim Paneline Gir';
+          });
+      }
+
       function runFirebaseLogin(u, p) {
         Promise.resolve()
           .then(function () { return MV.auth.firebase.signIn(u, p); })
@@ -385,18 +596,25 @@
               return;
             }
             if (result.ok === true) {
-              const bridge = MV.auth.firebase.createSessionFromResult(result);
-              debugLog('bridge result:', bridge);
-              if (bridge && bridge.ok === true) {
-                showInfo('Giriş başarılı, panel yükleniyor...');
-                setTimeout(function () {
-                  window.location.replace('./dashboard.html');
-                }, 500);
+              // pre.4: opt-in admin allowlist gate.
+              if (isAdminAllowlistGateEnabled()) {
+                if (!hasAdminAllowlistGateWrapper()) {
+                  // Gate ON but probeAdminAccess unavailable: fail closed
+                  // rather than silently bridging. This keeps the gate's
+                  // contract — "no allowlist verify, no session" — even
+                  // when the helper is missing at runtime.
+                  debugLog('allowlist gate: probeAdminAccess helper missing');
+                  showError('Admin yetki kontrolü için altyapı eksik.');
+                  tryFirebaseSignOutCleanup();
+                  btn.disabled = false;
+                  btn.textContent = 'Yönetim Paneline Gir';
+                  return;
+                }
+                runAdminAllowlistGate(result);
                 return;
               }
-              showError(firebaseErrorMessage(bridge && bridge.reason));
-              btn.disabled = false;
-              btn.textContent = 'Yönetim Paneline Gir';
+              // Legacy path (gate OFF) — bit-identical with alpha.19+.
+              bridgeAndRedirect(result);
               return;
             }
             // enabled:true, ok:false → Firebase reachable but signIn failed.
@@ -434,8 +652,10 @@
       // İlk input'a fokus
       setTimeout(function () { userInput.focus(); }, 100);
 
-      // beta.3: reflect current trial state in the indicator badge.
+      // beta.3 + pre.4: reflect current trial / gate flag state in the
+      // indicator badges. Order matches the DOM order.
       updateFirebaseTrialIndicator();
+      updateAdminAllowlistGateIndicator();
     })();
   </script>
 </body>

@@ -7,6 +7,108 @@ detaylar için commit history referans alınır.
 
 ---
 
+## [v12.1.0-pre.4] — Opt-in Admin Allowlist Login Gate
+
+- **`admin/index.html` Firebase login trial akışına opt-in admin
+  allowlist gate eklendi.** Gate default kapalıdır; flag-off davranışı
+  alpha.19+ Firebase trial / devLogin zinciri **bit-identical**.
+- **Yeni opt-in flag (Firebase login trial flag pattern'iyle simetrik):**
+  - URL query: `?mvAdminAllowlistGate=1` veya `?mvAdminAllowlistGate=true`
+    (yalnız dev host: `localhost` / `127.0.0.1` / `0.0.0.0` / `file:`).
+  - sessionStorage key: `mv_admin_allowlist_gate_trial = '1'` —
+    `?mvAdminAllowlistGate=1` ile yazılır; `?mvAdminAllowlistGate=0` /
+    `=false` ile silinir.
+  - Explicit global: `window.MV_ADMIN_ALLOWLIST_GATE === true`
+    (her host'ta çalışır, bilinçli production override).
+  - Production hostta query param fully no-op (no read, no write).
+- **Yeni helper'lar (`admin/index.html` IIFE içinde):**
+  - `getAdminAllowlistGateParam()`
+  - `persistAdminAllowlistGateIfRequested()`
+  - `isAdminAllowlistGatePersisted()`
+  - `isAdminAllowlistGateEnabled()` (üç kanal OR'ı)
+  - `hasAdminAllowlistGateWrapper()` (probeAdminAccess presence check)
+  - `allowlistGateMessage(verdict)` (reason → Türkçe friendly text)
+  - `tryFirebaseSignOutCleanup()` (best-effort, debug-only fail)
+  - `bridgeAndRedirect(result)` (legacy bridge + redirect, refactored
+    out of `runFirebaseLogin`)
+  - `runAdminAllowlistGate(result)` (probe → branch)
+  - `updateAdminAllowlistGateIndicator()` (badge toggle)
+- **Akış (gate ON + Firebase login trial ON):**
+  - `signIn` ok:true → `probeAdminAccess()` →
+    - `allowed:true` → `bridgeAndRedirect(result)` (mevcut zincir).
+    - aksi durumda → friendly Türkçe error + best-effort
+      Firebase signOut cleanup + **mv_admin_session yazılmaz** +
+      **dashboard redirect yapılmaz** + **devLogin fallback yok**.
+- **Deny mesajları (`allowlistGateMessage()`):**
+  - `admin-doc-missing` → "Bu Firebase kullanıcısı admin allowlist
+    içinde değil."
+  - `inactive-admin` → "Bu admin hesabı devre dışı bırakılmış."
+  - `invalid-role` → "Bu admin hesabının rol bilgisi geçersiz."
+  - `permission-denied` → "Admin yetki kontrolü için izin alınamadı."
+  - `firestore-not-ready` / `auth-not-ready` → "Admin yetki kontrolü
+    şu anda hazır değil."
+  - `no-current-user` → "Firebase oturumu doğrulanamadı."
+  - Diğer → "Admin yetki kontrolü başarısız oldu."
+  - probeAdminAccess helper missing → "Admin yetki kontrolü için
+    altyapı eksik." (fail closed).
+- **HTML rozeti.** `#adminAllowlistGateIndicator` — yeşil accent,
+  default `display:none`, `updateAdminAllowlistGateIndicator()` ile
+  toggle. Yeni CSS class eklenmedi (mevcut `.admin-auth-badge` shape +
+  inline yeşil renk). Sadece operatör görünürlüğüdür; submit handler
+  kararını bağımsız verir.
+- **`mv_admin_session` payload bit-identical.** `bridgeAndRedirect()`
+  → `createSessionFromResult` → `{authed, username, email, uid,
+  loginAt, provider:'firebase-auth'}`. Role alanı payload'a **bu
+  fazda eklenmedi**; bilinçli karar — `requireAdmin` rolü
+  değerlendirmiyor.
+- **Etkilenmeyen surface'ler (bit-identical):**
+  - `MV.auth.devLogin` (gate flag'i bu yolu görmez).
+  - `MV.auth.requireAdmin`, `isAuthed`, `logout`, `getUser`.
+  - `admin/dashboard.html` logout butonu (beta.1 trial zinciri).
+  - `admin/dashboard.html` requireAdmin gate.
+  - `MV.auth.firebase.{signIn, signOut, currentUser, onChange,
+    createSessionFromResult, clearSessionAfterSignOut,
+    probeAdminAccess}` wrapper davranışı.
+  - `MV_ENFORCE_FIREBASE_AUTH` flag scaffold (default OFF).
+  - Trial flag persistence (Firebase trial flag bağımsız).
+  - Firebase trial status indicator.
+- **Firestore write/CRUD yok.**
+  - `setDoc` / `updateDoc` / `deleteDoc` / `addDoc` / `writeBatch` /
+    `runTransaction` çağrısı 0.
+  - Tek read deseni hâlâ `probeAdminAccess()` body'sinde
+    `collection('admins').doc(uid).get()`; pre.3'tekiyle aynı.
+- **Yalnız runtime dosya: `admin/index.html`.** `shared/js/auth.js`,
+  `shared/config/firebase.js`, `firestore.rules`,
+  `admin/dashboard.html`, `admin/announcements.html`,
+  `admin/events.html`, `admin/apps.html`, `admin/logs.html`,
+  `admin/borc/index.html`, `borc.html`, `index.html` **dokunulmadı**.
+- **Dokümantasyon güncellendi.**
+  - `docs/firebase-admin-authorization.md`: yeni §9.8 "Opt-in Login
+    Gate" (akış, deny mesajları, signOut cleanup, session payload
+    bit-identical garantisi, etkilenmeyen surface'ler, DevTools
+    doğrulama) + sürüm notu pre.4.
+  - `docs/firebase-rules-test-plan.md`: yeni §1.3 "`admin/index.html`
+    opt-in allowlist gate senaryoları" (G-01 … G-17) + sürüm notu
+    pre.4.
+  - `docs/v12-readiness.md`: Auth Wrapper Layer Status'a 3 yeni
+    bullet (opt-in login gate available; default enforcement
+    pending; onChange watchdog pending) + sürüm notu pre.4.
+  - `docs/firebase-local-setup.md`: yeni "Opt-in admin allowlist
+    login gate örneği" alt bölümü (aktivasyon URL'i + kapatma +
+    production no-op + gerekli Firestore durumu + DevTools
+    doğrulama) + Capability Matrix 2 yeni satır + Phase Log pre.3
+    hash doğrulaması + pre.4 satırı + sürüm notu pre.4.
+  - `docs/README.md`: Firebase Admin Authorization Contract
+    entry'sine pre.4 §9.8 referansı.
+- **Borç paneli ve public site etkilenmedi.**
+  `admin/borc/index.html`, `borc.html`, `index.html` dokunulmadı.
+- **Gerçek credential / UID / email kontrolü.**
+  Yeni içerikte gerçek apiKey / projectId / appId / admin UID /
+  e-posta yok. Tüm örnekler placeholder (`admin@example.com`,
+  `PLACEHOLDER_PASSWORD`).
+
+---
+
 ## [v12.1.0-pre.3] — Guarded Admin Allowlist Runtime Probe
 
 - **`MV.auth.firebase.probeAdminAccess()` manual helper eklendi.**
