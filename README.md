@@ -1,29 +1,53 @@
 # metavis1on
 
-metavis1on; Discord topluluğu, dijital kültür, mini uygulamalar ve yönetim
-panellerini bir araya getiren modern bir topluluk portalıdır.
+Sessiz, seçici ve güçlü bir dijital alan.
 
-## Current Structure
+Tek sayfa Discord giriş sitesi. Kalabalık değil, çizgi önemli.
 
-- Public portal: `index.html`
-- Admin entry: `admin/`
-- Admin dashboard: `admin/dashboard.html`
-- Read-only admin modules:
-  - `admin/announcements.html`
-  - `admin/events.html`
-  - `admin/apps.html`
-  - `admin/logs.html`
-- Sensitive admin module:
-  - `admin/borc/`
-- Documentation:
-  - [`docs/firebase-transition-plan.md`](docs/firebase-transition-plan.md)
-  - [`docs/README.md`](docs/README.md)
-  - [`CHANGELOG.md`](CHANGELOG.md)
+## Yapı
 
-## Notes
+```
+index.html           Ana sayfa (tek sayfa)
+css/style.css        Stil dosyası (5 tema)
+js/main.js           Tema, menü, animasyon
+assets/              Logo dosyaları
+```
 
-- Firebase integration is **not active yet**.
-- Firebase migration is documented under
-  [`docs/firebase-transition-plan.md`](docs/firebase-transition-plan.md).
-- The debt panel (`admin/borc/`) is treated as a sensitive module and should
-  not be refactored without a separate migration/audit plan.
+## Logo Dosyaları
+
+| Dosya | Açıklama | Kullanım |
+|-------|----------|----------|
+| `logo_yazisiz.png` | Sadece sembol | Header, hero, favicon, küçük ikon |
+| `logo_altyazi.png` | Sembol + alt yazı | OG card, büyük vitrin |
+| `logo_sagyazi.png` | Sembol + sağ yazı | Footer, yatay marka alanları |
+
+Logo dosyalarını değiştirme, silme veya yeniden adlandırma.
+
+## Temalar
+
+5 tema seçeneği mevcut. Seçim localStorage'da saklanır.
+
+- **Karanlık** — varsayılan, koyu grafit + soğuk mavi
+- **Aydınlık** — beyaz/gri + lacivert
+- **Mor** — koyu mor + mor vurgular
+- **Mavi** — lacivert + mavi vurgular
+- **Kızıl** — koyu siyah + kırmızı/amber vurgular
+
+## Discord
+
+Discord davet linki:
+
+```
+https://discord.gg/tktMR9fKYW
+```
+
+`index.html` dosyasında 4 yerde kullanılır (hero butonu, Discord paneli, header butonu, footer).
+
+## Korunan Dosyalar
+
+Bu dosyalara dokunulmadı ve ileride ayrı ele alınacak:
+
+- `tetris.html`
+- `game.html`
+- `admin/borc/index.html`
+- `borc.html`

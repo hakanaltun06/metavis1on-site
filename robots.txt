@@ -1,12 +1,10 @@
-# metavis1on — robots.txt
-# Ana site indekslenebilir; yönetim, borç paneli, arşiv ve dahili önizleme
-# sayfaları arama motorlarına kapalı.
-
 User-agent: *
 Allow: /
 Disallow: /admin/
-Disallow: /admin/borc/
-Disallow: /archive/
-Disallow: /components-preview.html
+Disallow: /borc.html
+Disallow: /tetris.html
+Disallow: /game.html
+Disallow: /pages/
+Disallow: /shared/
 
 Sitemap: https://metavis1on.com/sitemap.xml

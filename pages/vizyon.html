@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vizyon — SENTINEL</title>
+  <meta name="description" content="SENTINEL’in nereye baktığı: az ama iyi." />
+  <meta name="theme-color" content="#050709" />
+
+  <link rel="icon" type="image/png" href="../assets/logo2.png" />
+  <link rel="apple-touch-icon" href="../assets/logo2.png" />
+
+  <script>
+    (function () {
+      try {
+        var s = localStorage.getItem('sentinel:theme');
+        var t = (s === 'light' || s === 'dark')
+          ? s
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+  <div class="bg-layer bg-glow" aria-hidden="true"></div>
+  <div class="bg-layer bg-grid" aria-hidden="true"></div>
+  <div class="bg-layer bg-scan" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container">
+      <nav class="nav" aria-label="Ana menü">
+        <a href="../index.html" class="brand" aria-label="SENTINEL — ana sayfa">
+          <span class="brand-symbol" aria-hidden="true"><img src="../assets/logo2.png" alt="" /></span>
+          <span class="brand-name">SENTINEL</span>
+        </a>
+
+        <ul class="nav-links" role="list">
+          <li><a href="../index.html">Ana Sayfa</a></li>
+          <li><a href="oyunlar.html">Oyunlar</a></li>
+          <li><a href="hakkimizda.html">Hakkımızda</a></li>
+          <li><a href="vizyon.html" class="is-active">Vizyon</a></li>
+          <li><a href="iletisim.html">İletişim</a></li>
+          <li><a href="oyunlar.html" class="nav-cta">Oyna</a></li>
+        </ul>
+
+        <div class="nav-right">
+          <button class="theme-toggle" type="button" aria-label="Açık temaya geç" aria-pressed="false">
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+            </svg>
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+            </svg>
+          </button>
+          <button class="nav-toggle" aria-label="Menü" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow eyebrow-center">Vizyon</span>
+        <h1>Az ama iyi.</h1>
+        <p>Büyük katalog değil. Akılda kalan birkaç başlık ve sade bir alan.</p>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="container">
+        <div class="prose reveal">
+
+          <blockquote>Bir oyun varsa kolay açılmalı, rahat oynanmalı.</blockquote>
+
+          <h2>Seçicilik</h2>
+          <p>
+            Listeyi şişirmek kolay. Zor olan, içindeki her başlığın arkasında durabilmek.
+            SENTINEL bu yüzden az başlık tutar. Hazır olanı ekler; hazır olmayanı bekler.
+          </p>
+
+          <h2>Hız</h2>
+          <p>
+            Yavaş açılan, karışık, yorucu sayfalar yok. Tarayıcıdan açılır, direkt oynanır.
+            Aradan çıkacak ne varsa çıkarıldı.
+          </p>
+
+          <h2>Sessizlik</h2>
+          <p>
+            Arayüz dikkati çalmaz; dikkati oyuna bırakır. Koyu tema, açık tema,
+            ölçülü hareket. Fazlasını eklemek kolay; ölçülü kalmak iş.
+          </p>
+
+          <h2>Süreklilik</h2>
+          <p>
+            Burası bir oyun sitesi değil; bir oyun alanı. Marka, tipografi, renk, hareket —
+            hepsi aynı dilden konuşur. Yıllar içinde yapı büyür; ton aynı kalır.
+          </p>
+
+          <blockquote>
+            SENTINEL, tarayıcıda oynanabilen oyunları tek yerde toplamak için
+            kurulan, seçici ve sade bir alandır.
+          </blockquote>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col footer-brand">
+          <a href="../index.html" class="brand" aria-label="SENTINEL">
+            <span class="brand-symbol" aria-hidden="true"><img src="../assets/logo2.png" alt="" /></span>
+            <span class="brand-name">SENTINEL</span>
+          </a>
+          <p>Tarayıcıda oynanabilen oyunlar için sade bir alan. Az başlık, sağlam yapı.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Sayfalar</h4>
+          <ul>
+            <li><a href="../index.html" class="footer-link">Ana Sayfa</a></li>
+            <li><a href="oyunlar.html" class="footer-link">Oyunlar</a></li>
+            <li><a href="hakkimizda.html" class="footer-link">Hakkımızda</a></li>
+            <li><a href="vizyon.html" class="footer-link">Vizyon</a></li>
+            <li><a href="iletisim.html" class="footer-link">İletişim</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Oyunlar</h4>
+          <ul>
+            <li><a href="../tetris.html" class="footer-link">TETRIS</a></li>
+            <li><a href="../game.html" class="footer-link">GRID</a></li>
+            <li><a href="oyunlar.html" class="footer-link">Tüm liste</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Not</h4>
+          <ul>
+            <li><a href="mailto:iletisim@example.com" class="footer-link">iletisim@example.com</a></li>
+            <li><a href="iletisim.html" class="footer-link">Oyun önerisi</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; <span data-year>2026</span> SENTINEL</span>
+        <span class="footer-domain-note">geçici alan: metavis1on.com</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js" defer></script>
+</body>
+</html>

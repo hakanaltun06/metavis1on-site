@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>İletişim — SENTINEL</title>
+  <meta name="description" content="Oyun önerisi, hata bildirimi, geri bildirim için kısa yol." />
+  <meta name="theme-color" content="#050709" />
+
+  <link rel="icon" type="image/png" href="../assets/logo2.png" />
+  <link rel="apple-touch-icon" href="../assets/logo2.png" />
+
+  <script>
+    (function () {
+      try {
+        var s = localStorage.getItem('sentinel:theme');
+        var t = (s === 'light' || s === 'dark')
+          ? s
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+  <div class="bg-layer bg-glow" aria-hidden="true"></div>
+  <div class="bg-layer bg-grid" aria-hidden="true"></div>
+  <div class="bg-layer bg-scan" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="container">
+      <nav class="nav" aria-label="Ana menü">
+        <a href="../index.html" class="brand" aria-label="SENTINEL — ana sayfa">
+          <span class="brand-symbol" aria-hidden="true"><img src="../assets/logo2.png" alt="" /></span>
+          <span class="brand-name">SENTINEL</span>
+        </a>
+
+        <ul class="nav-links" role="list">
+          <li><a href="../index.html">Ana Sayfa</a></li>
+          <li><a href="oyunlar.html">Oyunlar</a></li>
+          <li><a href="hakkimizda.html">Hakkımızda</a></li>
+          <li><a href="vizyon.html">Vizyon</a></li>
+          <li><a href="iletisim.html" class="is-active">İletişim</a></li>
+          <li><a href="oyunlar.html" class="nav-cta">Oyna</a></li>
+        </ul>
+
+        <div class="nav-right">
+          <button class="theme-toggle" type="button" aria-label="Açık temaya geç" aria-pressed="false">
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>
+            </svg>
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+            </svg>
+          </button>
+          <button class="nav-toggle" aria-label="Menü" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow eyebrow-center">İletişim</span>
+        <h1>Kısa ve net.</h1>
+        <p>Oyun önerisi, hata bildirimi, geri bildirim ya da kısa bir selam. Hepsi okunur.</p>
+      </div>
+    </section>
+
+    <section class="section-sm">
+      <div class="container">
+        <div class="contact-block reveal">
+          <h2>Doğrudan ulaş</h2>
+          <p>Form yok. Aracı yok. Tek adımda yazışmaya başla.</p>
+          <a href="mailto:iletisim@example.com" class="contact-mail">iletisim@example.com</a>
+        </div>
+
+        <div class="prose reveal" style="margin-top: 56px;">
+          <h2>Ne yazabilirsin?</h2>
+          <ul class="value-list">
+            <li><span><strong>Oyun önerisi.</strong> Listede görmek istediğin bir başlık.</span></li>
+            <li><span><strong>Hata bildirimi.</strong> Sayfada bozuk gördüğün bir şey.</span></li>
+            <li><span><strong>Geri bildirim.</strong> İyi giden ya da iyi gitmeyen.</span></li>
+            <li><span><strong>İş birliği.</strong> Kendi yaptığın bir oyunu paylaşmak.</span></li>
+          </ul>
+          <p style="text-align: center; color: var(--text-muted); font-size: 14px; margin-top: 32px;">
+            Dönüş süresi genellikle birkaç gün. Sabırlı yaklaşımlar için teşekkürler.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col footer-brand">
+          <a href="../index.html" class="brand" aria-label="SENTINEL">
+            <span class="brand-symbol" aria-hidden="true"><img src="../assets/logo2.png" alt="" /></span>
+            <span class="brand-name">SENTINEL</span>
+          </a>
+          <p>Tarayıcıda oynanabilen oyunlar için sade bir alan. Az başlık, sağlam yapı.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Sayfalar</h4>
+          <ul>
+            <li><a href="../index.html" class="footer-link">Ana Sayfa</a></li>
+            <li><a href="oyunlar.html" class="footer-link">Oyunlar</a></li>
+            <li><a href="hakkimizda.html" class="footer-link">Hakkımızda</a></li>
+            <li><a href="vizyon.html" class="footer-link">Vizyon</a></li>
+            <li><a href="iletisim.html" class="footer-link">İletişim</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Oyunlar</h4>
+          <ul>
+            <li><a href="../tetris.html" class="footer-link">TETRIS</a></li>
+            <li><a href="../game.html" class="footer-link">GRID</a></li>
+            <li><a href="oyunlar.html" class="footer-link">Tüm liste</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Not</h4>
+          <ul>
+            <li><a href="mailto:iletisim@example.com" class="footer-link">iletisim@example.com</a></li>
+            <li><a href="iletisim.html" class="footer-link">Oyun önerisi</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; <span data-year>2026</span> SENTINEL</span>
+        <span class="footer-domain-note">geçici alan: metavis1on.com</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js" defer></script>
+</body>
+</html>

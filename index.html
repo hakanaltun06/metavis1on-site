@@ -1,762 +1,239 @@
 <!DOCTYPE html>
-<html lang="tr" data-mv-theme="obsidian-cyan">
+<html lang="tr" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>metavis1on | Topluluk Portalı</title>
-  <meta name="description" content="metavis1on resmi topluluk portalı. Etkinlikler, mini uygulamalar ve özenle planlanan içeriklerle büyüyen, kalite ve saygıya dayalı dijital topluluk.">
-  <meta name="theme-color" content="#030407">
-  <meta name="robots" content="index,follow">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>metavis1on</title>
+  <meta name="description" content="metavis1on — sessiz, seçici ve güçlü bir dijital alan." />
+  <meta name="theme-color" content="#060810" />
+  <meta name="robots" content="index,follow" />
 
-  <link rel="canonical" href="https://metavis1on.com/">
+  <link rel="icon" type="image/png" href="assets/logo_yazisiz.png" />
+  <link rel="apple-touch-icon" href="assets/logo_yazisiz.png" />
+  <link rel="manifest" href="site.webmanifest" />
 
-  <!-- Favicon zinciri -->
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png">
-  <link rel="manifest" href="site.webmanifest">
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="metavis1on" />
+  <meta property="og:description" content="Sessiz, seçici ve güçlü bir dijital alan." />
+  <meta property="og:image" content="assets/logo_altyazi.png" />
+  <meta property="og:locale" content="tr_TR" />
 
-  <!-- Open Graph -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="metavis1on">
-  <meta property="og:title" content="metavis1on | Topluluk Portalı">
-  <meta property="og:description" content="Etkinlikler, mini uygulamalar ve özenle planlanan içeriklerle büyüyen, kalite ve saygıya dayalı resmi topluluk portalı.">
-  <meta property="og:url" content="https://metavis1on.com/">
-  <meta property="og:image" content="https://metavis1on.com/assets/og-card.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:locale" content="tr_TR">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="metavis1on | Topluluk Portalı">
-  <meta name="twitter:description" content="Etkinlikler, mini uygulamalar ve özenle planlanan içeriklerle büyüyen, kalite ve saygıya dayalı resmi topluluk portalı.">
-  <meta name="twitter:image" content="https://metavis1on.com/assets/og-card.png">
-
-  <!-- Effects gate: reveal animasyonları yalnızca IO destekleniyorsa ve
-       prefers-reduced-motion: reduce yoksa devreye girer. JS yüklenmezse
-       .mv-effects class'ı eklenmez; içerik default olarak görünür kalır. -->
   <script>
     (function () {
       try {
-        var canAnimate = ('IntersectionObserver' in window)
-          && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-        if (canAnimate) document.documentElement.classList.add('mv-effects');
-      } catch (e) { /* yut */ }
+        var t = localStorage.getItem('mv:theme');
+        if (t && ['dark','light','purple','blue','red'].indexOf(t) > -1) {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      } catch (e) {}
     })();
   </script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="shared/css/tokens.css">
-  <link rel="stylesheet" href="shared/css/reset.css">
-  <link rel="stylesheet" href="shared/css/themes.css">
-  <link rel="stylesheet" href="shared/css/components.css">
-  <link rel="stylesheet" href="shared/css/layout.css">
-  <link rel="stylesheet" href="shared/css/effects.css">
-
-  <style>
-    /* ============================================================
-       index.html — sayfaya özel ufak ayarlar
-       Tüm yapı shared/css üzerinden; aşağıdaki kurallar sadece
-       bu sayfanın kendi nav/footer/preview-strip yerleşimini ayarlar.
-       ============================================================ */
-    body {
-      background:
-        radial-gradient(ellipse at top, rgba(14, 165, 233, 0.05), transparent 55%),
-        var(--mv-bg-deep);
-      color: var(--mv-text-soft);
-      font-family: var(--mv-font-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    main { flex: 1; }
-
-    /* ---------- Üst Bar ---------- */
-    .v11-nav {
-      position: sticky;
-      top: 0;
-      z-index: 60;
-      background: rgba(5, 5, 7, 0.78);
-      backdrop-filter: var(--mv-glass-blur);
-      -webkit-backdrop-filter: var(--mv-glass-blur);
-      border-bottom: 1px solid var(--mv-border);
-    }
-    .v11-nav__inner {
-      max-width: var(--mv-container-wide);
-      margin: 0 auto;
-      padding: 14px var(--mv-space-lg);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--mv-space-md);
-    }
-    .v11-nav__brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      color: var(--mv-text-main);
-    }
-    .v11-nav__brand img {
-      width: 32px; height: 32px;
-      object-fit: contain;
-    }
-    .v11-nav__brand-text {
-      font-family: var(--mv-font-display);
-      font-weight: 800;
-      font-size: 1.15rem;
-      letter-spacing: -0.3px;
-    }
-    .v11-nav__brand-tag {
-      font-size: 0.66rem;
-      letter-spacing: var(--mv-letter-wide);
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: var(--mv-radius-full);
-      background: rgba(14, 165, 233, 0.10);
-      color: var(--mv-theme-primary);
-      border: 1px solid rgba(14, 165, 233, 0.25);
-    }
-
-    .v11-nav__links {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-    }
-    .v11-nav__link {
-      padding: 8px 14px;
-      font-size: 0.92rem;
-      font-weight: 500;
-      color: var(--mv-text-soft);
-      text-decoration: none;
-      border-radius: var(--mv-radius-md);
-      transition: var(--mv-transition-fast);
-    }
-    .v11-nav__link:hover {
-      color: var(--mv-text-main);
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    .v11-nav__actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .v11-nav__theme {
-      display: flex;
-      gap: 4px;
-      padding: 4px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--mv-border);
-      border-radius: var(--mv-radius-full);
-    }
-    .v11-theme-btn {
-      width: 26px; height: 26px;
-      padding: 0;
-      border: none;
-      background: transparent;
-      border-radius: 50%;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--mv-transition-fast);
-      position: relative;
-    }
-    .v11-theme-btn::after {
-      content: '';
-      width: 12px; height: 12px;
-      border-radius: 50%;
-      box-shadow: 0 0 8px currentColor;
-    }
-    .v11-theme-btn[data-mv-set-theme="obsidian-cyan"]   { color: #0ea5e9; }
-    .v11-theme-btn[data-mv-set-theme="obsidian-gold"]   { color: #f59e0b; }
-    .v11-theme-btn[data-mv-set-theme="obsidian-purple"] { color: #a855f7; }
-    .v11-theme-btn::after { background: currentColor; }
-    .v11-theme-btn.is-active {
-      background: rgba(255, 255, 255, 0.06);
-      box-shadow: inset 0 0 0 1px var(--mv-border-strong);
-    }
-
-    .v11-nav__burger {
-      display: none;
-      width: 38px; height: 38px;
-      border: 1px solid var(--mv-border);
-      background: transparent;
-      color: var(--mv-text-soft);
-      border-radius: var(--mv-radius-md);
-      cursor: pointer;
-      font-size: 1.1rem;
-      align-items: center;
-      justify-content: center;
-    }
-    .v11-nav__burger[aria-expanded="true"] {
-      background: rgba(14, 165, 233, 0.10);
-      border-color: rgba(14, 165, 233, 0.35);
-      color: var(--mv-theme-primary);
-    }
-
-    /* ---------- Skip-to-content (a11y) ---------- */
-    .mv-skip-link {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      z-index: 200;
-      padding: 10px 14px;
-      background: var(--mv-theme-primary);
-      color: #000;
-      font-weight: 600;
-      font-size: 0.9rem;
-      border-radius: var(--mv-radius-md);
-      text-decoration: none;
-      transform: translateY(-160%);
-      transition: transform 160ms ease;
-    }
-    .mv-skip-link:focus,
-    .mv-skip-link:focus-visible {
-      transform: translateY(0);
-      outline: 2px solid var(--mv-text-main);
-      outline-offset: 2px;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .mv-skip-link { transition: none; }
-    }
-
-    /* ---------- Mobil Menü Panel ---------- */
-    .v11-mobile-menu {
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: min(320px, 86vw);
-      z-index: 80;
-      background: rgba(8, 9, 14, 0.96);
-      backdrop-filter: var(--mv-glass-blur);
-      -webkit-backdrop-filter: var(--mv-glass-blur);
-      border-left: 1px solid var(--mv-border);
-      padding: 80px var(--mv-space-lg) var(--mv-space-lg);
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      transform: translateX(100%);
-      transition: transform 220ms ease;
-      visibility: hidden;
-      overflow-y: auto;
-    }
-    .v11-mobile-menu.is-open {
-      transform: translateX(0);
-      visibility: visible;
-    }
-    .v11-mobile-menu__link {
-      padding: 12px 14px;
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--mv-text-soft);
-      text-decoration: none;
-      border-radius: var(--mv-radius-md);
-      border: 1px solid transparent;
-      transition: var(--mv-transition-fast);
-    }
-    .v11-mobile-menu__link:hover,
-    .v11-mobile-menu__link:focus-visible {
-      color: var(--mv-text-main);
-      background: rgba(255, 255, 255, 0.04);
-      border-color: var(--mv-border);
-    }
-    .v11-mobile-menu__cta {
-      margin-top: var(--mv-space-md);
-    }
-    .v11-mobile-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 70;
-      background: rgba(0, 0, 0, 0.55);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 200ms ease;
-    }
-    .v11-mobile-backdrop.is-open {
-      opacity: 1;
-      visibility: visible;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .v11-mobile-menu,
-      .v11-mobile-backdrop { transition: none; }
-    }
-    @media (min-width: 861px) {
-      .v11-mobile-menu,
-      .v11-mobile-backdrop { display: none !important; }
-    }
-
-    /* Mobil menü açıkken arka sayfa scroll'u kilitlensin (yalnız mobile). */
-    @media (max-width: 860px) {
-      body.mv-nav-open { overflow: hidden; }
-    }
-
-    /* ---------- Preview Strip (geçici durum şeridi) ---------- */
-    .v11-preview-strip {
-      max-width: var(--mv-container-wide);
-      margin: var(--mv-space-md) auto 0;
-      padding: 8px var(--mv-space-lg);
-      display: flex;
-      gap: var(--mv-space-sm);
-      align-items: center;
-      flex-wrap: wrap;
-      font-size: 0.82rem;
-      color: var(--mv-text-muted);
-    }
-    .v11-preview-strip strong { color: var(--mv-text-soft); }
-
-    /* ---------- Konteyner sarmalayıcılar ---------- */
-    .v11-shell {
-      max-width: var(--mv-container-wide);
-      margin: 0 auto;
-      padding: 0 var(--mv-space-lg);
-    }
-
-    /* ---------- App preview placeholder ---------- */
-    .v11-apps-placeholder {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: var(--mv-space-lg);
-      min-height: 240px;
-    }
-    .v11-apps-placeholder:empty::before {
-      content: 'Uygulama listesi yükleniyor…';
-      grid-column: 1 / -1;
-      align-self: center;
-      justify-self: center;
-      color: var(--mv-text-dim);
-      font-size: 0.92rem;
-    }
-    .v11-apps-footer {
-      margin-top: var(--mv-space-xl);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--mv-space-md);
-      flex-wrap: wrap;
-    }
-
-    /* ---------- Duyuru şeridi başlığı ---------- */
-    .v11-strip-head {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: var(--mv-space-md);
-      margin-bottom: var(--mv-space-md);
-      flex-wrap: wrap;
-    }
-    .v11-strip-eyebrow {
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: var(--mv-letter-wide);
-      text-transform: uppercase;
-      color: var(--mv-theme-primary);
-      margin-bottom: 4px;
-    }
-    .v11-strip-title {
-      font-family: var(--mv-font-display);
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: var(--mv-letter-tight);
-      color: var(--mv-text-main);
-      margin: 0;
-    }
-    .v11-strip-hint {
-      font-size: 0.82rem;
-      font-family: var(--mv-font-mono);
-    }
-    @media (max-width: 540px) {
-      .v11-strip-hint { display: none; }
-    }
-
-    /* ---------- Etkinlik listesi placeholder ---------- */
-    .v11-events-empty {
-      padding: var(--mv-space-lg);
-      text-align: center;
-      color: var(--mv-text-muted);
-    }
-
-    /* ---------- Mobile ---------- */
-    @media (max-width: 860px) {
-      .v11-nav__links { display: none; }
-      .v11-nav__burger { display: inline-flex; }
-    }
-    @media (max-width: 540px) {
-      .v11-nav__brand-tag { display: none; }
-    }
-  </style>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-
 <body>
 
-  <!-- Skip-to-content (klavye kullanıcıları için) -->
-  <a class="mv-skip-link" href="#mainContent">İçeriğe atla</a>
+  <div class="bg-layer bg-glow" aria-hidden="true"></div>
+  <div class="bg-layer bg-grid" aria-hidden="true"></div>
+  <div class="bg-layer bg-scan" aria-hidden="true"></div>
+  <div class="bg-watermark" aria-hidden="true">
+    <img src="assets/logo_yazisiz.png" alt="" />
+  </div>
 
-  <!-- ============================================================
-       NAV — sticky üst bar
-       ============================================================ -->
-  <header class="v11-nav" role="banner">
-    <div class="v11-nav__inner">
-      <a class="v11-nav__brand" href="./" aria-label="metavis1on Ana Sayfa">
-        <img src="assets/logo-mark-64.png"
-             srcset="assets/logo-mark-64.png 1x, assets/logo-mark-128.png 2x"
-             alt="metavis1on" width="32" height="32" decoding="async"
-             onerror="this.style.display='none'">
-        <span class="v11-nav__brand-text">metavis1on</span>
-        <span class="v11-nav__brand-tag">v11 · Portal</span>
-      </a>
-
-      <nav class="v11-nav__links" aria-label="Ana navigasyon">
-        <a class="v11-nav__link" href="#ekosistem">Ekosistem</a>
-        <a class="v11-nav__link" href="#projeler">Projeler</a>
-        <a class="v11-nav__link" href="#etkinlikler">Etkinlikler</a>
-        <a class="v11-nav__link" href="public/projeler.html">Vitrin</a>
-      </nav>
-
-      <div class="v11-nav__actions">
-        <div class="v11-nav__theme" role="group" aria-label="Tema seçici">
-          <button class="v11-theme-btn is-active" data-mv-set-theme="obsidian-cyan"   type="button" aria-label="Elektrik Mavisi teması" aria-pressed="true"></button>
-          <button class="v11-theme-btn"           data-mv-set-theme="obsidian-gold"   type="button" aria-label="Obsidyen Altın teması"   aria-pressed="false"></button>
-          <button class="v11-theme-btn"           data-mv-set-theme="obsidian-purple" type="button" aria-label="Neon Mor teması"        aria-pressed="false"></button>
-        </div>
-
-        <a id="discordCta" class="mv-btn mv-btn--primary mv-btn--sm" href="#" rel="noopener noreferrer" target="_blank">
-          Discord'a Katıl
+  <header class="site-header">
+    <div class="container">
+      <nav class="nav" aria-label="Ana menü">
+        <a href="index.html" class="brand" aria-label="metavis1on — ana sayfa">
+          <img src="assets/logo_yazisiz.png" alt="" class="brand-logo" />
+          <span class="brand-name">metavis1on</span>
         </a>
 
-        <button id="navBurger" class="v11-nav__burger" type="button"
-                aria-label="Menüyü aç"
-                aria-expanded="false"
-                aria-controls="mobileMenu"
-                aria-haspopup="true">≡</button>
-      </div>
+        <ul class="nav-links" role="list">
+          <li><a href="#giris">Giriş</a></li>
+          <li><a href="#hakkinda">Hakkında</a></li>
+          <li><a href="#kurallar">Kurallar</a></li>
+          <li><a href="#baglanti">Bağlantı</a></li>
+        </ul>
+
+        <div class="nav-right">
+          <div class="theme-picker">
+            <button class="theme-picker-btn" type="button" aria-label="Tema seç" aria-expanded="false">
+              <span class="theme-picker-dot"></span>
+            </button>
+            <div class="theme-picker-panel" aria-label="Tema seçenekleri">
+              <button class="theme-option" data-set-theme="dark" type="button">
+                <span class="theme-option-dot" style="--dot-color:#0f1219;--dot-border:#5b7cff"></span>
+                <span>Karanlık</span>
+              </button>
+              <button class="theme-option" data-set-theme="light" type="button">
+                <span class="theme-option-dot" style="--dot-color:#eef0f5;--dot-border:#2240b8"></span>
+                <span>Aydınlık</span>
+              </button>
+              <button class="theme-option" data-set-theme="purple" type="button">
+                <span class="theme-option-dot" style="--dot-color:#150e24;--dot-border:#9333ea"></span>
+                <span>Mor</span>
+              </button>
+              <button class="theme-option" data-set-theme="blue" type="button">
+                <span class="theme-option-dot" style="--dot-color:#0d1628;--dot-border:#2563eb"></span>
+                <span>Mavi</span>
+              </button>
+              <button class="theme-option" data-set-theme="red" type="button">
+                <span class="theme-option-dot" style="--dot-color:#1a100e;--dot-border:#dc2626"></span>
+                <span>Kızıl</span>
+              </button>
+            </div>
+          </div>
+
+          <a href="https://discord.gg/tktMR9fKYW" class="btn btn-discord nav-discord-btn">
+            <svg class="discord-svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true">
+              <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09c-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33c-.01 0-.02.01-.03.02c-2.72 4.07-3.47 8.03-3.1 11.95c0 .02.01.04.03.05c1.8 1.32 3.53 2.12 5.24 2.65c.03.01.06 0 .07-.02c.4-.55.76-1.13 1.07-1.74c.02-.04 0-.08-.04-.09c-.57-.22-1.11-.48-1.64-.78c-.04-.02-.04-.08-.01-.11c.11-.08.22-.17.33-.25c.02-.02.05-.02.07-.01c3.44 1.57 7.15 1.57 10.55 0c.02-.01.05-.01.07.01c.11.09.22.17.33.26c.04.03.04.09-.01.11c-.52.31-1.07.56-1.64.78c-.04.01-.05.06-.04.09c.32.61.68 1.19 1.07 1.74c.03.01.06.02.09.01c1.72-.53 3.45-1.33 5.25-2.65c.02-.01.03-.03.03-.05c.44-4.53-.73-8.46-3.1-11.95c-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.83 2.12-1.89 2.12z"/>
+            </svg>
+            <span>Discord'a Gir</span>
+          </a>
+
+          <button class="nav-toggle" type="button" aria-label="Menü" aria-expanded="false">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </nav>
     </div>
   </header>
 
-  <!-- Mobil menü backdrop ve panel (desktop'ta CSS ile gizli) -->
-  <div id="mobileBackdrop" class="v11-mobile-backdrop" hidden></div>
-  <nav id="mobileMenu" class="v11-mobile-menu" aria-label="Mobil menü" aria-hidden="true">
-    <a class="v11-mobile-menu__link" href="#duyurular"   data-mv-mobile-link>Duyurular</a>
-    <a class="v11-mobile-menu__link" href="#ekosistem"   data-mv-mobile-link>Ekosistem</a>
-    <a class="v11-mobile-menu__link" href="#degerler"    data-mv-mobile-link>Değerler</a>
-    <a class="v11-mobile-menu__link" href="#vizyon"      data-mv-mobile-link>Vizyon</a>
-    <a class="v11-mobile-menu__link" href="#projeler"    data-mv-mobile-link>Projeler</a>
-    <a class="v11-mobile-menu__link" href="#etkinlikler" data-mv-mobile-link>Etkinlikler</a>
-    <a id="discordMobile" class="mv-btn mv-btn--primary v11-mobile-menu__cta" href="#"
-       rel="noopener noreferrer" target="_blank" data-mv-mobile-link>
-      Discord'a Katıl
-    </a>
-  </nav>
+  <main>
 
-  <main id="mainContent">
-
-    <!-- ============================================================
-         HERO
-         ============================================================ -->
-    <section class="mv-hero" id="hero" aria-labelledby="heroTitle">
-      <div class="mv-hero__bg" aria-hidden="true">
-        <div class="mv-hero__bg-orb mv-hero__bg-orb--primary"></div>
-        <div class="mv-hero__bg-orb mv-hero__bg-orb--accent"></div>
-        <div class="mv-hero__bg-grid"></div>
-      </div>
-
-      <div class="mv-hero__inner" data-mv-reveal>
-        <div class="mv-hero__eyebrow">Resmi Topluluk Portalı</div>
-        <h1 id="heroTitle" class="mv-hero__title">
-          Sadece bir Discord değil.<br>
-          <span class="mv-hero__title-grad">Bir topluluk portalı.</span>
-        </h1>
-        <p class="mv-hero__lead">
-          metavis1on; etkinlikler, mini uygulamalar ve özenle planlanmış içeriklerle
-          büyüyen, kalite ve saygıya dayalı bir dijital ekosistem.
-        </p>
-        <div class="mv-hero__actions">
-          <a id="discordHero" class="mv-btn mv-btn--primary mv-btn--lg" href="#" rel="noopener noreferrer" target="_blank">
-            Topluluğa Katıl
-          </a>
-          <a class="mv-btn mv-btn--ghost mv-btn--lg" href="#projeler">
-            Projeleri Gör
-          </a>
-        </div>
-
-        <div style="margin-top: var(--mv-space-xl); display: inline-flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
-          <span class="mv-status-pill mv-status-pill--online mv-status-pill--pulse">
-            <span class="mv-status-pill__dot"></span> Sistemler aktif
-          </span>
-          <span class="mv-status-pill mv-status-pill--info">
-            <span class="mv-status-pill__dot"></span> v11 portal sürümü
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         DUYURULAR — Hero sonrası kısa şerit
-         Kaynak: shared/config/site.js > MV_SITE.announcements
-         ============================================================ -->
-    <section class="mv-section mv-section--tight" id="duyurular" aria-labelledby="duyurularTitle" data-mv-reveal>
-      <div class="v11-shell">
-        <div class="v11-strip-head">
-          <div>
-            <div class="v11-strip-eyebrow">Akış</div>
-            <h2 id="duyurularTitle" class="v11-strip-title">Son duyurular</h2>
+    <!-- HERO -->
+    <section class="hero">
+      <span class="hero-glyph" aria-hidden="true">metavis1on</span>
+      <div class="container">
+        <div class="hero-inner reveal">
+          <div class="hero-emblem" aria-hidden="true">
+            <span class="emblem-corners"></span>
+            <div class="hero-logo"><img src="assets/logo_yazisiz.png" alt="" /></div>
           </div>
-          <span class="v11-strip-hint mv-text-muted">← Yatay kaydırın →</span>
-        </div>
 
-        <div id="announcementsStrip" class="mv-announcement-strip" aria-live="polite"></div>
+          <h1>metavis1on</h1>
+          <p class="hero-sub">Geliştirilme aşamasında.</p>
 
-        <noscript>
-          <p class="mv-text-muted" style="margin-top: var(--mv-space-md); font-size:0.88rem;">
-            Duyurular için JavaScript'i etkinleştirin.
-          </p>
-        </noscript>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         EKOSİSTEM — kısa özet
-         ============================================================ -->
-    <section class="mv-section mv-section--bordered" id="ekosistem" data-mv-reveal>
-      <div class="v11-shell">
-        <div class="mv-section-header">
-          <div class="mv-section-header__eyebrow">Portal Hakkında</div>
-          <h2 class="mv-section-header__title">Topluluk + projeler + içerik, tek çatı altında.</h2>
-          <p class="mv-section-header__lead">
-            metavis1on yalnızca bir sohbet alanı değil; ortak vizyona sahip bireyler için
-            tasarlanmış, modüler bir dijital platform.
-          </p>
-        </div>
-
-        <div class="mv-feature-grid">
-          <article class="mv-feature">
-            <div class="mv-feature__icon">⚡</div>
-            <div class="mv-feature__title">Aktif Topluluk</div>
-            <div class="mv-feature__desc">Düzenli sohbet, etkinlikler ve birlikte takip edilen içerikler.</div>
-          </article>
-          <article class="mv-feature">
-            <div class="mv-feature__icon mv-feature__icon--cool">🧩</div>
-            <div class="mv-feature__title">Mini Uygulamalar</div>
-            <div class="mv-feature__desc">Topluluğa özel hazırlanan oyunlar, deneyler ve araçlar.</div>
-          </article>
-          <article class="mv-feature">
-            <div class="mv-feature__icon mv-feature__icon--warm">📅</div>
-            <div class="mv-feature__title">Küratörlü Etkinlikler</div>
-            <div class="mv-feature__desc">Önceden planlanmış, içeriği netleştirilmiş düzenli buluşmalar.</div>
-          </article>
-          <article class="mv-feature">
-            <div class="mv-feature__icon">🛡️</div>
-            <div class="mv-feature__title">Sakin Düzen</div>
-            <div class="mv-feature__desc">Gürültüden uzak, saygıya dayalı, kontrollü bir iletişim ortamı.</div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         DEĞERLER — Topluluk değerleri (4 içerik bloğu)
-         ============================================================ -->
-    <section class="mv-section mv-section--surface" id="degerler" data-mv-reveal>
-      <div class="v11-shell">
-        <div class="mv-section-header">
-          <div class="mv-section-header__eyebrow">Felsefe</div>
-          <h2 class="mv-section-header__title">Topluluk değerleri.</h2>
-          <p class="mv-section-header__lead">
-            metavis1on yalnızca bir Discord davet sayfası değil; saygılı iletişim,
-            oyun, dijital kültür ve ortak üretim etrafında şekillenen bir topluluk portalıdır.
-          </p>
-        </div>
-
-        <div class="mv-grid mv-grid--2">
-          <div>
-            <div class="mv-content-block">
-              <div class="mv-content-block__eyebrow">01 · İletişim</div>
-              <h3 class="mv-content-block__title">Saygılı topluluk.</h3>
-              <div class="mv-content-block__body">
-                <p>
-                  Gereksiz kaos ve gürültü yerine daha düzenli, samimi ve kaliteli sohbet.
-                  Karşılıklı saygı temel kuraldır; geri kalan her şey bunun üzerine inşa edilir.
-                </p>
-              </div>
-            </div>
-            <div class="mv-content-block">
-              <div class="mv-content-block__eyebrow">02 · Kültür</div>
-              <h3 class="mv-content-block__title">Dijital kültür.</h3>
-              <div class="mv-content-block__body">
-                <p>
-                  Oyun, teknoloji, internet kültürü ve gündelik sosyal etkileşim.
-                  Tek bir konuya sıkışmayan, çeşitliliği koruyan bir paylaşım alanı.
-                </p>
-              </div>
-            </div>
+          <div class="hero-actions">
+            <a href="https://discord.gg/tktMR9fKYW" class="btn btn-primary">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true"><path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09c-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33c-.01 0-.02.01-.03.02c-2.72 4.07-3.47 8.03-3.1 11.95c0 .02.01.04.03.05c1.8 1.32 3.53 2.12 5.24 2.65c.03.01.06 0 .07-.02c.4-.55.76-1.13 1.07-1.74c.02-.04 0-.08-.04-.09c-.57-.22-1.11-.48-1.64-.78c-.04-.02-.04-.08-.01-.11c.11-.08.22-.17.33-.25c.02-.02.05-.02.07-.01c3.44 1.57 7.15 1.57 10.55 0c.02-.01.05-.01.07.01c.11.09.22.17.33.26c.04.03.04.09-.01.11c-.52.31-1.07.56-1.64.78c-.04.01-.05.06-.04.09c.32.61.68 1.19 1.07 1.74c.03.01.06.02.09.01c1.72-.53 3.45-1.33 5.25-2.65c.02-.01.03-.03.03-.05c.44-4.53-.73-8.46-3.1-11.95c-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.83 2.12-1.89 2.12z"/></svg>
+              <span>Discord'a Gir</span>
+            </a>
+            <a href="#hakkinda" class="btn btn-ghost">Kısaca Bak</a>
           </div>
-          <div>
-            <div class="mv-content-block">
-              <div class="mv-content-block__eyebrow">03 · Üretim</div>
-              <h3 class="mv-content-block__title">Mini projeler.</h3>
-              <div class="mv-content-block__body">
-                <p>
-                  Tetris, GRID ve Visiocial gibi küçük deneysel projeler portalın bir parçası.
-                  Topluluk hem oynar hem üretir; site bu üretimin vitrinidir.
-                </p>
-              </div>
-            </div>
-            <div class="mv-content-block">
-              <div class="mv-content-block__eyebrow">04 · Süreklilik</div>
-              <h3 class="mv-content-block__title">Gelişen portal.</h3>
-              <div class="mv-content-block__body">
-                <p>
-                  Site zamanla duyurular, etkinlikler, yeni uygulamalar ve yönetim modülleriyle büyür.
-                  Statik bir tanıtım sayfası değil; aktif bir portaldır.
-                </p>
-              </div>
-            </div>
+
+          <div class="hero-meta">
+            <span class="hero-meta-dot"></span>
+            <span>Yapım aşamasında</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================
-         VİZYON — tek paragraflık geçiş bloğu
-         ============================================================ -->
-    <section class="mv-section mv-section--tight" id="vizyon" data-mv-reveal>
-      <div class="v11-shell">
-        <div class="mv-section-header">
-          <div class="mv-section-header__eyebrow">Vizyon</div>
-          <h2 class="mv-section-header__title">metavis1on neye dönüşüyor?</h2>
-          <p class="mv-section-header__lead">
-            Discord topluluğunun resmi yüzü olmaktan çıkıp; küçük projeleri,
-            etkinlikleri, duyuruları ve topluluk araçlarını tek çatı altında toplayan
-            modern bir portala dönüşüyor. Tanıtım için değil, kullanım için tasarlanmış bir alan.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         PROJELER — apps showcase (v11.0.3'te dinamikleştirildi)
-         Kaynak: shared/config/site.js > MV_SITE.apps
-         ============================================================ -->
-    <section class="mv-section" id="projeler" data-mv-reveal>
-      <div class="v11-shell">
-        <div class="mv-section-header mv-section-header--left">
-          <div class="mv-section-header__eyebrow">Portal Modülleri</div>
-          <h2 class="mv-section-header__title">Uygulamalar ve mini projeler.</h2>
-          <p class="mv-section-header__lead">
-            metavis1on yalnızca bir topluluk değil; küçük web deneyleri, mini oyunlar
-            ve dahili yönetim araçları için de bir merkez. Her modül kendi başına bağımsız çalışır.
-          </p>
-        </div>
-
-        <!-- Kartlar runtime'da MV.apps.forProjectsPage()'den dolar.
-             JS kapalıysa altındaki noscript bloğu görünür. -->
-        <div class="v11-apps-placeholder" id="appsGrid" aria-live="polite"></div>
-
-        <noscript>
-          <div class="mv-card" style="margin-top: var(--mv-space-lg);">
-            <div class="mv-card__header">
-              <div class="mv-card__title">JavaScript devre dışı</div>
-            </div>
-            <div class="mv-card__desc">
-              Uygulama listesini görüntülemek için JavaScript'i etkinleştirin veya doğrudan
-              <a href="public/projeler.html" style="color:var(--mv-theme-primary);">vitrin sayfasına</a> gidin.
-            </div>
+    <!-- DISCORD PANELİ -->
+    <section class="section" id="giris">
+      <div class="container">
+        <div class="discord-panel reveal">
+          <div class="discord-watermark" aria-hidden="true">
+            <img src="assets/logo_yazisiz.png" alt="" />
           </div>
-        </noscript>
-
-        <div class="v11-apps-footer">
-          <p class="mv-text-muted" style="font-size: 0.92rem; margin: 0;">
-            Daha fazla proje ve deneysel sayfa yakında eklenecek.
-          </p>
-          <a class="mv-btn mv-btn--ghost" href="public/projeler.html">
-            Tüm Projeleri Gör →
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         ETKİNLİKLER — v11.0.5'te statik feed'e bağlandı
-         Kaynak: shared/config/site.js > MV_SITE.events
-         ============================================================ -->
-    <section class="mv-section mv-section--surface" id="etkinlikler" data-mv-reveal>
-      <div class="v11-shell">
-        <div class="mv-section-header mv-section-header--left">
-          <div class="mv-section-header__eyebrow">Yaklaşan</div>
-          <h2 class="mv-section-header__title">Etkinlikler ve buluşmalar.</h2>
-          <p class="mv-section-header__lead">
-            Düzenli sohbet geceleri, mini oyun akşamları ve portal geliştirme kontrolleri.
-            Yeni etkinlikler eklendikçe burada listelenir.
-          </p>
-        </div>
-
-        <div id="eventsList" aria-live="polite"></div>
-
-        <noscript>
-          <div class="mv-card" style="margin-top: var(--mv-space-lg);">
-            <div class="mv-card__header">
-              <div class="mv-card__title">JavaScript devre dışı</div>
+          <div class="discord-content">
+            <div class="discord-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28" aria-hidden="true"><path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09c-.01-.02-.04-.03-.07-.03c-1.5.26-2.93.71-4.27 1.33c-.01 0-.02.01-.03.02c-2.72 4.07-3.47 8.03-3.1 11.95c0 .02.01.04.03.05c1.8 1.32 3.53 2.12 5.24 2.65c.03.01.06 0 .07-.02c.4-.55.76-1.13 1.07-1.74c.02-.04 0-.08-.04-.09c-.57-.22-1.11-.48-1.64-.78c-.04-.02-.04-.08-.01-.11c.11-.08.22-.17.33-.25c.02-.02.05-.02.07-.01c3.44 1.57 7.15 1.57 10.55 0c.02-.01.05-.01.07.01c.11.09.22.17.33.26c.04.03.04.09-.01.11c-.52.31-1.07.56-1.64.78c-.04.01-.05.06-.04.09c.32.61.68 1.19 1.07 1.74c.03.01.06.02.09.01c1.72-.53 3.45-1.33 5.25-2.65c.02-.01.03-.03.03-.05c.44-4.53-.73-8.46-3.1-11.95c-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12s.84-2.12 1.89-2.12c1.06 0 1.9.96 1.89 2.12c0 1.17-.83 2.12-1.89 2.12z"/></svg>
             </div>
-            <div class="mv-card__desc">
-              Etkinlik listesi için JavaScript'i etkinleştirin.
-            </div>
-          </div>
-        </noscript>
-      </div>
-    </section>
-
-    <!-- ============================================================
-         KATIL — birinci sınıf CTA
-         ============================================================ -->
-    <section class="mv-section" id="katil" data-mv-reveal>
-      <div class="v11-shell">
-        <div class="mv-grid mv-grid--2">
-          <div class="mv-command-card mv-command-card--accent">
-            <div class="mv-command-card__head">
-              <div class="mv-command-card__icon">⌘</div>
-              <div>
-                <div class="mv-command-card__title">Topluluğa Katıl</div>
-                <div class="mv-command-card__sub">Discord davet bağlantısı</div>
-              </div>
-            </div>
-            <div class="mv-command-card__desc">
-              Canlı sohbet, etkinlikler ve sesli odalara erişim. Davet bağlantısı portal
-              üzerinden yönetilir.
-            </div>
-            <div class="mv-command-card__action">
-              <span class="mv-status-pill mv-status-pill--online mv-status-pill--pulse">
-                <span class="mv-status-pill__dot"></span> Davet aktif
+            <h2>Discord</h2>
+            <p>Geliştirilme aşamasında.</p>
+            <a href="https://discord.gg/tktMR9fKYW" class="btn btn-primary btn-lg">Discord'a Gir</a>
+            <div class="discord-meta">
+              <span class="discord-meta-item">
+                <span class="discord-meta-dot"></span>
+                Geliştirilme aşamasında
               </span>
-              <a id="discordCommand" class="mv-btn mv-btn--primary" href="#" rel="noopener noreferrer" target="_blank">
-                Discord'a Katıl →
-              </a>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
 
-          <div class="mv-command-card">
-            <div class="mv-command-card__head">
-              <div class="mv-command-card__icon">▢</div>
-              <div>
-                <div class="mv-command-card__title">Projeleri Keşfet</div>
-                <div class="mv-command-card__sub">Vitrin sayfası</div>
-              </div>
-            </div>
-            <div class="mv-command-card__desc">
-              Tetris, GRID, Visiocial ve topluluğa özel diğer mini uygulamaların tam listesi.
-            </div>
-            <div class="mv-command-card__action">
-              <span class="mv-text-muted" style="font-size:0.85rem;">Herkese açık</span>
-              <a class="mv-btn" href="public/projeler.html">
-                Vitrine Git →
-              </a>
-            </div>
+    <!-- KİMLİK -->
+    <section class="section" id="hakkinda">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow eyebrow-center">Kimlik</span>
+          <h2>Geliştirilme aşamasında.</h2>
+        </div>
+        <div class="identity-grid stagger">
+          <div class="identity-card reveal">
+            <h3>Geliştirilme aşamasında</h3>
+            <p>Bu alan henüz hazırlanıyor.</p>
+          </div>
+          <div class="identity-card reveal">
+            <h3>Geliştirilme aşamasında</h3>
+            <p>Bu alan henüz hazırlanıyor.</p>
+          </div>
+          <div class="identity-card reveal">
+            <h3>Geliştirilme aşamasında</h3>
+            <p>Bu alan henüz hazırlanıyor.</p>
+          </div>
+          <div class="identity-card reveal">
+            <h3>Geliştirilme aşamasında</h3>
+            <p>Bu alan henüz hazırlanıyor.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KURALLAR -->
+    <section class="section rules-section" id="kurallar">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow eyebrow-center">Kurallar</span>
+          <h2>Geliştirilme aşamasında.</h2>
+        </div>
+        <div class="rules-grid stagger">
+          <div class="rule-item reveal">
+            <span class="rule-num">01</span>
+            <p>Geliştirilme aşamasında.</p>
+          </div>
+          <div class="rule-item reveal">
+            <span class="rule-num">02</span>
+            <p>Geliştirilme aşamasında.</p>
+          </div>
+          <div class="rule-item reveal">
+            <span class="rule-num">03</span>
+            <p>Geliştirilme aşamasında.</p>
+          </div>
+          <div class="rule-item reveal">
+            <span class="rule-num">04</span>
+            <p>Geliştirilme aşamasında.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- YAKINDA -->
+    <section class="section" id="yakinda">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow eyebrow-center">Yakında</span>
+          <h2>Geliştirilme aşamasında.</h2>
+        </div>
+        <div class="soon-grid stagger">
+          <div class="soon-card reveal">
+            <span class="soon-dot"></span>
+            <p>Geliştirilme aşamasında.</p>
+          </div>
+          <div class="soon-card reveal">
+            <span class="soon-dot"></span>
+            <p>Geliştirilme aşamasında.</p>
+          </div>
+          <div class="soon-card reveal">
+            <span class="soon-dot"></span>
+            <p>Geliştirilme aşamasında.</p>
           </div>
         </div>
       </div>
@@ -764,380 +241,22 @@
 
   </main>
 
-  <!-- ============================================================
-       FOOTER
-       ============================================================ -->
-  <footer class="mv-footer" role="contentinfo">
-    <div class="mv-footer__inner">
-      <div class="mv-footer__top">
-        <div class="mv-footer__brand-block">
-          <div class="mv-footer__brand">
-            <img src="assets/logo-mark-64.png"
-                 srcset="assets/logo-mark-64.png 1x, assets/logo-mark-128.png 2x"
-                 alt="metavis1on" width="32" height="32" loading="lazy" decoding="async"
-                 onerror="this.style.display='none'">
-            <div class="mv-footer__brand-text">metavis1on</div>
+  <footer class="site-footer" id="baglanti">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <img src="assets/logo_sagyazi.png" alt="metavis1on" class="footer-logo" />
           </div>
-          <p class="mv-footer__tagline">
-            Kalite ve saygıya dayalı dijital topluluk portalı.
-          </p>
-          <div style="margin-top:8px;">
-            <span class="mv-status-pill mv-status-pill--online mv-status-pill--pulse">
-              <span class="mv-status-pill__dot"></span> Tüm sistemler aktif
-            </span>
-          </div>
+          <a href="https://discord.gg/tktMR9fKYW" class="btn btn-ghost btn-sm">Discord'a Gir</a>
         </div>
-
-        <div>
-          <div class="mv-footer__col-title">Portal</div>
-          <div class="mv-footer__links">
-            <a class="mv-footer__link" href="#duyurular">Duyurular</a>
-            <a class="mv-footer__link" href="#ekosistem">Ekosistem</a>
-            <a class="mv-footer__link" href="#degerler">Değerler</a>
-            <a class="mv-footer__link" href="#vizyon">Vizyon</a>
-            <a class="mv-footer__link" href="#projeler">Projeler</a>
-            <a class="mv-footer__link" href="#etkinlikler">Etkinlikler</a>
-            <a class="mv-footer__link" href="public/projeler.html">Vitrin</a>
-          </div>
+        <div class="footer-bottom">
+          <span>&copy; <span data-year>2026</span> metavis1on</span>
         </div>
-
-        <div>
-          <div class="mv-footer__col-title">Bağlantı</div>
-          <div class="mv-footer__links">
-            <a id="discordFooter" class="mv-footer__link" href="#" rel="noopener noreferrer" target="_blank">Discord</a>
-            <a class="mv-footer__link" href="public/projeler.html">Projeler</a>
-          </div>
-        </div>
-
-        <div>
-          <div class="mv-footer__col-title">Yönetim</div>
-          <div class="mv-footer__links">
-            <a class="mv-footer__link" href="admin/">Yönetici Girişi</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="mv-footer__bottom">
-        <div>© <span data-mv-year>2026</span> metavis1on · Tüm hakları saklıdır.</div>
-        <div>v11.0.7 · Topluluk Portalı</div>
       </div>
     </div>
   </footer>
 
-  <!-- ============================================================
-       SCRIPTS — shared yapı
-       ============================================================ -->
-  <script src="shared/config/site.js"></script>
-  <script src="shared/js/core.js"></script>
-  <script src="shared/js/theme.js"></script>
-  <script src="shared/js/apps.js"></script>
-  <script src="shared/js/effects.js" defer></script>
-
-  <script>
-    (function () {
-      'use strict';
-
-      // Yıl güncelleyici
-      if (window.MV && window.MV.core && window.MV.core.setCurrentYear) {
-        window.MV.core.setCurrentYear('[data-mv-year]');
-      }
-
-      // ---------- Apps Showcase Renderer (v11.0.3) ----------
-      // Veri kaynağı: MV.apps.forProjectsPage() (fallback: MV_SITE.apps).
-      // site.js'de URL'ler '../' prefix'iyle (public/ perspektifinden) yazıldığı için
-      // kök sayfada çalışırken bu prefix runtime'da sıyrılır. Borç paneli için
-      // sabit 'admin/borc/' kullanılır; bu, kullanıcı korumalı borc.html redirect
-      // dosyasından bağımsızdır.
-      var CATEGORY = {
-        visiocial: 'Sosyal',
-        tetris:    'Mini Oyun',
-        grid:      'Puzzle',
-        borc:      'Yönetim'
-      };
-      var STATUS_TEXT = {
-        prototype:  'Demo',
-        stable:     'Aktif',
-        production: 'Aktif'
-      };
-      var STATUS_PILL = {
-        prototype:  'mv-status-pill--info',
-        stable:     'mv-status-pill--online mv-status-pill--pulse',
-        production: 'mv-status-pill--online mv-status-pill--pulse'
-      };
-      var GLYPH = {
-        visiocial: '◈', // ◈
-        tetris:    '▦', // ▦
-        grid:      '▩', // ▩
-        borc:      '₺'  // ₺
-      };
-      var ACCENT_CLASS = {
-        purple: 'mv-app-card-v2__icon--purple',
-        cyan:   'mv-app-card-v2__icon--cyan',
-        gold:   'mv-app-card-v2__icon--gold',
-        red:    'mv-app-card-v2__icon--red'
-      };
-
-      function resolveUrl(app) {
-        if (app.id === 'borc') return 'admin/borc/';
-        var url = app.legacyUrl || app.targetUrl || '#';
-        return url.replace(/^\.\.\//, '');
-      }
-
-      var esc = (window.MV && window.MV.core && window.MV.core.escapeHtml)
-        || function (s) { return String(s == null ? '' : s); };
-
-      function renderAppsShowcase() {
-        var container = document.getElementById('appsGrid');
-        if (!container) return;
-
-        var apps = [];
-        if (window.MV && window.MV.apps && typeof window.MV.apps.forProjectsPage === 'function') {
-          apps = window.MV.apps.forProjectsPage();
-        } else if (window.MV_SITE && Array.isArray(window.MV_SITE.apps)) {
-          apps = window.MV_SITE.apps.slice();
-        }
-
-        if (!apps.length) {
-          container.innerHTML =
-            '<div class="mv-card" style="grid-column:1 / -1;">'
-            + '<div class="mv-card__header"><div class="mv-card__title">Uygulama listesi yüklenemedi</div></div>'
-            + '<div class="mv-card__desc">Lütfen sayfayı yenileyin veya '
-            + '<a href="public/projeler.html" style="color:var(--mv-theme-primary);">vitrin sayfasına</a> gidin.</div>'
-            + '</div>';
-          return;
-        }
-
-        var html = apps.map(function (app) {
-          var isLocked = app.visibility === 'admin';
-          var category = CATEGORY[app.id] || app.tag || '';
-          var statusKey = app.status || 'stable';
-          var statusText = isLocked ? 'Admin Only' : (STATUS_TEXT[statusKey] || 'Aktif');
-          var statusPillClass = isLocked
-            ? 'mv-status-pill--offline'
-            : (STATUS_PILL[statusKey] || 'mv-status-pill--online mv-status-pill--pulse');
-          var glyph = GLYPH[app.id] || '◇';
-          var accentClass = ACCENT_CLASS[app.accent] || '';
-          var url = resolveUrl(app);
-          var ctaText = isLocked ? 'Yönetici Girişi →' : 'Modülü Aç →';
-          var cardClasses = 'mv-app-card-v2' + (isLocked ? ' mv-app-card-v2--locked' : '');
-
-          return ''
-            + '<a class="' + cardClasses + '" href="' + esc(url) + '">'
-            +   '<div class="mv-app-card-v2__head">'
-            +     '<div class="mv-app-card-v2__icon ' + accentClass + '">' + glyph + '</div>'
-            +     '<div>'
-            +       '<div class="mv-app-card-v2__title">' + esc(app.name) + '</div>'
-            +       '<div class="mv-app-card-v2__sub">' + esc(category) + '</div>'
-            +     '</div>'
-            +   '</div>'
-            +   '<div class="mv-app-card-v2__body">' + esc(app.description) + '</div>'
-            +   '<div class="mv-app-card-v2__meta">'
-            +     '<span class="mv-status-pill ' + statusPillClass + '">'
-            +       '<span class="mv-status-pill__dot"></span> ' + esc(statusText)
-            +     '</span>'
-            +     '<span class="mv-app-card-v2__cta">' + ctaText + '</span>'
-            +   '</div>'
-            + '</a>';
-        }).join('');
-
-        container.innerHTML = html;
-      }
-
-      renderAppsShowcase();
-
-      // ---------- Announcements (v11.0.5) ----------
-      function renderAnnouncements() {
-        var container = document.getElementById('announcementsStrip');
-        if (!container) return;
-        var items = (window.MV_SITE && Array.isArray(window.MV_SITE.announcements))
-          ? window.MV_SITE.announcements : [];
-
-        if (!items.length) {
-          container.innerHTML =
-            '<article class="mv-announcement-strip__item" style="min-width:280px;">'
-            +   '<div class="mv-announcement-strip__head">'
-            +     '<span class="mv-announcement-strip__date">—</span>'
-            +   '</div>'
-            +   '<div class="mv-announcement-strip__title">Henüz duyuru yok</div>'
-            +   '<div class="mv-announcement-strip__text">Yeni duyurular yayımlandığında burada görünür.</div>'
-            + '</article>';
-          return;
-        }
-
-        container.innerHTML = items.map(function (a) {
-          return ''
-            + '<article class="mv-announcement-strip__item">'
-            +   '<div class="mv-announcement-strip__head">'
-            +     '<span class="mv-announcement-strip__dot"></span>'
-            +     '<span class="mv-announcement-strip__date">' + esc(a.date) + '</span>'
-            +   '</div>'
-            +   '<div class="mv-announcement-strip__title">' + esc(a.title) + '</div>'
-            +   '<div class="mv-announcement-strip__text">' + esc(a.text) + '</div>'
-            + '</article>';
-        }).join('');
-      }
-
-      // ---------- Events (v11.0.5) ----------
-      var EVENT_STATUS_PILL = {
-        'Planlandı': 'mv-status-pill--online mv-status-pill--pulse',
-        'Yakında':   'mv-status-pill--info',
-        'Hazırlık':  'mv-status-pill--pending',
-        'İptal':     'mv-status-pill--offline'
-      };
-
-      function renderEvents() {
-        var container = document.getElementById('eventsList');
-        if (!container) return;
-        var items = (window.MV_SITE && Array.isArray(window.MV_SITE.events))
-          ? window.MV_SITE.events : [];
-
-        if (!items.length) {
-          container.innerHTML =
-            '<div class="mv-card">'
-            +   '<div class="mv-card__header"><div class="mv-card__title">Yaklaşan etkinlik yok</div></div>'
-            +   '<div class="mv-card__desc">Yeni etkinlikler eklendiğinde burada listelenir.</div>'
-            + '</div>';
-          return;
-        }
-
-        container.innerHTML = items.map(function (e) {
-          var pill = EVENT_STATUS_PILL[e.status] || 'mv-status-pill--info';
-          return ''
-            + '<article class="mv-event-row">'
-            +   '<div class="mv-event-row__date">'
-            +     '<span class="mv-event-row__day">' + esc(e.day) + '</span>'
-            +     '<span class="mv-event-row__month">' + esc(e.month) + '</span>'
-            +   '</div>'
-            +   '<div class="mv-event-row__body">'
-            +     '<div class="mv-event-row__title">' + esc(e.title) + '</div>'
-            +     '<div class="mv-event-row__meta">'
-            +       (e.time     ? '<span class="mv-event-row__meta-item">⏰ ' + esc(e.time)     + '</span>' : '')
-            +       (e.location ? '<span class="mv-event-row__meta-item">📍 ' + esc(e.location) + '</span>' : '')
-            +     '</div>'
-            +   '</div>'
-            +   '<span class="mv-status-pill ' + pill + '">'
-            +     '<span class="mv-status-pill__dot"></span> ' + esc(e.status)
-            +   '</span>'
-            + '</article>';
-        }).join('');
-      }
-
-      renderAnnouncements();
-      renderEvents();
-
-      // Discord davet bağlantısı — site.js'ten okunur
-      var discordUrl = (window.MV_SITE && window.MV_SITE.discordInvite) || '#';
-      ['discordCta', 'discordHero', 'discordCommand', 'discordFooter', 'discordMobile'].forEach(function (id) {
-        var el = document.getElementById(id);
-        if (el && discordUrl && discordUrl !== '#') {
-          el.setAttribute('href', discordUrl);
-        }
-      });
-
-      // Tema seçici aktif durum senkronizasyonu (aria-pressed dahil)
-      var themeButtons = document.querySelectorAll('[data-mv-set-theme]');
-      function syncActiveTheme() {
-        var current = (window.MV && window.MV.theme && window.MV.theme.get && window.MV.theme.get()) || 'obsidian-cyan';
-        themeButtons.forEach(function (b) {
-          var isActive = b.getAttribute('data-mv-set-theme') === current;
-          b.classList.toggle('is-active', isActive);
-          b.setAttribute('aria-pressed', String(isActive));
-        });
-      }
-      themeButtons.forEach(function (b) {
-        b.addEventListener('click', function () {
-          var id = b.getAttribute('data-mv-set-theme');
-          if (window.MV && window.MV.theme && id) {
-            window.MV.theme.set(id);
-            syncActiveTheme();
-          }
-        });
-      });
-      syncActiveTheme();
-
-      // ---------- Mobil Menü (v11.1.3 + v11.1.4 focus-trap) ----------
-      var burger   = document.getElementById('navBurger');
-      var menu     = document.getElementById('mobileMenu');
-      var backdrop = document.getElementById('mobileBackdrop');
-
-      function getFocusable() {
-        if (!menu) return [];
-        return Array.prototype.slice.call(
-          menu.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')
-        ).filter(function (el) {
-          return !el.hasAttribute('hidden') && el.offsetParent !== null;
-        });
-      }
-
-      function setMenu(open) {
-        if (!burger || !menu || !backdrop) return;
-        burger.setAttribute('aria-expanded', String(open));
-        burger.setAttribute('aria-label', open ? 'Menüyü kapat' : 'Menüyü aç');
-        burger.textContent = open ? '✕' : '≡';
-        menu.classList.toggle('is-open', open);
-        menu.setAttribute('aria-hidden', String(!open));
-        backdrop.classList.toggle('is-open', open);
-        document.body.classList.toggle('mv-nav-open', open);
-        if (open) {
-          backdrop.removeAttribute('hidden');
-          var focusables = getFocusable();
-          if (focusables.length) {
-            // Açılış animasyonu sırasında odak atlamaması için bir tick bekle.
-            setTimeout(function () { focusables[0].focus(); }, 0);
-          }
-        }
-      }
-
-      if (burger && menu && backdrop) {
-        burger.addEventListener('click', function () {
-          var willOpen = burger.getAttribute('aria-expanded') !== 'true';
-          if (willOpen) backdrop.removeAttribute('hidden');
-          setMenu(willOpen);
-        });
-
-        // Menü linkine tıklayınca kapan
-        menu.querySelectorAll('[data-mv-mobile-link]').forEach(function (a) {
-          a.addEventListener('click', function () { setMenu(false); });
-        });
-
-        // Backdrop'a tıklayınca kapan
-        backdrop.addEventListener('click', function () { setMenu(false); });
-
-        // Escape + Tab focus-trap (sadece menü açıkken devrede)
-        document.addEventListener('keydown', function (e) {
-          var isOpen = burger.getAttribute('aria-expanded') === 'true';
-          if (!isOpen) return;
-
-          if (e.key === 'Escape') {
-            setMenu(false);
-            burger.focus();
-            return;
-          }
-
-          if (e.key === 'Tab') {
-            var focusables = getFocusable();
-            if (!focusables.length) return;
-            var first = focusables[0];
-            var last  = focusables[focusables.length - 1];
-            var active = document.activeElement;
-
-            // Focus paneli dışındaysa içeri çek
-            if (!menu.contains(active)) {
-              e.preventDefault();
-              (e.shiftKey ? last : first).focus();
-              return;
-            }
-            if (e.shiftKey && active === first) {
-              e.preventDefault();
-              last.focus();
-            } else if (!e.shiftKey && active === last) {
-              e.preventDefault();
-              first.focus();
-            }
-          }
-        });
-      }
-    })();
-  </script>
+  <script src="js/main.js" defer></script>
 </body>
 </html>
